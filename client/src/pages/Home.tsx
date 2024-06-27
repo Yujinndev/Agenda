@@ -72,16 +72,16 @@ const Home = () => {
           id="home"
         >
           <div className="relative ml-auto pt-10 xl:pt-20">
-            <div className="gap-12 flex flex-col md:flex-row items-center">
+            <div className="gap-12 flex flex-col md:flex-row items-center z-30">
               <div className="text-center sm:px-12 md:w-2/3 md:px-0 md:text-left lg:w-1/2">
-                <h2 className="text-5xl font-black dark:text-white md:text-6xl lg:text-6xl xl:text-7xl">
+                <h2 className="text-6xl font-black dark:text-white md:text-6xl lg:text-6xl xl:text-7xl">
                   Making events{' '}
                   <b className="brand leading-relaxed text-amber-300">
                     ‘SIMPLE
                   </b>{' '}
                   and <b className="brand text-amber-300">EFFORTLESS‘</b>
                 </h2>
-                <div>
+                <div className="z-20">
                   <p className="mt-8 text-lg text-gray-700 dark:text-gray-100">
                     From birthdays to weddings, effortlessly plan and manage
                     every detail of your event with ease and precision.
@@ -103,10 +103,10 @@ const Home = () => {
                   </div>
                 </div>
               </div>
-              <div className="relative md:mt-0 -mt-24 md:w-2/5 lg:w-3/5">
+              <div className="relative md:mt-0 -mt-24 md:w-2/5 lg:w-3/5 -z-50">
                 <div className="lg:ml-2 lg:mr-0">
                   <img
-                    className="md:ml-4 h-[30rem] lg:h-[40rem] scale-100 object-cover object-left dark:hidden lg:scale-125"
+                    className="md:ml-4 h-[35rem] lg:h-[40rem] scale-100 object-cover object-left dark:hidden lg:scale-125"
                     src={heroLogo}
                     alt="app screenshot"
                   />

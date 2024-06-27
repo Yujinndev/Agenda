@@ -2,6 +2,7 @@ import React from 'react'
 import Navbar from '@/components/Navbar'
 import { useLocation } from 'react-router-dom'
 import { cn } from '@/lib/utils'
+import { Toaster } from '@/components/ui/toaster'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   let location = useLocation()
@@ -19,6 +20,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         )}
       >
         {children}
+        <Toaster />
       </div>
     </main>
   )

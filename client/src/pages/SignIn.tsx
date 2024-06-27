@@ -21,6 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import PasswordInput from '@/components/ui/passwordInput'
 
 interface inputData {
   email: string
@@ -87,10 +88,7 @@ const SignIn = () => {
                     <FormItem>
                       <Label>Email</Label>
                       <FormControl>
-                        <Input
-                          placeholder="admin@lasuperiormercados.com"
-                          {...field}
-                        />
+                        <Input placeholder="admin@agenda.com" {...field} />
                       </FormControl>
 
                       <FormError errorField={form.formState.errors.email} />
@@ -105,17 +103,12 @@ const SignIn = () => {
                       <Label>Password</Label>
 
                       <FormControl>
-                        <Input
-                          placeholder="********"
-                          type="password"
-                          {...field}
-                        />
+                        <PasswordInput {...field} />
                       </FormControl>
                       <FormError errorField={form.formState.errors.password} />
                     </FormItem>
                   )}
                 />
-                {/* <FormError errorField={form.formState.errors.root} /> */}
                 <Button
                   type="submit"
                   disabled={form.formState.isSubmitting}
