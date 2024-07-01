@@ -189,7 +189,7 @@ const NewEvent: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               {getStepContent(activeStep)}
 
-              <div className="flex justify-end gap-4 my-8 pt-16 relative lg:absolute lg:-bottom-4 lg:right-8">
+              <div className="flex justify-end gap-4 lg:my-8 my-4 lg:pt-16 relative lg:absolute lg:-bottom-4 lg:right-8">
                 {activeStep > 0 && (
                   <Button
                     onClick={handleBack}

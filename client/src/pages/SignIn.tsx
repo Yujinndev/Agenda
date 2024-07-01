@@ -1,14 +1,10 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-} from '@/components/ui/form'
+import { useNavigate } from 'react-router-dom'
+import { ArrowUpLeft } from 'lucide-react'
+import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { userSchema } from '@/schema/user'
-import axios from '@/lib/axios'
 import coverImg from '@/assets/coverImg.jpg'
 import FormError from '@/components/ui/formError'
 import { Button } from '@/components/ui/button'
@@ -22,6 +18,8 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import PasswordInput from '@/components/ui/passwordInput'
+import useAuth from '@/hooks/useAuth'
+import api from '@/lib/axios'
 
 interface inputData {
   email: string
@@ -29,6 +27,13 @@ interface inputData {
 }
 
 const SignIn = () => {
+  const navigate = useNavigate()
+  const { auth, setAuth } = useAuth()
+
+  useEffect(() => {
+    if (auth?.accessToken) navigate('/', { replace: true })
+  }, [])
+
   const form = useForm({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -39,18 +44,19 @@ const SignIn = () => {
 
   const onSubmit = async (data: inputData) => {
     try {
-      const response = await axios.post('/auth/login', {
+      const response = await api.post('/auth/login', {
         email: data.email,
         password: data.password,
       })
 
-      const userdetails = response?.data?.userId
-      const token = response?.data?.token
+      if (response.status === 200) {
+        navigate('/', { replace: true })
+      }
 
-      localStorage.setItem('_tkn', token)
-      // useAuthStore.getState().login(userdetails)
-
-      window.location.href = 'http://localhost:5173/dashboard'
+      setAuth({
+        user: response.data?.email,
+        accessToken: response.data?.token,
+      })
     } catch (error: any) {
       const message = error?.response?.data?.error
       form.setError('password', { message: message })
@@ -58,16 +64,23 @@ const SignIn = () => {
   }
 
   return (
-    <section className="w-full lg:h-[92.5vh] lg:grid lg:grid-cols-3 overflow-hidden">
-      <div className="bg-muted absolute lg:relative top-10 lg:top-0">
+    <section className="w-full lg:h-[100vh] lg:grid lg:grid-cols-3 overflow-hidden">
+      <div className="bg-muted absolute lg:relative top-0 md:top-10 lg:top-0">
         <img
           src={coverImg}
           alt="Image"
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
-      <div className="absolute inset-y-28 inset-x-0 lg:inset-y-0 lg:relative flex items-center justify-center p-6 py-12 col-span-2 lg:-mt-20">
-        <Card className="z-10 m-auto grid w-full gap-6 bg-white lg:w-[550px] lg:px-8 lg:py-4">
+      <div className="absolute inset-y-52 bottom-0 inset-x-0 lg:inset-y-0 lg:relative flex items-center justify-center p-6 py-12 col-span-2 md:mt-20 lg:-mt-4">
+        <Card className="z-10 m-auto grid w-full gap-6 bg-white lg:w-[550px] lg:px-8 lg:py-4 relative">
+          <Button
+            variant="ghost"
+            className="border rounded-full h-9 w-9 lg:h-12 lg:w-12 p-0 absolute -left-2 bg-white z-10 -top-2"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowUpLeft className="flex-shrink-0" />
+          </Button>
           <CardHeader className="-mb-8">
             <CardTitle className="text-2xl">Let's sign in!</CardTitle>
             <CardDescription>

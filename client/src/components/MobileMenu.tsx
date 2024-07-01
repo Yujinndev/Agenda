@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { Link } from 'react-router-dom'
+import { ProtectedLinks, PublicLinks } from './Navbar'
+import useAuth from '@/hooks/useAuth'
 
 interface MenuList {
   href: string
@@ -20,6 +22,7 @@ const MENULISTS: MenuList[] = [
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState<Boolean>(false)
+  const { auth } = useAuth()
 
   const flipMenu = () => {
     setIsOpen((prev) => !prev)
@@ -58,12 +61,12 @@ const MobileMenu = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute left-0 top-20 z-10 flex h-[calc(100vh-96px)] bg-slate-100 min-h-screen w-full flex-col items-center justify-center gap-8 text-xl font-medium">
-          {MENULISTS.map((menu) => (
-            <Link key={menu.href} to={menu.href} onClick={() => flipMenu()}>
-              {menu.title}
-            </Link>
-          ))}
+        <div className="absolute left-0 top-20 -z-10 flex h-[calc(100vh-96px)] bg-slate-100 min-h-screen w-full flex-col  gap-2 text-left divide-red-50 pt-4">
+          {auth?.accessToken ? (
+            <ProtectedLinks className="text-xl font-semibold w-screen border-b-[1px] h-max rounded-none" />
+          ) : (
+            <PublicLinks />
+          )}
         </div>
       )}
     </div>

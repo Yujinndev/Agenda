@@ -12,6 +12,7 @@ import FAQ from '@/components/ui/FAQ'
 import Footer from '@/components/Footer'
 import eventLogo from '@/assets/event-image.png'
 import heroLogo from '@/assets/hero-image.png'
+import useAuth from '@/hooks/useAuth'
 
 const features = [
   {
@@ -59,6 +60,7 @@ const faqs = [
 
 const Home = () => {
   const [activeFaq, setActiveFaq] = useState<Number | null>(null)
+  const { auth } = useAuth()
 
   const toggleAccordion = (index: number) => {
     setActiveFaq((prevIndex) => (prevIndex === index ? null : index))
@@ -91,7 +93,11 @@ const Home = () => {
                       className="flex-1 rounded-full transition-all duration-300 ease-linear"
                       asChild
                     >
-                      <Link to="/signin">Get started</Link>
+                      {auth?.accessToken ? (
+                        <Link to="/dashboard">Go to Dashboard</Link>
+                      ) : (
+                        <Link to="/signin">Get started</Link>
+                      )}
                     </Button>
                     <Button
                       variant="outline"

@@ -3,12 +3,18 @@ import { z } from 'zod'
 export const eventDetailsSchema = z.object({
   title: z.string().min(1, 'Kindly enter your Event name'),
   purpose: z.string().min(1, 'Kindly describe your Event'),
-  startDateTime: z.string().refine((date) => new Date(date) > new Date(), {
-    message: 'State of event date must be in the future',
-  }),
-  endDateTime: z.string().refine((date) => new Date(date) > new Date(), {
-    message: 'End of event date must be in the future',
-  }),
+  startDateTime: z
+    .string()
+    .min(1, 'Kindly enter the end date')
+    .refine((date) => new Date(date) > new Date(), {
+      message: 'Start of event date must be in the future',
+    }),
+  endDateTime: z
+    .string()
+    .min(1, 'Kindly enter the end date')
+    .refine((date) => new Date(date) > new Date(), {
+      message: 'End of event date must be in the future',
+    }),
   location: z.string().min(1, `Kindly enter the event's location`),
 })
 
