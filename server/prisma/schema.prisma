@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                 String             @id @default(uuid())
+  email              String             @unique
+  password           String
+  firstName          String
+  lastName           String
+  middleName         String?
+  organizedEvents    Event[]            @relation("OrganizedEvents")
+  participatedEvents EventParticipant[]
+  EventFeedback      EventFeedback[]
+
+  refreshToken String?
+
+  @@index([email])
+}
+
+model Event {
+  id            String             @id @default(uuid())
+  title         String
+  purpose       String
+  startDateTime DateTime
+  endDateTime   DateTime
+  location      String
+  category      String
+  maxBudget     Decimal?
+  audience      EventAudience      @default(PUBLIC)
+  finance       EventBudget[]
+  participants  EventParticipant[]
+  status        EventStatus
+  EventFeedback EventFeedback[]    @relation("Feedbacks")
+  organizerId   String
+  organizer     User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizerId, id])
+}
+
+enum EventAudience {
+  PUBLIC
+  INVITED_ONLY
+  USER_GROUP
+}
+
+enum EventStatus {
+  FOR_APPROVAL
+  UPCOMING
+  DONE
+  RESCHEDULED
+  CANCELLED
+}
+
+model EventParticipant {
+  id      Int    @id @default(autoincrement())
+  userId  String
+  eventId String
+  user    User   @relation(fields: [userId], references: [id])
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
+
+model EventBudget {
+  id              Int             @id @default(autoincrement())
+  financeCategory FinanceCategory
+  taskCategory    String
+  taskName        String
+  vendor          String
+  estimatedCost   Decimal
+  actualCost      Decimal?
+  eventId         String
+  event           Event           @relation(fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
+
+  @@unique([taskCategory, eventId])
+}
+
+enum FinanceCategory {
+  INCOME
+  EXPENSE
+}
+
+model EventFeedback {
+  id      Int      @id @default(autoincrement())
+  content String
+  rating  Decimal?
+  userId  String
+  eventId String
+  user    User     @relation(fields: [userId], references: [id])
+  event   Event    @relation("Feedbacks", fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
