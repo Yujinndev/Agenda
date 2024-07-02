@@ -7,19 +7,23 @@ interface FormState {
   resetFormData: () => void
 }
 
+const initialData: EventFormValues = {
+  title: '',
+  purpose: '',
+  startDateTime: '',
+  endDateTime: '',
+  location: '',
+  estimatedAttendees: '',
+  category: '',
+  audience: '',
+  price: '',
+  participants: [],
+  estimatedExpense: '',
+  status: 'UPCOMING',
+}
+
 const useEventFormStore = create<FormState>((set) => ({
-  formData: {
-    title: '',
-    purpose: '',
-    startDateTime: '',
-    endDateTime: '',
-    location: '',
-    maxAttendees: '',
-    guests: [],
-    category: 'PUBLIC',
-    maxBudget: '',
-    status: 'UPCOMING',
-  },
+  formData: initialData,
   updateFormData: (newData) =>
     set((state) => ({
       formData: {
@@ -29,18 +33,7 @@ const useEventFormStore = create<FormState>((set) => ({
     })),
   resetFormData: () =>
     set({
-      formData: {
-        title: '',
-        purpose: '',
-        startDateTime: '',
-        endDateTime: '',
-        location: '',
-        maxAttendees: '',
-        guests: [],
-        category: 'PUBLIC',
-        maxBudget: '',
-        status: 'UPCOMING',
-      },
+      formData: initialData,
     }),
 }))
 

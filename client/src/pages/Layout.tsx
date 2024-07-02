@@ -5,16 +5,18 @@ import { Toaster } from '@/components/ui/toaster'
 
 const Layout = () => {
   let location = useLocation()
-  const isNotInLogin: Boolean = location.pathname !== '/signin'
+  const isNotInOnboarding: Boolean =
+    !location.pathname.startsWith('/onboarding')
 
   return (
-    <main>
-      {isNotInLogin && <Navbar />}
+    <main className="overflow-x-hidden max-w-screen">
+      {isNotInOnboarding && <Navbar />}
       <div
         className={cn(
-          'flex items-center justify-center min-h-screen bg-grid-black/[0.015] overflow-y-auto',
+          'min-h-screen w-screen bg-grid-black/[0.015] overflow-y-auto',
           {
-            'lg:px-16 xl:px-32 2xl:px-64 pt-20': isNotInLogin,
+            'px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40 pt-20 py-20 flex justify-center items-start':
+              isNotInOnboarding,
           }
         )}
       >

@@ -14,6 +14,7 @@ interface TextFieldCustomProps<TFieldValues extends FieldValues>
 export function TextFieldCustom<TFieldValues extends FieldValues>({
   name,
   label,
+  className,
   placeholder = '',
   ...props
 }: TextFieldCustomProps<TFieldValues>) {
@@ -24,19 +25,19 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
       name={name}
       control={control}
       render={({ field }) => (
-        <FormItem>
+        <FormItem className={className}>
           <Label className="ubuntu-bold">{label}</Label>
           <FormControl>
             {name !== 'purpose' ? (
               <Input
                 {...field}
                 {...props}
-                placeholder={placeholder !== '' ? placeholder : label}
+                placeholder={placeholder !== '' ? placeholder : ''}
               />
             ) : (
               <Textarea
                 {...field}
-                placeholder={placeholder !== '' ? placeholder : label}
+                placeholder={placeholder !== '' ? placeholder : ''}
               />
             )}
           </FormControl>

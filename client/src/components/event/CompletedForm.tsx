@@ -10,10 +10,12 @@ const CompletedForm = () => {
     startDateTime,
     endDateTime,
     location,
-    maxAttendees,
-    guests,
+    estimatedAttendees,
+    participants,
     category,
-    maxBudget,
+    price,
+    audience,
+    estimatedExpense,
     status,
   } = formData
 
@@ -32,7 +34,7 @@ const CompletedForm = () => {
         <CardTitle>{location}</CardTitle>
       </CardContent>
 
-      <div className="flex flex-col lg:flex-row justify-between pe-8 border-b-[1px]">
+      <div className="grid lg:grid-cols-3 border-b-[1px]">
         <CardContent className="border-b-[1px] lg:border-0 px-0">
           <CardDescription>Start of Event:</CardDescription>
           <CardTitle>{format(new Date(startDateTime), 'PPp')}</CardTitle>
@@ -54,34 +56,57 @@ const CompletedForm = () => {
         </CardContent>
       </div>
 
-      <CardContent className="border-b-[1px] px-0">
-        <CardDescription>Maximum Attendee/s:</CardDescription>
-        <CardTitle>{maxAttendees} persons</CardTitle>
-      </CardContent>
-      <CardContent className="border-b-[1px] px-0">
-        <CardDescription>Event Category:</CardDescription>
-        <CardTitle>{category}</CardTitle>
-      </CardContent>
+      <div className="grid lg:grid-cols-3 border-b-[1px]">
+        <CardContent className="border-b-[1px] lg:border-0 px-0">
+          <CardDescription>Estimated Attendee/s:</CardDescription>
+          <CardTitle>{estimatedAttendees} persons</CardTitle>
+        </CardContent>
+        <CardContent className="border-b-[1px] lg:border-0 px-0">
+          <CardDescription>Event Category:</CardDescription>
+          <CardTitle>{category}</CardTitle>
+        </CardContent>
+        <CardContent className="border-b-[1px] lg:border-0 px-0">
+          <CardDescription>Published/Shared to:</CardDescription>
+          <CardTitle>{audience}</CardTitle>
+        </CardContent>
+      </div>
+
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Invited Guest/s:</CardDescription>
         <CardTitle>
           <ol>
-            {guests.map((guest) => (
-              <li>* {guest.email}</li>
-            ))}
+            {participants.length > 0
+              ? participants.map((item) => (
+                  <li key={item.email}>* {item.email}</li>
+                ))
+              : 'No worries, You can invite in the event dashboard later!'}
           </ol>
         </CardTitle>
       </CardContent>
-      <CardContent className="border-b-[1px] px-0">
-        <CardDescription>Max Budget:</CardDescription>
-        <CardTitle>
-          {new Intl.NumberFormat('fil-PH', {
-            style: 'currency',
-            currency: 'PHP',
-            maximumFractionDigits: 2,
-          }).format(parseInt(maxBudget))}
-        </CardTitle>
-      </CardContent>
+
+      <div className="grid lg:grid-cols-2 border-b-[1px]">
+        <CardContent className="border-b-[1px] lg:border-0 px-0">
+          <CardDescription>Estimated Expenses:</CardDescription>
+          <CardTitle>
+            {new Intl.NumberFormat('fil-PH', {
+              style: 'currency',
+              currency: 'PHP',
+              maximumFractionDigits: 2,
+            }).format(parseFloat(estimatedExpense))}
+          </CardTitle>
+        </CardContent>
+        <CardContent className="border-b-[1px] lg:border-0 px-0">
+          <CardDescription>Joining Fee / Ticket Price:</CardDescription>
+          <CardTitle>
+            {new Intl.NumberFormat('fil-PH', {
+              style: 'currency',
+              currency: 'PHP',
+              maximumFractionDigits: 2,
+            }).format(parseFloat(price))}
+          </CardTitle>
+        </CardContent>
+      </div>
+
       <CardContent className="px-0">
         <CardDescription>Status:</CardDescription>
         <CardTitle>{status}</CardTitle>

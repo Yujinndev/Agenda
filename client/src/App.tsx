@@ -5,6 +5,8 @@ import Layout from '@/pages/Layout'
 import NewEvent from '@/pages/event/NewEvent'
 import Dashboard from '@/pages/Dashboard'
 import EventPage from '@/pages/event/Event'
+import Register from '@/pages/Register'
+
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
 import { AuthProvider } from '@/context/AuthProvider'
@@ -18,7 +20,8 @@ function App() {
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route element={<PersistAuth />}>
-                <Route path="/signin" element={<SignIn />} />
+                <Route path="/onboarding/signin" element={<SignIn />} />
+                <Route path="/onboarding/register" element={<Register />} />
 
                 <Route element={<ProtectedRoute />}>
                   <Route path="/dashboard" element={<Dashboard />} />

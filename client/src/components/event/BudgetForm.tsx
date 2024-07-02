@@ -4,10 +4,14 @@ const BudgetForm = () => {
   return (
     <div className="grid gap-4">
       <TextFieldCustom
-        name="maxBudget"
-        label="Max Budget"
+        name="estimatedExpense"
+        label="Estimated Expenses"
         type="number"
-        placeholder="20000"
+      />
+      <TextFieldCustom
+        name="price"
+        label="Joining Fee / Ticket Price"
+        type="number"
       />
     </div>
   )

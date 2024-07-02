@@ -5,11 +5,13 @@ const ProtectedRoute = () => {
   const { auth } = useAuth()
   const location = useLocation()
 
-  return auth?.accessToken ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/signin" state={{ from: location }} replace />
-  )
+  if (!auth?.accessToken) {
+    return (
+      <Navigate to="/onboarding/signin" state={{ from: location }} replace />
+    )
+  }
+
+  return <Outlet />
 }
 
 export default ProtectedRoute

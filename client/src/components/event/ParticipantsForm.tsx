@@ -8,16 +8,31 @@ import { useFormContext, useWatch } from 'react-hook-form'
 import { Label } from '../ui/label'
 import FormError from '../ui/formError'
 import useEventFormStore from '@/services/state/useEventFormStore'
+import { SelectFieldCustom } from '../ui/SelectFieldCustom'
+
+const CATEGORY_CHOICES = [
+  { value: 'PERSONAL', title: 'Personal' },
+  { value: 'COMMUNITY', title: 'Community' },
+  { value: 'SCHOOL', title: 'School' },
+  { value: 'WORK', title: 'Work' },
+]
+
+const AUDIENCE_CHOICES = [
+  { value: 'PUBLIC', title: 'Public' },
+  { value: 'INVITED_ONLY', title: 'Only to Invited People' },
+  { value: 'USER_GROUP', title: 'My Groups' },
+  { value: 'ONLY_ME', title: 'Only Me' },
+]
 
 const ParticipantsForm = () => {
   const { control } = useFormContext()
-  const guests = useWatch({ name: 'guests' }) || []
+  const guests = useWatch({ name: 'participants' }) || []
   const { formData, updateFormData } = useEventFormStore()
   const {
     fields,
     handleAppend,
     handleRemove: handleRemoveFromDynamicForm,
-  } = useDynamicForm(formData.guests)
+  } = useDynamicForm(formData.participants)
 
   const onHandleRemove = (index: number) => {
     handleRemoveFromDynamicForm(index)
@@ -25,18 +40,33 @@ const ParticipantsForm = () => {
     // Update Zustand store immediately after removing
     const updatedGuests = [...guests]
     updatedGuests.splice(index, 1)
-    updateFormData({ guests: updatedGuests })
+    updateFormData({ participants: updatedGuests })
   }
 
   return (
     <div className="grid gap-4">
-      <TextFieldCustom
-        name="maxAttendees"
-        label="Max Attendees"
-        placeholder="Number of Maximum Attendee/s"
-        type="number"
+      <div className="grid lg:grid-cols-3 gap-2 w-full">
+        <TextFieldCustom
+          name="estimatedAttendees"
+          label="Estimated Attendees"
+          placeholder="No. of Attendee/s"
+          type="number"
+        />
+        <SelectFieldCustom
+          name="category"
+          choices={CATEGORY_CHOICES}
+          label="Event Category"
+          placeholder="Who can view this event?"
+          className="lg:col-span-2"
+        />
+      </div>
+
+      <SelectFieldCustom
+        name="audience"
+        choices={AUDIENCE_CHOICES}
+        label="Event Sharing and Privacy"
+        placeholder="Who can view this event?"
       />
-      <TextFieldCustom name="category" label="Event Category" />
 
       <div className="w-full flex flex-col rounded-lg">
         <div className="flex justify-between items-center p-0">
@@ -56,7 +86,7 @@ const ParticipantsForm = () => {
             <FormField
               key={field.id}
               control={control}
-              name={`guests.${index}.email`}
+              name={`participants.${index}.email`}
               render={({ field }) => (
                 <div className="grid grid-cols-8 h-max w-full shrink-0 m-auto gap-2 last:mb-8">
                   <FormItem className="col-span-7 h-full">

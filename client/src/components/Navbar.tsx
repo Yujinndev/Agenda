@@ -1,24 +1,49 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { CircleUser } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import MobileMenu from '@/components/MobileMenu'
 import useAuth from '@/hooks/useAuth'
 import useLogout from '@/hooks/useLogout'
+import { cn } from '@/lib/utils'
+
+const LINKS = [
+  {
+    site: '/',
+    name: 'Home',
+  },
+  {
+    site: '/dashboard',
+    name: 'Dashboard',
+  },
+  {
+    site: '/events',
+    name: 'Browse Events',
+  },
+]
 
 export const ProtectedLinks = ({
   className,
 }: React.HTMLAttributes<HTMLDivElement>) => {
+  const { pathname } = useLocation()
+
   return (
-    <div>
-      <Button variant="link" className={className} asChild>
-        <Link to="/dashboard">Dashboard</Link>
-      </Button>
-      <Button variant="link" className={className} asChild>
-        <Link to="/events">Events</Link>
-      </Button>
-      <Button variant="link" className={className} asChild>
-        <Link to="/events/new">New</Link>
-      </Button>
+    <div className={cn('flex flex-col md:flex-row gap-4', className)}>
+      {LINKS.map((link) => (
+        <Button
+          key={link.site}
+          size="sm"
+          variant="ghost"
+          className="relative ms-2 flex w-[96%] justify-start p-2 md:w-auto md:justify-center md:px-5"
+          asChild
+        >
+          <Link to={link.site}>
+            {link.name}
+            {pathname === link.site && (
+              <div className="absolute inset-y-8 h-1 w-10 rounded-xl bg-primary" />
+            )}
+          </Link>
+        </Button>
+      ))}
     </div>
   )
 }
@@ -40,8 +65,8 @@ const Navbar = () => {
   const logout = useLogout()
 
   return (
-    <div className="flex h-20 fixed z-50 items-center justify-between w-full bg-slate-100 px-4 md:px-8 lg:px-16 xl:px-32 2xl:px-64">
-      <div className="w-[20%] md:hidden lg:block flex items-center gap-5">
+    <div className="flex h-20 fixed z-50 items-center justify-between w-full bg-slate-100 px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40">
+      <div className="w-[10%] md:hidden lg:block flex items-center gap-5">
         <MobileMenu />
         <Link to="/" className="text-lg font-bold text-primary">
           <h1>Agenda</h1>
@@ -54,15 +79,15 @@ const Navbar = () => {
       </div>
       <div className="flex w-[30%] items-center justify-end gap-4 xl:gap-8">
         {auth?.accessToken ? (
-          <Button variant="destructive" onClick={logout}>
+          <Button onClick={logout}>
             <div className="flex items-center gap-3 px-4 py-8">
               <CircleUser size={14} />
-              <span>Logout</span>
+              <span>{auth?.user}</span>
             </div>
           </Button>
         ) : (
           <Button asChild>
-            <Link to="/signin">
+            <Link to="/onboarding/signin">
               <div className="flex items-center gap-3 px-4 py-8">
                 <CircleUser size={14} />
                 <span>Login</span>

@@ -19,6 +19,7 @@ import CompletedForm from '@/components/event/CompletedForm'
 import { Check } from 'lucide-react'
 import { useToast } from '@/components/ui/use-toast'
 import { useNavigate } from 'react-router-dom'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 // Define the form data type based on all schemas
 type FormData = z.infer<typeof eventDetailsSchema> &
@@ -37,6 +38,7 @@ const NewEvent: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0)
   const { toast } = useToast()
   const navigate = useNavigate()
+  const api = useAxiosPrivate()
 
   const steps = [
     'Details Form',
@@ -79,16 +81,31 @@ const NewEvent: React.FC = () => {
     }
   }
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async () => {
     if (activeStep === steps.length - 1) {
-      toast({
-        description: 'Your event has been created.',
-        variant: 'success',
-      })
-      navigate('/events', { replace: true })
-      reset()
-      resetFormData()
-      console.log(eventDetails)
+      // api endpoint
+
+      try {
+        const response = await api.post('/event/create', {
+          data: eventDetails,
+        })
+        console.log('🚀 ~ onSubmit ~ eventDetails:', eventDetails)
+
+        if (response.status === 200) {
+          toast({
+            description: 'Your event has been created.',
+            variant: 'success',
+          })
+          navigate('/events', { replace: true })
+          reset()
+          resetFormData()
+        }
+      } catch (err) {
+        toast({
+          description: err as string,
+          variant: 'destructive',
+        })
+      }
       // Handle final submission
     } else {
       handleNext()
@@ -109,18 +126,18 @@ const NewEvent: React.FC = () => {
   }
 
   return (
-    <Card className="m-4 p-2 grid lg:grid-cols-5 relative lg:min-h-[80vh] w-full">
+    <Card className="m-4 p-2 grid lg:grid-cols-5 relative lg:min-h-[80vh] h-full w-full">
       <div className="relative hidden lg:flex w-full rounded-lg col-span-2 justify-center overflow-hidden bg-white z-10">
         <img
           src={heroImg}
           alt="Image"
-          className="w-full -ms-10 aspect-square object-contain relative"
+          className="w-full -ms-4 aspect-square object-contain relative"
         />
       </div>
-      <div className="bg-slate-100 h-[9.5rem] inset-0 absolute rounded-t-lg" />
+      <div className="bg-amber-500/30 h-[9.5rem] inset-0 absolute rounded-t-lg" />
 
       <div className="col-span-3 relative p-8 py-4 lg:pt-8 z-10">
-        <nav className="pb-8" aria-label="Progress">
+        <nav className="pb-12 lg:pb-4" aria-label="Progress">
           <ol
             role="list"
             className="space-y-4 flex justify-between items-center md:space-x-8 md:space-y-0 relative"
@@ -142,11 +159,11 @@ const NewEvent: React.FC = () => {
                       <span className="text pt-2 font-medium">{step}</span>
                     </div>
                   ) : (
-                    <div className="group flex w-full flex-col border-l-4 border-gray-400 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
+                    <div className="group flex w-full flex-col border-l-4 border-gray-600 py-2 pl-4 transition-colors md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4">
                       <div className="rounded-full flex items-center justify-center bg-white border h-6 w-6">
-                        <p className="text-gray-400">{index + 1}</p>
+                        <p className="text-gray-600">{index + 1}</p>
                       </div>
-                      <span className="text pt-2 font-medium text-gray-400">
+                      <span className="text pt-2 font-medium text-gray-600">
                         {step}
                       </span>
                     </div>
@@ -184,12 +201,12 @@ const NewEvent: React.FC = () => {
           </ol>
         </nav>
 
-        <article className="mt-8">
+        <div className="mt-8">
           <FormProvider {...form}>
             <form onSubmit={handleSubmit(onSubmit)}>
               {getStepContent(activeStep)}
 
-              <div className="flex justify-end gap-4 lg:my-8 my-4 lg:pt-16 relative lg:absolute lg:-bottom-4 lg:right-8">
+              <div className="flex justify-center gap-4 my-6 relative  lg:absolute lg:bottom-0 lg:right-6">
                 {activeStep > 0 && (
                   <Button
                     onClick={handleBack}
@@ -200,13 +217,13 @@ const NewEvent: React.FC = () => {
                     Back
                   </Button>
                 )}
-                <Button type="submit" className="px-8">
+                <Button type="submit" className="px-8 w-full">
                   {activeStep === steps.length - 1 ? 'Submit' : 'Next'}
                 </Button>
               </div>
             </form>
           </FormProvider>
-        </article>
+        </div>
       </div>
     </Card>
   )

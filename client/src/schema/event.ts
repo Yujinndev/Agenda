@@ -19,26 +19,29 @@ export const eventDetailsSchema = z.object({
 })
 
 export const eventGuestDetailSchema = z.object({
-  maxAttendees: z
-    .string()
-    .min(1, 'Kindly provide the maximum number of attendee/s'),
-  category: z.enum(['PUBLIC', 'PRIVATE']),
+  estimatedAttendees: z.string().min(1, 'Required'),
+  category: z.string().min(1, 'Kindly Select an Event Category'),
+  audience: z.string().min(1, 'Kindly Select an Event Publishing Audience'),
 })
 
 export const eventGuestPeopleSchema = z.object({
-  guests: z.array(
+  participants: z.array(
     z.object({
-      email: z.string().email({
-        message: 'Kindly enter valid email',
-      }),
+      email: z
+        .string()
+        .email({
+          message: 'Kindly enter valid email',
+        })
+        .or(z.literal('')),
     })
   ),
 })
 
 export const eventBudgetSchema = z.object({
-  maxBudget: z
+  estimatedExpense: z
     .string()
     .min(1, 'Kindly provide the maximum budget for the event'),
+  price: z.string().min(1, 'Kindly provide the price for joining this event'),
 })
 
 export const eventConfirmationSchema = z.object({

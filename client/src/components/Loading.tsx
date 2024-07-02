@@ -4,7 +4,7 @@ const Loading = () => {
   return (
     <div className=" flex min-h-[90vh] flex-col items-center justify-center">
       <LoadingSpinner />
-      <h1 className="pt-4 font-mono">Loading ..</h1>
+      <h1 className="pt-4 text-lg font-mono">Loading ...</h1>
     </div>
   )
 }
@@ -21,7 +21,7 @@ const LoadingSpinner = ({
       height="154"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="green"
+      stroke="grey"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"

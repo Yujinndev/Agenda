@@ -1,24 +1,8 @@
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
-import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { ProtectedLinks, PublicLinks } from './Navbar'
 import useAuth from '@/hooks/useAuth'
-
-interface MenuList {
-  href: string
-  title: string
-}
-
-const MENULISTS: MenuList[] = [
-  {
-    href: '/',
-    title: 'Dashboard',
-  },
-  {
-    href: '/events',
-    title: 'Events',
-  },
-]
 
 const MobileMenu = () => {
   const [isOpen, setIsOpen] = useState<Boolean>(false)
@@ -61,13 +45,19 @@ const MobileMenu = () => {
       </div>
 
       {isOpen && (
-        <div className="absolute left-0 top-20 -z-10 flex h-[calc(100vh-96px)] bg-slate-100 min-h-screen w-full flex-col  gap-2 text-left divide-red-50 pt-4">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-x-0 inset-y-16 flex min-h-screen w-full flex-col items-start gap-4 bg-slate-100 p-1 py-4 md:hidden"
+        >
           {auth?.accessToken ? (
-            <ProtectedLinks className="text-xl font-semibold w-screen border-b-[1px] h-max rounded-none" />
+            <ProtectedLinks className="text-xl font-semibold w-screen" />
           ) : (
             <PublicLinks />
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   )

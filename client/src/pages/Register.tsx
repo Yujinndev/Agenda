@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Link, useNavigate } from 'react-router-dom'
 import { ArrowUpLeft } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
-import { userSchema } from '@/schema/user'
+import { registerUserSchema } from '@/schema/user'
 import coverImg from '@/assets/coverImg.jpg'
 import FormError from '@/components/ui/formError'
 import { Button } from '@/components/ui/button'
@@ -20,37 +20,46 @@ import {
 import PasswordInput from '@/components/ui/passwordInput'
 import useAuth from '@/hooks/useAuth'
 import api from '@/lib/axios'
+import { z } from 'zod'
+import { useToast } from '@/components/ui/use-toast'
 
-interface inputData {
-  email: string
-  password: string
-}
-
-const SignIn = () => {
+const Register = () => {
   const navigate = useNavigate()
   const { auth, setAuth } = useAuth()
+  const { toast } = useToast()
 
   useEffect(() => {
     if (auth?.accessToken) navigate('/', { replace: true })
   }, [])
 
   const form = useForm({
-    resolver: zodResolver(userSchema),
+    resolver: zodResolver(registerUserSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
+      middleName: '',
       email: '',
       password: '',
     },
   })
 
-  const onSubmit = async (data: inputData) => {
+  const onSubmit = async (data: z.infer<typeof registerUserSchema>) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/auth/register', {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        middleName: data.middleName ?? null,
         email: data.email,
         password: data.password,
       })
 
       if (response.status === 200) {
-        navigate('/', { replace: true })
+        toast({
+          description: 'You have registered successfully!',
+          variant: 'success',
+        })
+
+        navigate('/onboarding/signin', { replace: true })
       }
 
       setAuth({
@@ -65,7 +74,7 @@ const SignIn = () => {
 
   return (
     <section className="w-full lg:h-[100vh] lg:grid lg:grid-cols-3 overflow-hidden">
-      <div className="bg-muted absolute lg:relative top-0 md:top-10 lg:top-0">
+      <div className="bg-muted absolute lg:relative top-0 lg:top-0">
         <img
           src={coverImg}
           alt="Image"
@@ -77,14 +86,16 @@ const SignIn = () => {
           <Button
             variant="ghost"
             className="border rounded-full h-9 w-9 lg:h-12 lg:w-12 p-0 absolute -left-2 bg-white z-10 -top-2"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(-1)}
           >
             <ArrowUpLeft className="flex-shrink-0" />
           </Button>
           <CardHeader className="-mb-8">
-            <CardTitle className="text-2xl">Let's sign in!</CardTitle>
+            <CardTitle className="text-2xl">
+              Let's create your account!
+            </CardTitle>
             <CardDescription>
-              Enter your credentials below to login to your account ..
+              Enter your personal details below to create to your account ..
             </CardDescription>
           </CardHeader>
 
@@ -94,6 +105,46 @@ const SignIn = () => {
                 onSubmit={form.handleSubmit(onSubmit)}
                 className="mt-4 grid gap-3"
               >
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>First Name</Label>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+
+                      <FormError errorField={form.formState.errors.email} />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>Last Name</Label>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+
+                      <FormError errorField={form.formState.errors.email} />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="middleName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <Label>Middle Name</Label>
+                      <FormControl>
+                        <Input placeholder="(Optional)" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="email"
@@ -128,11 +179,12 @@ const SignIn = () => {
                   className="w-full rounded-full py-6"
                   size="lg"
                 >
-                  Sign in
+                  Create Account
                 </Button>
+
                 <Button variant="outline" asChild>
-                  <Link to="/onboarding/register">
-                    Don't have an account? Register here
+                  <Link to="/onboarding/signin">
+                    Already have an account? Login here
                   </Link>
                 </Button>
               </form>
@@ -144,4 +196,4 @@ const SignIn = () => {
   )
 }
 
-export default SignIn
+export default Register
