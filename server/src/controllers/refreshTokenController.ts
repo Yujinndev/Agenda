@@ -22,9 +22,13 @@ export const handleRefreshToken = async (req: Request, res: Response) => {
     (err: jwt.VerifyErrors | null, decoded: any) => {
       if (err || user.email !== decoded.email) return res.sendStatus(403)
 
-      const accessToken = jwt.sign({ email: user.email }, SECRET_ACCESS_KEY, {
-        expiresIn: '15m',
-      })
+      const accessToken = jwt.sign(
+        { email: user.email, userId: user.id },
+        SECRET_ACCESS_KEY,
+        {
+          expiresIn: '15m',
+        },
+      )
 
       res.json({ accessToken: accessToken, email: user.email })
     },

@@ -3,13 +3,14 @@ import { Request, Response } from 'express'
 import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../constant'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+
 const prisma = new PrismaClient()
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body
 
   try {
-    const user = await prisma.user.findFirst({
+    const user = await prisma.user.findUnique({
       where: {
         email,
       },
@@ -23,13 +24,21 @@ export const loginUser = async (req: Request, res: Response) => {
 
     if (!isPasswordMatched) throw new Error()
 
-    const accessToken = jwt.sign({ email: user.email }, SECRET_ACCESS_KEY, {
-      expiresIn: '15m',
-    })
+    const accessToken = jwt.sign(
+      { email: user.email, userId: user.id },
+      SECRET_ACCESS_KEY,
+      {
+        expiresIn: '15m',
+      },
+    )
 
-    const refreshToken = jwt.sign({ email: user.email }, SECRET_REFRESH_KEY, {
-      expiresIn: '1d',
-    })
+    const refreshToken = jwt.sign(
+      { email: user.email, userId: user.id },
+      SECRET_REFRESH_KEY,
+      {
+        expiresIn: '1d',
+      },
+    )
 
     await prisma.user.update({
       where: { email: user.email },
@@ -75,4 +84,33 @@ export const logoutUser = async (req: Request, res: Response) => {
 
   res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
   return res.sendStatus(200)
+}
+
+export const registerUser = async (req: Request, res: Response) => {
+  const { firstName, middleName, lastName, email, password } = req.body
+
+  if (!req.body) return res.sendStatus(500)
+
+  try {
+    const checkEmailIfUsed = await prisma.user.findUnique({ where: { email } })
+    if (checkEmailIfUsed) {
+      return res.status(500).json({ error: 'Email is already used' })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const newUser = await prisma.user.create({
+      data: {
+        firstName,
+        lastName,
+        middleName,
+        email,
+        password: hashedPassword,
+      },
+    })
+
+    res.sendStatus(200)
+  } catch {
+    return res.sendStatus(403)
+  }
 }

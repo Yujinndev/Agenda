@@ -23,28 +23,29 @@ model User {
   organizedEvents    Event[]            @relation("OrganizedEvents")
   participatedEvents EventParticipant[]
   EventFeedback      EventFeedback[]
-
-  refreshToken String?
+  refreshToken       String?
 
   @@index([email])
 }
 
 model Event {
-  id            String             @id @default(uuid())
-  title         String
-  purpose       String
-  startDateTime DateTime
-  endDateTime   DateTime
-  location      String
-  category      String
-  maxBudget     Decimal?
-  audience      EventAudience      @default(PUBLIC)
-  finance       EventBudget[]
-  participants  EventParticipant[]
-  status        EventStatus
-  EventFeedback EventFeedback[]    @relation("Feedbacks")
-  organizerId   String
-  organizer     User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  id                 String             @id @default(uuid())
+  title              String
+  purpose            String
+  location           String
+  startDateTime      DateTime
+  endDateTime        DateTime
+  estimatedAttendees Int?
+  category           EventCategory
+  audience           EventAudience      @default(PUBLIC)
+  participants       EventParticipant[]
+  estimatedExpense   Decimal?
+  price              Decimal?           @default(0)
+  status             EventStatus?       @default(UPCOMING)
+  finance            EventBudget[]
+  EventFeedback      EventFeedback[]    @relation("Feedbacks")
+  organizerId        String
+  organizer          User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -52,10 +53,18 @@ model Event {
   @@index([organizerId, id])
 }
 
+enum EventCategory {
+  PERSONAL
+  COMMUNITY
+  SCHOOL
+  WORK
+}
+
 enum EventAudience {
   PUBLIC
   INVITED_ONLY
   USER_GROUP
+  ONLY_ME
 }
 
 enum EventStatus {
@@ -67,11 +76,13 @@ enum EventStatus {
 }
 
 model EventParticipant {
-  id      Int    @id @default(autoincrement())
-  userId  String
+  id      Int     @id @default(autoincrement())
+  userId  String?
   eventId String
-  user    User   @relation(fields: [userId], references: [id])
-  event   Event  @relation(fields: [eventId], references: [id])
+  email   String
+  name    String?
+  user    User?   @relation(fields: [userId], references: [id])
+  event   Event   @relation(fields: [eventId], references: [id])
 
   @@unique([userId, eventId])
 }
@@ -88,7 +99,7 @@ model EventBudget {
   event           Event           @relation(fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
-  updateAt  DateTime @updatedAt
+  updatedAt DateTime @updatedAt
 
   @@unique([taskCategory, eventId])
 }

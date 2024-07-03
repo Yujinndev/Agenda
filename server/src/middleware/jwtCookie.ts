@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
-import { SECRET_ACCESS_KEY } from '@/constant'
+import { SECRET_ACCESS_KEY } from '../constant'
 
 export const jwtCookieVerify = (
   req: Request,
@@ -22,6 +22,7 @@ export const jwtCookieVerify = (
   try {
     const decoded = jwt.verify(token, SECRET_ACCESS_KEY)
     req.body.email = (decoded as { email: string }).email
+    req.body.userId = (decoded as { userId: string }).userId
 
     next()
   } catch {

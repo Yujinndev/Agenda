@@ -1,4 +1,8 @@
-import { loginUser, logoutUser } from '../controllers/authController'
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+} from '../controllers/authController'
 import { Router } from 'express'
 
 export const authRouter = () => {
@@ -6,6 +10,7 @@ export const authRouter = () => {
 
   router.post('/login', loginUser)
   router.post('/logout', logoutUser)
+  router.post('/register', registerUser)
 
   return router
 }
