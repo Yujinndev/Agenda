@@ -50,10 +50,10 @@ const MobileMenu = () => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="absolute inset-x-0 inset-y-16 flex min-h-screen w-full flex-col items-start gap-4 bg-slate-100 p-1 py-4 md:hidden"
+          className="absolute inset-x-0 inset-y-20 flex h-max m-2 w-[96%] shadow-lg rounded-lg flex-col items-start gap-4 bg-slate-100 p-1 py-4 md:hidden border"
         >
           {auth?.accessToken ? (
-            <ProtectedLinks className="text-xl font-semibold w-screen" />
+            <ProtectedLinks className="text-xl font-semibold w-full" />
           ) : (
             <PublicLinks />
           )}

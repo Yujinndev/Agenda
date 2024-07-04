@@ -16,7 +16,11 @@ const LINKS = [
     name: 'Dashboard',
   },
   {
-    site: '/events',
+    site: '/events/my-events',
+    name: 'My Events',
+  },
+  {
+    site: '/events/browse',
     name: 'Browse Events',
   },
 ]
@@ -27,13 +31,13 @@ export const ProtectedLinks = ({
   const { pathname } = useLocation()
 
   return (
-    <div className={cn('flex flex-col md:flex-row gap-4', className)}>
+    <div className={cn('flex flex-col w-max md:flex-row gap-4', className)}>
       {LINKS.map((link) => (
         <Button
           key={link.site}
           size="sm"
           variant="ghost"
-          className="relative ms-2 flex w-[96%] justify-start p-2 md:w-auto md:justify-center md:px-5"
+          className="relative ms-2 flex w-[96%] rounded-none justify-start p-2 md:w-auto md:justify-center md:px-5 border-b-[1px] lg:border-0"
           asChild
         >
           <Link to={link.site}>
@@ -82,7 +86,7 @@ const Navbar = () => {
           <Button onClick={logout}>
             <div className="flex items-center gap-3 px-4 py-8">
               <CircleUser size={14} />
-              <span>{auth?.user}</span>
+              <span>@{auth?.user?.split('@')[0]}</span>
             </div>
           </Button>
         ) : (

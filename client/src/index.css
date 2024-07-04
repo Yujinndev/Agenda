@@ -87,28 +87,14 @@ video {
   max-height: none;
 }
 
-.ubuntu-light {
-  font-family: 'Ubuntu', sans-serif;
-  font-weight: 300;
-  font-style: normal;
-}
-
-body,
-.ubuntu-regular {
-  font-family: 'Ubuntu', sans-serif;
+body {
+  font-family: 'Overpass', sans-serif;
   font-weight: 400;
-  font-style: normal;
-}
-
-.ubuntu-medium {
-  font-family: 'Ubuntu', sans-serif;
-  font-weight: 500;
-  font-style: normal;
 }
 
 h1,
 .ubuntu-bold {
-  font-family: 'Ubuntu', sans-serif;
+  font-family: 'Overpass', sans-serif;
   font-weight: 700;
   font-style: normal;
 }
@@ -130,4 +116,13 @@ h1 {
   background-color: rgb(199, 199, 199);
 
   border-radius: 20px;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
 }
