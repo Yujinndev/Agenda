@@ -1,11 +1,18 @@
-import { createEvent, fetchUserEvents } from '../controllers/eventController'
+import {
+  createEvent,
+  fetchAllPublicEvents,
+  fetchSingleEvent,
+  fetchUserEvents,
+} from '../controllers/eventController'
 import { Router } from 'express'
 
 export const eventRouter = () => {
   const router = Router()
 
-  router.get('/myEvents', fetchUserEvents)
   router.post('/create', createEvent)
+  router.get('/myEvents', fetchUserEvents)
+  router.get('/all/public', fetchAllPublicEvents)
+  router.get('/item/:id', fetchSingleEvent)
 
   return router
 }

@@ -5,6 +5,7 @@ export interface Participant {
 }
 
 export interface EventProps {
+  id?: string
   title: string
   purpose: string
   startDateTime: string
@@ -14,11 +15,12 @@ export interface EventProps {
   category: EventCategory
   audience: EventAudience
   price: string
-  participants: any
+  participants?: any
+  committee?: any
   estimatedExpense: string
   status: EventStatus
   email: string
-  userId: string
+  userId?: string
 }
 
 enum EventCategory {

@@ -24,6 +24,7 @@ model User {
   participatedEvents EventParticipant[]
   EventFeedback      EventFeedback[]
   refreshToken       String?
+  EventCommittee     EventCommittee[]
 
   @@index([email])
 }
@@ -43,6 +44,7 @@ model Event {
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
   finance            EventBudget[]
+  committee          EventCommittee[]   @relation("Committee")
   EventFeedback      EventFeedback[]    @relation("Feedbacks")
   organizerId        String
   organizer          User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
@@ -75,6 +77,26 @@ enum EventStatus {
   CANCELLED
 }
 
+model EventCommittee {
+  id             Int            @id @default(autoincrement())
+  userId         String?
+  eventId        String
+  email          String
+  name           String?
+  approvalStatus ApprovalStatus @default(WAITING)
+  user           User?          @relation(fields: [userId], references: [id])
+  event          Event          @relation("Committee", fields: [eventId], references: [id])
+
+  @@unique([email, eventId])
+}
+
+enum ApprovalStatus {
+  WAITING
+  REQUESTING_REVISION
+  REJECTED
+  APPROVED
+}
+
 model EventParticipant {
   id      Int     @id @default(autoincrement())
   userId  String?
@@ -84,7 +106,7 @@ model EventParticipant {
   user    User?   @relation(fields: [userId], references: [id])
   event   Event   @relation(fields: [eventId], references: [id])
 
-  @@unique([userId, eventId])
+  @@unique([email, eventId])
 }
 
 model EventBudget {
