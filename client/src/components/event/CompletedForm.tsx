@@ -11,7 +11,7 @@ const CompletedForm = () => {
     endDateTime,
     location,
     estimatedAttendees,
-    participants,
+    committee,
     category,
     price,
     audience,
@@ -75,8 +75,8 @@ const CompletedForm = () => {
         <CardDescription>Invited Guest/s:</CardDescription>
         <CardTitle>
           <ol>
-            {participants.length > 0
-              ? participants.map((item) => (
+            {committee.length > 0
+              ? committee.map((item) => (
                   <li key={item.email}>* {item.email}</li>
                 ))
               : 'No worries, You can invite in the event dashboard later!'}

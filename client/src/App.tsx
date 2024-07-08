@@ -13,6 +13,7 @@ import EventPage from '@/pages/event/Event'
 import MyEvents from '@/pages/event/MyEvents'
 import Register from '@/pages/Register'
 import EventDetails from '@/pages/event/EventDetails'
+import ResponseForm from '@/pages/ResponseForm'
 
 import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
@@ -27,6 +28,8 @@ function App() {
           <Routes>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
+              <Route path="/response-form" element={<ResponseForm />} />
+
               <Route element={<PersistAuth />}>
                 <Route path="/onboarding/signin" element={<SignIn />} />
                 <Route path="/onboarding/register" element={<Register />} />

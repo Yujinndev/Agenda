@@ -24,8 +24,15 @@ export const eventGuestDetailSchema = z.object({
   audience: z.string().min(1, 'Kindly Select an Event Publishing Audience'),
 })
 
-export const eventGuestPeopleSchema = z.object({
-  participants: z.array(
+export const eventBudgetSchema = z.object({
+  estimatedExpense: z
+    .string()
+    .min(1, 'Kindly provide the maximum budget for the event'),
+  price: z.string().min(1, 'Kindly provide the price for joining this event'),
+})
+
+export const eventCommitteeSchema = z.object({
+  committee: z.array(
     z.object({
       email: z
         .string()
@@ -37,32 +44,24 @@ export const eventGuestPeopleSchema = z.object({
   ),
 })
 
-export const eventBudgetSchema = z.object({
-  estimatedExpense: z
-    .string()
-    .min(1, 'Kindly provide the maximum budget for the event'),
-  price: z.string().min(1, 'Kindly provide the price for joining this event'),
-})
-
 export const eventConfirmationSchema = z.object({
   status: z.string().min(1),
 })
 
-export const eventGuestsSchema = eventGuestDetailSchema.merge(
-  eventGuestPeopleSchema
-)
-
-export const eventFormSchema = eventDetailsSchema
-  .merge(eventGuestDetailSchema)
-  .merge(eventGuestPeopleSchema)
-  .merge(eventBudgetSchema)
-  .merge(eventConfirmationSchema)
+export const eventApprovalSchema = eventBudgetSchema.merge(eventCommitteeSchema)
 
 export type EventDetailsFormValues = z.infer<typeof eventDetailsSchema>
 export type EventGuestsDetailFormValues = z.infer<typeof eventGuestDetailSchema>
-export type EventGuestsFormValues = z.infer<typeof eventGuestPeopleSchema>
-export type EventBudgetFormValues = z.infer<typeof eventBudgetSchema>
+export type EventCommitteeFormValues = z.infer<typeof eventCommitteeSchema>
+export type EventApprovalFormValues = z.infer<typeof eventApprovalSchema>
 export type EventConfirmationFormValues = z.infer<
   typeof eventConfirmationSchema
 >
+
+// for zustand store
+export const eventFormSchema = eventDetailsSchema
+  .merge(eventGuestDetailSchema)
+  .merge(eventBudgetSchema)
+  .merge(eventCommitteeSchema)
+  .merge(eventConfirmationSchema)
 export type EventFormValues = z.infer<typeof eventFormSchema>

@@ -72,8 +72,8 @@ const Navbar = () => {
     <div className="flex h-20 fixed z-50 items-center justify-between w-full bg-slate-100 px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40">
       <div className="w-[10%] md:hidden lg:block flex items-center gap-5">
         <MobileMenu />
-        <Link to="/" className="text-lg font-bold text-primary">
-          <h1>Agenda</h1>
+        <Link to="/" className="text-xl text-black text-primary">
+          <h1 className="font-black">Agenda</h1>
         </Link>
       </div>
       <div className="hidden w-[50%] md:flex">

@@ -17,7 +17,7 @@ const initialData: EventFormValues = {
   category: '',
   audience: '',
   price: '',
-  participants: [],
+  committee: [],
   estimatedExpense: '',
   status: 'UPCOMING',
 }

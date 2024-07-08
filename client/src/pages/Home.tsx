@@ -78,8 +78,8 @@ const Home = () => {
               <h2 className="text-5xl font-black dark:text-white md:text-6xl lg:text-6xl xl:text-7xl">
                 Making events{' '}
                 <b className="brand leading-relaxed from-green-900 to-yellow-200 bg-gradient-to-tr bg-clip-text text-transparent">
-                  ‘SIMPLE
-                </b>{' '}
+                  ‘SIMPLE{' '}
+                </b>
                 and{' '}
                 <b className="brand from-green-900 to-yellow-200 bg-gradient-to-tr bg-clip-text text-transparent">
                   EFFORTLESS‘
@@ -98,7 +98,7 @@ const Home = () => {
                     {auth?.accessToken ? (
                       <Link to="/dashboard">Go to Dashboard</Link>
                     ) : (
-                      <Link to="/signin">Get started</Link>
+                      <Link to="/onboarding/signin">Get started</Link>
                     )}
                   </Button>
                   <Button

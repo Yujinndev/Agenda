@@ -8,10 +8,10 @@ import { useToast } from '@/components/ui/use-toast'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import {
-  eventBudgetSchema,
+  eventApprovalSchema,
   eventConfirmationSchema,
   eventDetailsSchema,
-  eventGuestsSchema,
+  eventGuestDetailSchema,
 } from '@/schema/event'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import CompletedForm from '@/components/event/CompletedForm'
@@ -24,14 +24,14 @@ import Stepper from '@/components/ui/stepper'
 
 // Define the form data type based on all schemas
 type FormData = z.infer<typeof eventDetailsSchema> &
-  z.infer<typeof eventGuestsSchema> &
-  z.infer<typeof eventBudgetSchema> &
+  z.infer<typeof eventGuestDetailSchema> &
+  z.infer<typeof eventApprovalSchema> &
   z.infer<typeof eventConfirmationSchema>
 
 const SCHEMAS = [
   eventDetailsSchema,
-  eventGuestsSchema,
-  eventBudgetSchema,
+  eventGuestDetailSchema,
+  eventApprovalSchema,
   eventConfirmationSchema,
 ]
 
@@ -58,7 +58,8 @@ const NewEvent: React.FC = () => {
     mode: 'onChange',
   })
 
-  const { handleSubmit, trigger, getValues, reset } = form
+  const { handleSubmit, trigger, getValues, reset, formState } = form
+  const { isSubmitting } = formState
 
   // Use useEffect to update form values when eventDetails change
   useEffect(() => {
@@ -90,17 +91,17 @@ const NewEvent: React.FC = () => {
             endDateTime: new Date(eventDetails.endDateTime),
           },
         })
+
+        toast({
+          description: 'Your event has been created.',
+          variant: 'success',
+        })
       } catch (error) {
         console.log(error)
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myEvents'] })
-
-      toast({
-        description: 'Your event has been created.',
-        variant: 'success',
-      })
 
       reset()
       resetFormData()
@@ -119,6 +120,7 @@ const NewEvent: React.FC = () => {
   const handleNext = async () => {
     const isStepValid = await trigger()
     updateFormData(getValues())
+    console.log(eventDetails)
 
     if (isStepValid) {
       setActiveStep((prevActiveStep) => prevActiveStep + 1)
@@ -159,8 +161,16 @@ const NewEvent: React.FC = () => {
                     Back
                   </Button>
                 )}
-                <Button type="submit" className="px-8 w-full">
-                  {activeStep === STEPS.length - 1 ? 'Submit' : 'Next'}
+                <Button
+                  type="submit"
+                  className="px-8 w-full"
+                  disabled={isSubmitting}
+                >
+                  {activeStep === STEPS.length - 1
+                    ? 'Submit'
+                    : isSubmitting
+                    ? 'Submitting'
+                    : 'Next'}
                 </Button>
               </div>
             </form>

@@ -8,7 +8,7 @@ export const useGetEventById = (id: string) => {
     queryKey: ['event', id],
     queryFn: async () => {
       const response = await axios.get(`/event/item/${id}`)
-      return response.data
+      return response.data.event
     },
   })
 }

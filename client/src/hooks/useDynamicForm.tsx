@@ -1,28 +1,28 @@
-import { eventGuestPeopleSchema } from '@/schema/event'
+import { eventCommitteeSchema } from '@/schema/event'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 const useDynamicForm = (initialGuests: { email: string }[] = []) => {
-  const form = useForm<z.infer<typeof eventGuestPeopleSchema>>({
-    resolver: zodResolver(eventGuestPeopleSchema),
+  const form = useForm<z.infer<typeof eventCommitteeSchema>>({
+    resolver: zodResolver(eventCommitteeSchema),
     defaultValues: {
-      participants: initialGuests.length > 0 ? initialGuests : [{ email: '' }],
+      committee: initialGuests.length > 0 ? initialGuests : [{ email: '' }],
     },
   })
 
-  const onSubmit = (data: z.infer<typeof eventGuestPeopleSchema>) => {
+  const onSubmit = (data: z.infer<typeof eventCommitteeSchema>) => {
     console.log(data)
   }
 
   const { control } = form
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: 'participants',
+    name: 'committee',
   })
 
   const handleRemove = (index: number) => {
-    form.resetField(`participants.${index}`)
+    form.resetField(`committee.${index}.email`)
     update(index, { email: '' })
     remove(index)
   }
