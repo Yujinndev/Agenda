@@ -1,12 +1,12 @@
 import Calendar, { Event } from '@/components/Calendar'
 import EventCard from '@/components/EventCard'
 import Loading from '@/components/Loading'
-import { useUserEvents } from '@/hooks/api/useGetUserEvents'
+import { useGetUserEvents } from '@/hooks/api/useGetUserEvents'
 import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
-  const { data: events, isLoading, isSuccess } = useUserEvents()
+  const { data: events, isLoading, isSuccess } = useGetUserEvents()
 
   const upcomingEvents =
     isSuccess &&
@@ -51,7 +51,7 @@ const Dashboard = () => {
             <Link to={`/events/detail/${event.id}`} key={event.id}>
               <EventCard
                 event={event}
-                className="bg-amber-300 hover:bg-amber-300/80"
+                className="bg-amber-400 hover:bg-amber-300/80"
               />
             </Link>
           ))}

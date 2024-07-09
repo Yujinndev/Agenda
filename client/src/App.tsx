@@ -24,31 +24,29 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Home />} />
-              <Route path="/response-form" element={<ResponseForm />} />
+        <Routes>
+          <Route element={<Layout />}>
+            <Route path="/" element={<Home />} />
+            <Route path="/response-form" element={<ResponseForm />} />
+            <Route path="/events/browse/" element={<EventPage />} />
 
-              <Route element={<PersistAuth />}>
-                <Route path="/onboarding/signin" element={<SignIn />} />
-                <Route path="/onboarding/register" element={<Register />} />
+            <Route element={<PersistAuth />}>
+              <Route path="/onboarding/signin" element={<SignIn />} />
+              <Route path="/onboarding/register" element={<Register />} />
 
-                <Route element={<ProtectedRoute />}>
-                  <Route path="/dashboard" element={<Dashboard />} />
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                  <Route path="/events" element={<Outlet />}>
-                    <Route path="new/" element={<NewEvent />} />
-                    <Route path="browse/" element={<EventPage />} />
-                    <Route path="my-events/" element={<MyEvents />} />
-                    <Route path="detail/:id/" element={<EventDetails />} />
-                  </Route>
+                <Route path="/events" element={<Outlet />}>
+                  <Route path="new/" element={<NewEvent />} />
+                  <Route path="my-events/" element={<MyEvents />} />
+                  <Route path="detail/:id/" element={<EventDetails />} />
                 </Route>
               </Route>
-              <Route path="*" element={<NotFoundPage />} />
             </Route>
-          </Routes>
-        </>
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
       </Router>
     </AuthProvider>
   )

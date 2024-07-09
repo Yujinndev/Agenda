@@ -17,12 +17,12 @@ import useAuth from '@/hooks/useAuth'
 const features = [
   {
     name: 'Finance Tracker and Analysis',
-    desc: 'Suggest date ideas and venues that align with the specified budget.',
+    desc: `Propose your budget outlining your event's financial needs.`,
     icon: <FaMoneyBills />,
   },
   {
-    name: 'Guest Email Invitation',
-    desc: 'Invite guests in a modernized manner. Users can effortlessly manage RSVPs.',
+    name: 'Process approval via Email',
+    desc: `Comply in your company's bureaucracy in a modernized manner. Users can effortlessly manage approval.`,
     icon: <FaEnvelopeCircleCheck />,
   },
   {
@@ -31,7 +31,7 @@ const features = [
     icon: <FaTimeline />,
   },
   {
-    name: 'Calendar Integration',
+    name: 'Calendar Dashboard Integration',
     desc: 'Users can schedule tasks, set reminders, and synchronize event details with their personal calendars.',
     icon: <FaCalendarDays />,
   },
@@ -87,8 +87,8 @@ const Home = () => {
               </h2>
               <div className="z-20">
                 <p className="mt-8 text-lg text-gray-700 dark:text-gray-100">
-                  From birthdays to weddings, effortlessly plan and manage every
-                  detail of your event with ease and precision.
+                  From personal to your work, effortlessly plan and manage every
+                  detail of your agenda with ease and precision.
                 </p>
                 <div className="mx-auto mt-12 flex w-72 gap-4  sm:gap-6 md:w-auto md:justify-start">
                   <Button
@@ -148,9 +148,8 @@ const Home = () => {
                     Event Planning and Management
                   </h2>
                   <p className="mt-1 text-gray-600 dark:text-gray-400">
-                    Understand the preferences of both individuals involved in
-                    the date, considering factors like favorite cuisines,
-                    preferred activities, and ambiance.
+                    Understand the matrix involved in the agenda, considering
+                    factors like approval, budget, and participants.
                   </p>
                 </div>
               </div>

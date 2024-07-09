@@ -1,19 +1,6 @@
 import { TextFieldCustom } from '../ui/TextFieldCustom'
 import { SelectFieldCustom } from '../ui/SelectFieldCustom'
-
-const CATEGORY_CHOICES = [
-  { value: 'PERSONAL', title: 'Personal' },
-  { value: 'COMMUNITY', title: 'Community' },
-  { value: 'SCHOOL', title: 'School' },
-  { value: 'WORK', title: 'Work' },
-]
-
-const AUDIENCE_CHOICES = [
-  { value: 'PUBLIC', title: 'Public' },
-  { value: 'INVITED_ONLY', title: 'Only to Invited People' },
-  { value: 'USER_GROUP', title: 'My Groups' },
-  { value: 'ONLY_ME', title: 'Only Me' },
-]
+import { CATEGORY_CHOICES, EVENT_AUDIENCE } from '@/constants/choices'
 
 const ParticipantsForm = () => {
   return (
@@ -36,7 +23,7 @@ const ParticipantsForm = () => {
 
       <SelectFieldCustom
         name="audience"
-        choices={AUDIENCE_CHOICES}
+        choices={EVENT_AUDIENCE}
         label="Event Sharing and Privacy"
         placeholder="Who can view this event?"
       />

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpLeft } from 'lucide-react'
 import { Form, FormControl, FormField, FormItem } from '@/components/ui/form'
 import { userSchema } from '@/schema/user'
@@ -28,7 +28,10 @@ interface inputData {
 
 const SignIn = () => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { auth, setAuth } = useAuth()
+
+  const toNavigateAfterSuccess = location?.state?.from?.pathname || '/'
 
   useEffect(() => {
     if (auth?.accessToken) navigate('/', { replace: true })
@@ -50,7 +53,7 @@ const SignIn = () => {
       })
 
       if (response.status === 200) {
-        navigate('/', { replace: true })
+        navigate(toNavigateAfterSuccess, { replace: true })
       }
 
       setAuth({

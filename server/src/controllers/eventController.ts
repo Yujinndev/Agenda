@@ -220,6 +220,9 @@ export const fetchUserEvents = async (req: Request, res: Response) => {
       where: {
         organizerId: { equals: userId },
       },
+      orderBy: {
+        startDateTime: 'asc',
+      },
       include: {
         participants: true,
       },
@@ -264,18 +267,24 @@ export const fetchSingleEvent = async (req: Request, res: Response) => {
 
 export const fetchAllPublicEvents = async (req: Request, res: Response) => {
   try {
-    const events = await prisma.event.findMany({
+    const allEvents = await prisma.event.findMany({
       where: {
-        audience: { equals: 'PUBLIC' },
+        AND: [
+          { audience: { equals: 'PUBLIC' } },
+          { status: { equals: 'UPCOMING' } },
+        ],
       },
-      include: { participants: false },
+      orderBy: {
+        startDateTime: 'asc',
+      },
+      include: { participants: true, organizer: true },
     })
 
-    if (!events) {
+    if (!allEvents) {
       return res.status(204).json({ message: 'No event Found' })
     }
 
-    res.status(200).json({ events })
+    res.status(200).json({ allEvents })
   } catch {
     res.sendStatus(500)
   }

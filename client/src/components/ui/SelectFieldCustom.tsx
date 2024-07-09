@@ -12,7 +12,7 @@ import {
 
 interface Choice {
   value: string
-  title: string
+  label: string
 }
 
 interface TextFieldCustomProps {
@@ -48,7 +48,7 @@ export function SelectFieldCustom({
             <SelectContent>
               {choices.map((choice) => (
                 <SelectItem key={choice.value} value={choice.value}>
-                  {choice.title}
+                  {choice.label}
                 </SelectItem>
               ))}
             </SelectContent>

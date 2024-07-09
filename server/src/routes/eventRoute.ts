@@ -11,7 +11,6 @@ export const eventRouter = () => {
 
   router.post('/create', createEvent)
   router.get('/myEvents', fetchUserEvents)
-  router.get('/all/public', fetchAllPublicEvents)
   router.get('/item/:id', fetchSingleEvent)
 
   return router

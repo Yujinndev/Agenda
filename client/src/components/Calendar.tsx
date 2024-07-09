@@ -23,9 +23,14 @@ export interface Event {
   title: string
   purpose: string
   category: string
+  price: string
   status: string
+  location?: string
+  estimatedAttendees?: number
   startDateTime: Date
   endDateTime: Date
+  organizer?: any
+  participants: any
 }
 
 type DateBlockProps = {

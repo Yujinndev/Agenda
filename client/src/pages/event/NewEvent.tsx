@@ -166,10 +166,10 @@ const NewEvent: React.FC = () => {
                   className="px-8 w-full"
                   disabled={isSubmitting}
                 >
-                  {activeStep === STEPS.length - 1
-                    ? 'Submit'
-                    : isSubmitting
+                  {isSubmitting
                     ? 'Submitting'
+                    : activeStep === STEPS.length - 1
+                    ? 'Submit'
                     : 'Next'}
                 </Button>
               </div>

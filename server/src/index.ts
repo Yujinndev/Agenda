@@ -7,6 +7,7 @@ import { authRouter } from './routes/authRoute'
 import { jwtCookieVerify } from './middleware/jwtCookie'
 import { handleRefreshToken } from './controllers/refreshTokenController'
 import { eventRouter } from './routes/eventRoute'
+import { fetchAllPublicEvents } from './controllers/eventController'
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser())
 
 app.get('/refresh-token', handleRefreshToken)
+app.get('/event/all/public', fetchAllPublicEvents)
 app.use('/auth', authRouter())
 app.use('/event', jwtCookieVerify, eventRouter())
 
