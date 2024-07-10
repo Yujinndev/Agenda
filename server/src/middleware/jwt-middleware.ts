@@ -1,8 +1,8 @@
-import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
+import { NextFunction, Request, Response } from 'express'
 import { SECRET_ACCESS_KEY } from '../constant'
 
-export const jwtCookieVerify = (
+export const jwtMiddleware = (
   req: Request,
   res: Response,
   next: NextFunction,

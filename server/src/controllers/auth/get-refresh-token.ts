@@ -1,11 +1,11 @@
-import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../constant'
+import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../../constant'
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 
 const prisma = new PrismaClient()
 
-export const handleRefreshToken = async (req: Request, res: Response) => {
+export const getRefreshTokenHandler = async (req: Request, res: Response) => {
   const cookies = req.cookies
   if (!cookies?.refreshToken) return res.sendStatus(403)
 

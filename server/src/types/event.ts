@@ -16,7 +16,7 @@ export interface EventProps {
   audience: EventAudience
   price: string
   participants?: any
-  committee?: any
+  committees?: any
   estimatedExpense: string
   status: EventStatus
   email: string

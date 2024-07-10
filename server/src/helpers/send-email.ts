@@ -1,6 +1,6 @@
 import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
-import { createEmailLinkWithToken } from './createEmailLinkWithToken'
+import { createEmailLinkWithToken } from './create-email-magic-link'
 
 interface SendEmailProps {
   email: string
