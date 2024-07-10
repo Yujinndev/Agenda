@@ -19,6 +19,7 @@ import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
 import { AuthProvider } from '@/context/AuthProvider'
+import EventDetail from './pages/event/EventDetail'
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/response-form" element={<ResponseForm />} />
             <Route path="/events/browse/" element={<EventPage />} />
+            <Route path="/events/details/" element={<EventDetail />} />
 
             <Route element={<PersistAuth />}>
               <Route path="/onboarding/signin" element={<SignIn />} />

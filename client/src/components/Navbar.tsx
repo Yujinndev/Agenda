@@ -63,6 +63,9 @@ export const PublicLinks = ({
       <Button variant="link" className={className} asChild>
         <Link to="/events/browse">Browse Events</Link>
       </Button>
+      <Button variant="link" className={className} asChild>
+        <Link to="/events/details">Event Details</Link>
+      </Button>
     </div>
   )
 }
