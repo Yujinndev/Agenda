@@ -2,14 +2,15 @@ import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
 import { createEmailLinkWithToken } from './create-email-magic-link'
 
-interface SendEmailProps {
+type SendEmailProps = {
   email: string
   eventCreator: string
   eventId: string
   eventTitle: string
-  eventStartDateTime: string
-  eventEndDateTime: string
+  eventStartDateTime: Date
+  eventEndDateTime: Date
   eventPurpose: string
+  eventDetails: string
   eventLocation: string
   eventCategory: string
   eventEstimatedAttendees: number
@@ -25,6 +26,7 @@ export const sendEmail = async ({
   eventStartDateTime,
   eventEndDateTime,
   eventPurpose,
+  eventDetails,
   eventLocation,
   eventCategory,
   eventEstimatedAttendees,
@@ -164,6 +166,7 @@ export const sendEmail = async ({
         maximumFractionDigits: 2,
       },
     ).format(parseFloat(eventFee))}</b>.</p>
+              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">${eventDetails}</p>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">To ensure everything proceeds smoothly, we seek your valuable approval. Please let us know if you require any additional information or have any questions regarding the event. Your feedback is important to us, and we are open to any suggestions you may have.</p>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">Thank you for considering this proposal. I look forward to your positive response.</p>
               <br/>

@@ -10,6 +10,7 @@ export const createEventHandler = async (req: Request, res: Response) => {
   const {
     title,
     purpose,
+    details,
     startDateTime,
     endDateTime,
     location,
@@ -21,6 +22,10 @@ export const createEventHandler = async (req: Request, res: Response) => {
     estimatedExpense,
     status,
   }: EventProps = data
+
+  if (!data) {
+    res.sendStatus(400)
+  }
 
   try {
     const parsedAttendees = estimatedAttendees
@@ -34,8 +39,9 @@ export const createEventHandler = async (req: Request, res: Response) => {
         data: {
           title,
           purpose,
-          startDateTime,
-          endDateTime,
+          details,
+          startDateTime: new Date(startDateTime).toISOString(),
+          endDateTime: new Date(endDateTime).toISOString(),
           location,
           estimatedAttendees: parsedAttendees,
           category,
@@ -51,48 +57,60 @@ export const createEventHandler = async (req: Request, res: Response) => {
         },
       })
 
-      // Create committees one by one
-      if (committees.length > 0) {
-        for (const participant of committees) {
-          const participantDetails: any = await tx.user.findUnique({
-            where: {
-              email: participant.email,
-            },
-          })
-
-          await tx.eventCommittee.create({
-            data: {
-              userId: participantDetails.userId ?? null,
-              name: participantDetails.name ?? null,
-              email: participantDetails.email,
-              eventId: participantDetails.id,
-            },
-          })
-        }
-      }
-
-      const user = await prisma.user.findFirstOrThrow({
+      const organizer = await tx.user.findFirstOrThrow({
         where: {
           id: userId,
         },
         select: {
           firstName: true,
           lastName: true,
+          email: true,
         },
       })
 
-      if (committees.length >= 1) {
-        const userFullName = user.firstName + ' ' + user.lastName
-        const firstCommittee: string = committees[0].email
+      // Create committees one by one
+      if (committees.length > 0) {
+        for (const committee of committees) {
+          let committeeId
+          let committeeFullName
+
+          try {
+            const committeeDetails = await tx.user.findFirstOrThrow({
+              where: {
+                email: committee.email,
+              },
+            })
+
+            committeeId = committeeDetails?.id
+            committeeFullName =
+              committeeDetails?.firstName + ' ' + committeeDetails?.lastName
+          } catch (error) {
+            console.log(error)
+          }
+
+          await tx.eventCommittee.create({
+            data: {
+              userId: committeeId ?? null,
+              name: committeeFullName || null,
+              email: committee?.email,
+              eventId: newEvent?.id,
+            },
+          })
+        }
+
+        const organizerFullName =
+          organizer?.firstName + ' ' + organizer?.lastName
+        const firstCommittee: string = committees[0]?.email
 
         await sendEmail({
           email: firstCommittee,
-          eventCreator: userFullName,
-          eventId: event.id,
+          eventCreator: organizerFullName,
+          eventId: newEvent.id,
           eventTitle: title,
           eventStartDateTime: startDateTime,
           eventEndDateTime: endDateTime,
           eventPurpose: purpose,
+          eventDetails: details,
           eventLocation: location,
           eventCategory: category,
           eventEstimatedAttendees: parsedAttendees,
@@ -102,12 +120,20 @@ export const createEventHandler = async (req: Request, res: Response) => {
       }
 
       //TODO: insert into eventLogs -> "CREATED EVENT", DATE, USER
+      await tx.eventHistoryLog.create({
+        data: {
+          eventId: newEvent.id,
+          email: organizer.email,
+          message: 'New Event',
+          action: 'CREATED',
+        },
+      })
 
       return newEvent
     })
 
     res.status(200).json(event)
   } catch (error) {
-    res.sendStatus(500)
+    res.status(500).json(error)
   }
 }

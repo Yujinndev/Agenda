@@ -9,22 +9,26 @@ export const logoutUserHandler = async (req: Request, res: Response) => {
   if (!cookies.refreshToken) return res.sendStatus(204)
   const refreshToken = cookies.refreshToken
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { refreshToken: refreshToken },
-  })
+  try {
+    const user = await prisma.user.findFirstOrThrow({
+      where: { refreshToken: refreshToken },
+    })
 
-  if (!user) {
+    if (!user) {
+      res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
+      return res.sendStatus(204)
+    }
+
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        refreshToken: null,
+      },
+    })
+
     res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
-    return res.sendStatus(204)
+    return res.sendStatus(200)
+  } catch (error) {
+    res.status(500).json(error)
   }
-
-  await prisma.user.update({
-    where: { email: user.email },
-    data: {
-      refreshToken: null,
-    },
-  })
-
-  res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
-  return res.sendStatus(200)
 }

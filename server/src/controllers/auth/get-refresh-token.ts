@@ -7,30 +7,34 @@ const prisma = new PrismaClient()
 
 export const getRefreshTokenHandler = async (req: Request, res: Response) => {
   const cookies = req.cookies
-  if (!cookies?.refreshToken) return res.sendStatus(403)
 
+  if (!cookies?.refreshToken) return res.sendStatus(403)
   const refreshToken = cookies.refreshToken
 
-  const user = await prisma.user.findFirstOrThrow({
-    where: { refreshToken: refreshToken },
-  })
-  if (!user) return res.sendStatus(404)
+  try {
+    const user = await prisma.user.findFirstOrThrow({
+      where: { refreshToken: refreshToken },
+    })
+    if (!user) return res.sendStatus(404)
 
-  jwt.verify(
-    refreshToken,
-    SECRET_REFRESH_KEY,
-    (err: jwt.VerifyErrors | null, decoded: any) => {
-      if (err || user.email !== decoded.email) return res.sendStatus(403)
+    jwt.verify(
+      refreshToken,
+      SECRET_REFRESH_KEY,
+      (err: jwt.VerifyErrors | null, decoded: any) => {
+        if (err || user.email !== decoded.email) return res.sendStatus(403)
 
-      const accessToken = jwt.sign(
-        { email: user.email, userId: user.id },
-        SECRET_ACCESS_KEY,
-        {
-          expiresIn: '15m',
-        },
-      )
+        const accessToken = jwt.sign(
+          { email: user.email, userId: user.id },
+          SECRET_ACCESS_KEY,
+          {
+            expiresIn: '15m',
+          },
+        )
 
-      res.json({ accessToken: accessToken, email: user.email })
-    },
-  )
+        res.json({ accessToken: accessToken, email: user.email })
+      },
+    )
+  } catch (error) {
+    res.status(500).json(error)
+  }
 }

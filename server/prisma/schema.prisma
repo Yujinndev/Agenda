@@ -32,7 +32,8 @@ model User {
 model Event {
   id                 String             @id @default(uuid())
   title              String
-  purpose            String
+  details            String?
+  purpose            String?
   location           String
   startDateTime      DateTime
   endDateTime        DateTime
@@ -44,15 +45,16 @@ model Event {
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
   finance            EventBudget[]
-  committee          EventCommittee[]   @relation("Committee")
+  committee          EventCommittee[]   @relation("Committees")
   EventFeedback      EventFeedback[]    @relation("Feedbacks")
+  EventHistoryLogs   EventHistoryLog[]  @relation("HistoryLogs")
   organizerId        String
   organizer          User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([organizerId, id])
+  @@index([organizerId])
 }
 
 enum EventCategory {
@@ -78,20 +80,45 @@ enum EventStatus {
 }
 
 model EventCommittee {
-  id             Int            @id @default(autoincrement())
-  userId         String?
-  eventId        String
-  email          String
-  name           String?
-  approvalStatus ApprovalStatus @default(WAITING)
-  user           User?          @relation(fields: [userId], references: [id])
-  event          Event          @relation("Committee", fields: [eventId], references: [id])
+  id                    Int                     @id @default(autoincrement())
+  userId                String?
+  eventId               String
+  email                 String
+  name                  String?
+  EventCommitteeInquiry EventCommitteeInquiry[] @relation("CommitteeInquiries")
+  approvalStatus        ApprovalStatus          @default(WAITING)
+  user                  User?                   @relation(fields: [userId], references: [id])
+  event                 Event                   @relation("Committees", fields: [eventId], references: [id])
 
   @@unique([email, eventId])
 }
 
 enum ApprovalStatus {
   WAITING
+  REQUESTING_REVISION
+  REJECTED
+  APPROVED
+}
+
+model EventSentEmailCommittee {
+  id             Int      @id @unique @default(autoincrement())
+  isSent         Boolean
+  committeeEmail String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model EventCommitteeInquiry {
+  id               Int            @id @default(autoincrement())
+  committeeEmail   String
+  committeeEventId String
+  committee        EventCommittee @relation("CommitteeInquiries", fields: [committeeEmail, committeeEventId], references: [email, eventId])
+  content          String?
+  responseType     ResponseType
+  date             DateTime       @default(now())
+}
+
+enum ResponseType {
   REQUESTING_REVISION
   REJECTED
   APPROVED
@@ -141,4 +168,25 @@ model EventFeedback {
   event   Event    @relation("Feedbacks", fields: [eventId], references: [id])
 
   @@unique([userId, eventId])
+}
+
+model EventHistoryLog {
+  id         Int           @id @default(autoincrement())
+  eventId    String
+  event      Event         @relation("HistoryLogs", fields: [eventId], references: [id])
+  email      String
+  message    String
+  oldValues  String?
+  newValues  String?
+  action     HistoryAction
+  actionTime DateTime      @default(now())
+}
+
+enum HistoryAction {
+  CREATED
+  UPDATED
+  INQUIRED
+  REJECTED
+  APPROVED
+  DELETED
 }
