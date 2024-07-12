@@ -1,14 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import useAxiosPrivate from '../useAxiosPrivate'
 
-export const UseGetAllPublicEvents = () => {
+export const useGetAllPublicEvents = () => {
   const axios = useAxiosPrivate()
 
   return useQuery({
-    queryKey: ['allEvents'],
+    queryKey: ['public-events'],
     queryFn: async () => {
-      const response = await axios.get('event/all/public')
-      return response.data?.allEvents
+      try {
+        const response = await axios.get('/api/event/all')
+        return response.data?.records
+      } catch (error) {
+        console.log(error)
+      }
     },
   })
 }

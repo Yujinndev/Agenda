@@ -22,11 +22,7 @@ const PersistAuth = () => {
       }
     }
 
-    !auth?.accessToken
-      ? setTimeout(() => {
-          verifyRefreshToken()
-        }, 500)
-      : setIsLoading(false)
+    !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false)
 
     return () => {
       isMounted = false

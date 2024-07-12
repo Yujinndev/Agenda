@@ -47,7 +47,7 @@ const SignIn = () => {
 
   const onSubmit = async (data: inputData) => {
     try {
-      const response = await api.post('/auth/login', {
+      const response = await api.post('/api/auth/login', {
         email: data.email,
         password: data.password,
       })

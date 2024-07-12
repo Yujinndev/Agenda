@@ -45,7 +45,7 @@ const Register = () => {
 
   const onSubmit = async (data: z.infer<typeof registerUserSchema>) => {
     try {
-      const response = await api.post('/auth/register', {
+      const response = await api.post('/api/auth/register', {
         firstName: data.firstName,
         lastName: data.lastName,
         middleName: data.middleName ?? null,

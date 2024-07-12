@@ -5,10 +5,10 @@ export const useGetUserEvents = () => {
   const axios = useAxiosPrivate()
 
   return useQuery({
-    queryKey: ['myEvents'],
+    queryKey: ['my-events'],
     queryFn: async () => {
-      const response = await axios.get('/event/myEvents')
-      return response.data?.userEvents
+      const response = await axios.get('/api/event/me/all')
+      return response.data?.records
     },
   })
 }

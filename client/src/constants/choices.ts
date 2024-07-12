@@ -1,5 +1,5 @@
 export const EVENT_CATEGORIES = [
-  { label: 'Requested', value: 'FOR_APPROVAL' },
+  { label: 'Pending', value: 'FOR_APPROVAL' },
   { label: 'Upcoming', value: 'UPCOMING' },
   { label: 'Done', value: 'DONE' },
   { label: 'Cancelled', value: 'CANCELLED' },
