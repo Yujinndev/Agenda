@@ -1,11 +1,11 @@
 import EventCard from '@/components/EventCard'
 import { Event } from '@/components/Calendar'
-import { UseGetAllPublicEvents } from '@/hooks/api/useGetAllPublicEvents'
+import { useGetAllPublicEvents } from '@/hooks/api/useGetAllPublicEvents'
 import Loading from '@/components/Loading'
 import { Link } from 'react-router-dom'
 
 const EventPage = () => {
-  const { data: allEvents, isLoading } = UseGetAllPublicEvents()
+  const { data: allEvents, isLoading } = useGetAllPublicEvents()
 
   if (isLoading) {
     return <Loading />
@@ -22,7 +22,7 @@ const EventPage = () => {
 
       <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-8">
         {allEvents.map((event: Event) => (
-          <Link to={`/events/detail/${event.id}`} key={event.id}>
+          <Link to={`/events/browse/p/${event.id}`} key={event.id}>
             <EventCard event={event} extendedVariant={true} />
           </Link>
         ))}

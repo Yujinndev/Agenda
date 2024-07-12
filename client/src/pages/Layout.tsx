@@ -13,7 +13,7 @@ const Layout = () => {
       {isNotInOnboarding && <Navbar />}
       <div
         className={cn(
-          'min-h-screen w-screen bg-grid-black/[0.002] overflow-y-auto',
+          'min-h-screen w-screen bg-grid-black/[0.0015] overflow-y-auto',
           {
             'px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40 pt-20 flex justify-center items-start':
               isNotInOnboarding,

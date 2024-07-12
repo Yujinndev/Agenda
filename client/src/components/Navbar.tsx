@@ -8,10 +8,6 @@ import { cn } from '@/lib/utils'
 
 const LINKS = [
   {
-    site: '/',
-    name: 'Home',
-  },
-  {
     site: '/dashboard',
     name: 'Dashboard',
   },
@@ -42,7 +38,7 @@ export const ProtectedLinks = ({
         >
           <Link to={link.site}>
             {link.name}
-            {pathname === link.site && (
+            {pathname.startsWith(link.site) && (
               <div className="absolute inset-y-8 h-1 w-10 rounded-xl bg-primary" />
             )}
           </Link>
@@ -58,13 +54,7 @@ export const PublicLinks = ({
   return (
     <div>
       <Button variant="link" className={className} asChild>
-        <Link to="/">Home</Link>
-      </Button>
-      <Button variant="link" className={className} asChild>
         <Link to="/events/browse">Browse Events</Link>
-      </Button>
-      <Button variant="link" className={className} asChild>
-        <Link to="/events/details">Event Details</Link>
       </Button>
     </div>
   )
@@ -75,7 +65,7 @@ const Navbar = () => {
   const logout = useLogout()
 
   return (
-    <div className="flex h-20 fixed z-50 items-center justify-between w-full bg-slate-100 px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40">
+    <div className="flex h-20 fixed z-50 items-center justify-between w-screen bg-slate-100 px-4 md:px-8 lg:px-16 xl:px-28 2xl:px-40">
       <div className="w-[10%] md:hidden lg:block flex items-center gap-5">
         <MobileMenu />
         <Link to="/" className="text-xl text-black text-primary">

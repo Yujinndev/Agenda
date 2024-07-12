@@ -22,6 +22,7 @@ export interface Event {
   id: number
   title: string
   purpose: string
+  details: string
   category: string
   price: string
   status: string
@@ -30,7 +31,8 @@ export interface Event {
   startDateTime: Date
   endDateTime: Date
   organizer?: any
-  participants: any
+  participants?: any
+  committee?: any
 }
 
 type DateBlockProps = {
@@ -169,6 +171,9 @@ const AllDays = ({
                 'absolute bottom-1 right-1 h-6 w-6 text-black bg-amber-300 hover:bg-amber-300/80 flex items-center justify-center px-2 rounded-full lg:hidden',
                 {
                   hidden: todaysEvents.length == 0,
+                },
+                {
+                  'lg:block': todaysEvents.length > 1,
                 }
               )}
             >
@@ -194,7 +199,7 @@ const AllDays = ({
                     }
                   )}
                 >
-                  <p className="font-bold">{event.title}</p>
+                  <p className="font-bold line-clamp-2">{event.title}</p>
                   <p>{format(new Date(event.startDateTime), 'hh:mm a')}</p>
                 </Link>
               ))}

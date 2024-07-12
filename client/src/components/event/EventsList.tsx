@@ -24,21 +24,21 @@ const EventList = ({
             key={el.id}
             whileHover={{ scale: 1.005 }}
             whileTap={{ scale: 0.95 }}
-            className="relative h-1 flex-1 bg-white transition-all ease-linear"
+            className="relative flex-1 bg-white transition-all ease-linear"
           >
             <Link to={`/events/detail/${el.id}`}>
               <Card
-                className={cn('relative flex', {
+                className={cn('relative flex h-36', {
                   'bg-primary/10': selectedFilter === 'DONE',
                   'bg-red-700/10': selectedFilter === 'CANCELLED',
                 })}
               >
                 <img
-                  src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSZHgjV8ckMtH2AEwV7Q63QFOFZoVDKDy24MVx_9NVPA&s"
+                  src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
                   alt="Example Image"
-                  className="hidden lg:block"
+                  className="hidden lg:flex aspect-square w-3/12 relative"
                 />
-                <CardContent className="relative flex flex-1 items-center gap-4 px-8 pt-4">
+                <CardContent className="relative flex flex-1 items-center gap-4 p-8">
                   <div className="flex flex-col items-center justify-center rounded-sm border px-4 py-2">
                     <p className="-mb-1 text-base">
                       {format(startDateTime, 'MMM')}

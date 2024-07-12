@@ -14,7 +14,7 @@ const EventCard = ({
   extendedVariant?: boolean
   className?: string
 }) => {
-  const participantsCount = event?.participants?.length
+  const currentParticipantsCount = event?.participants?.length
 
   return (
     <Card
@@ -25,7 +25,7 @@ const EventCard = ({
       )}
     >
       <img
-        src="https://marketplace.canva.com/EAFj6TR4-qE/1/0/1600w/canva-purple-and-green-festive-flat-illustration-music-festival-facebook-event-cover-PvfxTQxRP8k.jpg"
+        src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
         alt="Example Image"
         className={cn(
           'w-full hidden h-48 overflow-hidden rounded-lg group-hover:opacity-80',
@@ -36,9 +36,9 @@ const EventCard = ({
       />
       <div className="grid gap-[2px]">
         <div className="flex justify-between gap-1 items-start">
-          <h2 className="font-bold text-lg">{event.title}</h2>
+          <h2 className="font-bold text-lg line-clamp-1">{event.title}</h2>
 
-          <Badge>{event.category}</Badge>
+          <Badge className="lg:text-[10px]">{event.category}</Badge>
         </div>
         {extendedVariant && (
           <div className="flex items-center gap-2 text-gray-600">
@@ -69,7 +69,7 @@ const EventCard = ({
             <div className="flex items-center gap-2">
               <CheckCheckIcon size={20} className="mb-1" />
               <p>
-                {participantsCount} / {event.estimatedAttendees} People
+                {currentParticipantsCount} / {event.estimatedAttendees} People
               </p>
             </div>
             <div className="flex items-center gap-2">

@@ -1,24 +1,27 @@
 import Calendar, { Event } from '@/components/Calendar'
 import EventCard from '@/components/EventCard'
 import Loading from '@/components/Loading'
+import { useGetRequestedEventsForCommitteeUser } from '@/hooks/api/useGetRequestedEventsForCommitteeUser'
 import { useGetUserEvents } from '@/hooks/api/useGetUserEvents'
+import useAuth from '@/hooks/useAuth'
+import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
 import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
   const { data: events, isLoading, isSuccess } = useGetUserEvents()
+  const { data: eventsToApprove } = useGetRequestedEventsForCommitteeUser()
+  const { auth } = useAuth()
 
   const upcomingEvents =
     isSuccess &&
     events.filter((el: Event) => el.status === 'UPCOMING').slice(0, 3)
 
-  const requestedEvents =
-    isSuccess &&
-    events.filter((el: Event) => el.status === 'FOR_APPROVAL').slice(0, 3)
-
   if (isLoading) {
     return <Loading />
   }
+
+  const user = auth!.user as string
 
   return (
     <section className="relative w-full grid lg:grid-cols-5 p-4 lg:px-0 gap-4 lg:pt-10">
@@ -47,14 +50,25 @@ const Dashboard = () => {
           <h2 className="text-xl font-bold">Requested Events</h2>
           <div className="h-[1px] w-full bg-gray-400" />
 
-          {requestedEvents.map((event: Event) => (
-            <Link to={`/events/detail/${event.id}`} key={event.id}>
-              <EventCard
-                event={event}
-                className="bg-amber-400 hover:bg-amber-300/80"
-              />
-            </Link>
-          ))}
+          {eventsToApprove?.map((event: Event) => {
+            const isNextToApprove = isCommitteeNextToApprove({
+              committees: event?.committee,
+              currentUser: user,
+            })
+
+            return (
+              <div key={event.id}>
+                {isNextToApprove.isNext ? (
+                  <Link to={`/events/detail/${event.id}`} key={event.id}>
+                    <EventCard
+                      event={event}
+                      className="bg-amber-400 hover:bg-amber-300/80"
+                    />
+                  </Link>
+                ) : null}
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>
