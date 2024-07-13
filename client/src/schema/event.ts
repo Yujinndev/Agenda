@@ -2,7 +2,8 @@ import { z } from 'zod'
 
 export const eventDetailsSchema = z.object({
   title: z.string().min(1, 'Kindly enter your Event name'),
-  purpose: z.string().min(1, 'Kindly describe your Event'),
+  details: z.string().min(50, 'Kindly enter your Event details'),
+  purpose: z.string().min(25, 'Kindly enter your Event purpose'),
   startDateTime: z
     .string()
     .min(1, 'Kindly enter the end date')
@@ -32,7 +33,7 @@ export const eventBudgetSchema = z.object({
 })
 
 export const eventCommitteeSchema = z.object({
-  committee: z.array(
+  committees: z.array(
     z.object({
       email: z
         .string()

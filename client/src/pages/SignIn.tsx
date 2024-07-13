@@ -75,7 +75,7 @@ const SignIn = () => {
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
-      <div className="absolute inset-y-52 bottom-0 inset-x-0 lg:inset-y-0 lg:relative flex items-center justify-center p-6 py-12 col-span-2 md:mt-20 lg:-mt-4">
+      <div className="absolute inset-y-28 bottom-0 inset-x-0 lg:inset-y-0 lg:relative flex items-center justify-center p-6 py-12 col-span-2 md:mt-20 lg:-mt-4">
         <Card className="z-10 m-auto grid w-full gap-6 bg-white lg:w-[550px] lg:px-8 lg:py-4 relative">
           <Button
             variant="ghost"

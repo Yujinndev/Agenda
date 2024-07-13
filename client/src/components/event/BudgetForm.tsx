@@ -31,12 +31,12 @@ const BudgetForm = () => {
   }
 
   const { control } = useFormContext()
-  const guests = useWatch({ name: 'committee' }) || []
+  const guests = useWatch({ name: 'committees' }) || []
   const {
     fields,
     handleAppend,
     handleRemove: handleRemoveFromDynamicForm,
-  } = useDynamicForm(formData.committee)
+  } = useDynamicForm(formData.committees)
 
   const onHandleRemove = (index: number) => {
     handleRemoveFromDynamicForm(index)
@@ -44,7 +44,7 @@ const BudgetForm = () => {
     // Update Zustand store immediately after removing
     const updatedCommittee = [...guests]
     updatedCommittee.splice(index, 1)
-    updateFormData({ committee: updatedCommittee })
+    updateFormData({ committees: updatedCommittee })
   }
 
   return (
@@ -77,7 +77,7 @@ const BudgetForm = () => {
               variant="ghost"
               onClick={() => handleAppend()}
             >
-              <Plus /> <span className="hidden lg:flex">Add new guest</span>
+              <Plus /> <span className="hidden lg:flex">Add new committee</span>
             </Button>
           </div>
 
@@ -86,7 +86,7 @@ const BudgetForm = () => {
               <FormField
                 key={field.id}
                 control={control}
-                name={`committee.${index}.email`}
+                name={`committees.${index}.email`}
                 render={({ field }) => (
                   <div className="grid grid-cols-8 h-max w-full shrink-0 m-auto gap-2 last:mb-8">
                     <FormItem className="col-span-7 h-full">

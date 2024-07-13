@@ -9,6 +9,7 @@ interface FormState {
 
 const initialData: EventFormValues = {
   title: '',
+  details: '',
   purpose: '',
   startDateTime: '',
   endDateTime: '',
@@ -17,7 +18,7 @@ const initialData: EventFormValues = {
   category: '',
   audience: '',
   price: '',
-  committee: [],
+  committees: [],
   estimatedExpense: '',
   status: 'UPCOMING',
 }

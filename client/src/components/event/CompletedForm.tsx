@@ -1,17 +1,19 @@
 import useEventFormStore from '@/services/state/useEventFormStore'
 import { format, formatDistance, subDays } from 'date-fns'
 import { Card, CardContent, CardDescription, CardTitle } from '../ui/card'
+import { EVENT_CATEGORIES } from '@/constants/choices'
 
 const CompletedForm = () => {
   const { formData } = useEventFormStore()
   const {
     title,
+    details,
     purpose,
     startDateTime,
     endDateTime,
     location,
     estimatedAttendees,
-    committee,
+    committees,
     category,
     price,
     audience,
@@ -19,11 +21,17 @@ const CompletedForm = () => {
     status,
   } = formData
 
+  const getStatus = EVENT_CATEGORIES.find((el) => el.value === status)
+
   return (
     <Card className="border-0 grid gap-2 py-4 shadow-none bg-transparent">
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Title:</CardDescription>
         <CardTitle>{title}</CardTitle>
+      </CardContent>
+      <CardContent className="border-b-[1px] px-0">
+        <CardDescription>Details:</CardDescription>
+        <CardTitle>{details}</CardTitle>
       </CardContent>
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Purpose:</CardDescription>
@@ -72,11 +80,11 @@ const CompletedForm = () => {
       </div>
 
       <CardContent className="border-b-[1px] px-0">
-        <CardDescription>Invited Guest/s:</CardDescription>
+        <CardDescription>Committee/s:</CardDescription>
         <CardTitle>
           <ol>
-            {committee.length > 0
-              ? committee.map((item) => (
+            {committees.length > 0
+              ? committees.map((item) => (
                   <li key={item.email}>* {item.email}</li>
                 ))
               : 'No worries, You can invite in the event dashboard later!'}
@@ -109,7 +117,7 @@ const CompletedForm = () => {
 
       <CardContent className="px-0">
         <CardDescription>Status:</CardDescription>
-        <CardTitle>{status}</CardTitle>
+        <CardTitle>{getStatus?.label}</CardTitle>
       </CardContent>
     </Card>
   )

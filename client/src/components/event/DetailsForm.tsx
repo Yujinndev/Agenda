@@ -5,9 +5,14 @@ const DetailsForm = () => {
     <div className="grid gap-2 lg:gap-4">
       <TextFieldCustom name="title" label="Title" placeholder="Glow Run 2024" />
       <TextFieldCustom
+        name="details"
+        label="Details"
+        placeholder="Ready, Set, GLOW! Join us to ignite the LORMANIAN Glow in the greatest comeback of Glow Run."
+      />
+      <TextFieldCustom
         name="purpose"
         label="Purpose"
-        placeholder="Ready, Set, GLOW! Join us to ignite the LORMANIAN Glow in the greatest comeback of Glow Run."
+        placeholder="To organize a fun and engaging nighttime running event that combines fitness with entertainment."
       />
       <div className="grid lg:grid-cols-2 gap-4">
         <TextFieldCustom

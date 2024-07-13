@@ -7,7 +7,7 @@ const useDynamicForm = (initialGuests: { email: string }[] = []) => {
   const form = useForm<z.infer<typeof eventCommitteeSchema>>({
     resolver: zodResolver(eventCommitteeSchema),
     defaultValues: {
-      committee: initialGuests.length > 0 ? initialGuests : [{ email: '' }],
+      committees: initialGuests.length > 0 ? initialGuests : [{ email: '' }],
     },
   })
 
@@ -18,11 +18,11 @@ const useDynamicForm = (initialGuests: { email: string }[] = []) => {
   const { control } = form
   const { fields, append, remove, update } = useFieldArray({
     control,
-    name: 'committee',
+    name: 'committees',
   })
 
   const handleRemove = (index: number) => {
-    form.resetField(`committee.${index}.email`)
+    form.resetField(`committees.${index}.email`)
     update(index, { email: '' })
     remove(index)
   }

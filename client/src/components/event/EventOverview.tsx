@@ -3,23 +3,29 @@ import { format, formatDistance, subDays } from 'date-fns'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { EVENT_AUDIENCE } from '@/constants/choices'
+import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
+import useAuth from '@/hooks/useAuth'
+import MarkdownFormat from '@/utils/MarkdownFormat'
 
 const EventOverview = ({ id }: { id: string }) => {
   const { data } = useGetEventById(id)
-
+  const { auth } = useAuth()
   const convertDate = new Date(data.startDateTime)
   const startDateTime = format(convertDate, 'PPp')
   const endDateTime = format(new Date(data.endDateTime), 'PPp')
   const eventAudience = EVENT_AUDIENCE.find((el) => el.value === data.audience)
+  const eventOrganizer = `${data?.organizer?.firstName} ${
+    data?.organizer?.middleName ?? ''
+  } ${data?.organizer?.lastName}`
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
       <div className="flex flex-col gap-4">
-        <Card className="shadow-none rounded-lg relative p-4">
+        <Card className="shadow-none rounded-lg relative p-4 max-h-96">
           <img
-            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSZHgjV8ckMtH2AEwV7Q63QFOFZoVDKDy24MVx_9NVPA&s"
+            src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
             alt="Example Image"
-            className="w-full rounded-lg"
+            className="w-full h-full rounded-lg"
           />
 
           <CardContent className="absolute -mt-20 flex items-center gap-2">
@@ -58,19 +64,6 @@ const EventOverview = ({ id }: { id: string }) => {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="flex flex-col gap-4">
-        <Card className="shadow-none lg:min-h-[19.6rem]">
-          <CardContent className="flex flex-col gap-2 p-8">
-            <div>
-              <h1 className="text-xl font-black">Description:</h1>
-              <p className="ms-8 text-lg lg:text-justify lg:text-xl">
-                {data.purpose}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
         <Card className="shadow-none">
           <CardContent className="flex gap-2 p-8">
             <h1 className="text-xl font-black">Estimated Attendees:</h1>
@@ -85,6 +78,44 @@ const EventOverview = ({ id }: { id: string }) => {
             <p className="text-lg lg:text-justify lg:text-xl">
               {eventAudience?.label ?? 'Unset'}
             </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        <Card className="shadow-none">
+          <CardContent className="flex items-center gap-4 p-8">
+            <Avatar className="h-16 w-16">
+              <AvatarImage src="https://github.com/shadcn.png" />
+              <AvatarFallback>CN</AvatarFallback>
+            </Avatar>
+            <div className="grid">
+              <h1 className="text-xl font-black">Organized By:</h1>
+              <p className="text-lg lg:text-justify lg:text-xl">
+                {eventOrganizer}{' '}
+                {data?.organizer?.email === auth.user && '(You)'}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-none md:min-h-[18rem] lg:min-h-[20rem]">
+          <CardContent className="flex flex-col gap-2 p-8">
+            <div>
+              <h1 className="text-xl font-black">Description:</h1>
+              <div className="ms-8 text-lg lg:text lg:text-xl">
+                <MarkdownFormat details={data.details} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-none h-full">
+          <CardContent className="flex flex-col gap-2 p-8">
+            <div>
+              <h1 className="text-xl font-black">Purpose:</h1>
+              <div className="ms-8 text-lg lg:text lg:text-xl">
+                <MarkdownFormat details={data.purpose} />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

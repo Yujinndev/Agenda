@@ -41,7 +41,7 @@ const NewEvent: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0)
   const { toast } = useToast()
   const navigate = useNavigate()
-  const api = useAxiosPrivate()
+  const axios = useAxiosPrivate()
 
   const STEPS = ['Details Form', 'Participants Form', 'Budget Form', 'Confirm']
 
@@ -84,11 +84,9 @@ const NewEvent: React.FC = () => {
   const createEvent = useMutation({
     mutationFn: async () => {
       try {
-        await api.post('/event/create', {
+        await axios.post('/api/event/create', {
           data: {
             ...eventDetails,
-            startDateTime: new Date(eventDetails.startDateTime),
-            endDateTime: new Date(eventDetails.endDateTime),
           },
         })
 
@@ -101,16 +99,24 @@ const NewEvent: React.FC = () => {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['myEvents'] })
+      queryClient.invalidateQueries({ queryKey: ['my-events'] })
 
       reset()
       resetFormData()
       navigate('/dashboard', { replace: true })
     },
+    onError: (error) => {
+      console.log(error)
+      toast({
+        description: 'Failed to create event.',
+        variant: 'destructive',
+      })
+    },
   })
 
-  const onSubmit = () => {
+  const onSubmit = async () => {
     if (activeStep === STEPS.length - 1) {
+      updateFormData(getValues())
       createEvent.mutate()
     } else {
       handleNext()
@@ -164,12 +170,12 @@ const NewEvent: React.FC = () => {
                 <Button
                   type="submit"
                   className="px-8 w-full"
-                  disabled={isSubmitting}
+                  disabled={createEvent.isPending}
                 >
-                  {isSubmitting
-                    ? 'Submitting'
+                  {createEvent.isPending || isSubmitting
+                    ? 'Creating ..'
                     : activeStep === STEPS.length - 1
-                    ? 'Submit'
+                    ? 'Create Event'
                     : 'Next'}
                 </Button>
               </div>
