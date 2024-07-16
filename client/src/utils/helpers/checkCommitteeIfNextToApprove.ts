@@ -1,4 +1,4 @@
-interface Committees {
+type CommitteesType = {
   currentUser: string
   committees: {
     email: string
@@ -9,17 +9,19 @@ interface Committees {
 export const isCommitteeNextToApprove = ({
   committees,
   currentUser,
-}: Committees) => {
-  const currentUserCommitteeIndex = committees.findIndex(
+}: CommitteesType) => {
+  const currentUserCommitteeIndex: number = committees.findIndex(
     (el: any) => el.email === currentUser
   )
 
-  // the findIndex returns -1 if not found, means that it is not a committee
+  // If findIndex returns -1, the user is not a committee member
   if (currentUserCommitteeIndex < 0) {
     return { isNext: false }
   }
 
-  if (committees[currentUserCommitteeIndex].approvalStatus === 'APPROVED') {
+  const currentUserStatus = committees[currentUserCommitteeIndex].approvalStatus
+
+  if (currentUserStatus === 'APPROVED') {
     return {
       isNext: true,
       status: 'APPROVED',
@@ -34,6 +36,6 @@ export const isCommitteeNextToApprove = ({
 
   return {
     isNext: true,
-    status: committees[currentUserCommitteeIndex].approvalStatus,
+    status: currentUserStatus,
   }
 }

@@ -26,6 +26,7 @@ const EventOverview = ({ id }: { id: string }) => {
             src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
             alt="Example Image"
             className="w-full h-full rounded-lg"
+            loading="lazy"
           />
 
           <CardContent className="absolute -mt-20 flex items-center gap-2">

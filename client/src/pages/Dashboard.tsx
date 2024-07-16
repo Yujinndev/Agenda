@@ -9,12 +9,17 @@ import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const Dashboard = () => {
-  const { data: events, isLoading, isSuccess } = useGetUserEvents()
-  const { data: eventsToApprove } = useGetRequestedEventsForCommitteeUser()
+  const {
+    data: events,
+    isLoading,
+    isSuccess: isUserEventsSuccess,
+  } = useGetUserEvents()
+  const { data: eventsToApprove, isSuccess: isRequestedEventsSuccess } =
+    useGetRequestedEventsForCommitteeUser()
   const { auth } = useAuth()
 
   const upcomingEvents =
-    isSuccess &&
+    isUserEventsSuccess &&
     events.filter((el: Event) => el.status === 'UPCOMING').slice(0, 3)
 
   if (isLoading) {
@@ -46,30 +51,30 @@ const Dashboard = () => {
             </Link>
           ))}
         </div>
-        <div className="p-4 px-2 flex flex-col gap-2 lg:-m-1 rounded-md min-h-40">
-          <h2 className="text-xl font-bold">Requested Events</h2>
-          <div className="h-[1px] w-full bg-gray-400" />
+        {isRequestedEventsSuccess && eventsToApprove.length > 0 && (
+          <div className="p-4 px-2 flex flex-col gap-2 lg:-m-1 rounded-md min-h-40">
+            <h2 className="text-xl font-bold">Requested Events</h2>
+            <div className="h-[1px] w-full bg-gray-400" />
 
-          {eventsToApprove?.map((event: Event) => {
-            const isNextToApprove = isCommitteeNextToApprove({
-              committees: event?.committee,
-              currentUser: user,
-            })
+            {eventsToApprove.map((event: Event) => {
+              const isNextToApprove = isCommitteeNextToApprove({
+                committees: event?.committee,
+                currentUser: user,
+              })
 
-            return (
-              <div key={event.id}>
-                {isNextToApprove.isNext ? (
+              return (
+                isNextToApprove.isNext && (
                   <Link to={`/events/detail/${event.id}`} key={event.id}>
                     <EventCard
                       event={event}
-                      className="bg-amber-400 hover:bg-amber-300/80"
+                      className="bg-gray-400 hover:bg-gray-300/80"
                     />
                   </Link>
-                ) : null}
-              </div>
-            )
-          })}
-        </div>
+                )
+              )
+            })}
+          </div>
+        )}
       </div>
     </section>
   )

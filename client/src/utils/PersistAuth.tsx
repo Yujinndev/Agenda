@@ -6,27 +6,21 @@ import Loading from '@/components/Loading'
 
 const PersistAuth = () => {
   const [isLoading, setIsLoading] = useState(true)
-  const refresh = useRefreshToken()
   const { auth } = useAuth()
+  const refresh = useRefreshToken()
 
   useEffect(() => {
-    let isMounted = true
-
     const verifyRefreshToken = async () => {
       try {
         await refresh()
       } catch (err) {
         console.error(err)
       } finally {
-        isMounted && setIsLoading(false)
+        setIsLoading(false)
       }
     }
 
     !auth?.accessToken ? verifyRefreshToken() : setIsLoading(false)
-
-    return () => {
-      isMounted = false
-    }
   }, [])
 
   if (isLoading) {

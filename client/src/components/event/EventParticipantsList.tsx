@@ -8,18 +8,20 @@ const EventParticipantsList = ({ id }: { id: string }) => {
 
   return (
     <div className="relative ml-auto">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Card className="relative flex flex-col items-center justify-center gap-4 p-4">
-          {/* <AddGuest id={id} /> */}
-          <p className="text-base">Invite Participants</p>
-        </Card>
-        {participants.map((item: { email: string }, idx: number) => (
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 min-h-40">
+        {/* <Card className="relative flex flex-col items-center justify-center gap-4 p-4">
+          <AddGuest id={id} />
+          <p className="text-base text-center">Invite Participants</p>
+        </Card> */}
+        {participants.map((item: { name: string }, idx: number) => (
           <Card
             key={idx}
-            className="relative flex flex-col items-center justify-around gap-4 p-4 h-52"
+            className="relative flex flex-col items-center justify-around p-4"
           >
             <User size={50} />
-            <p className="text-center text-base font-bold">{item.email}</p>
+            <p className="text-center text-base font-bold line-clamp-2">
+              {item.name}
+            </p>
           </Card>
         ))}
       </div>

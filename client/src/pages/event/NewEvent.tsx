@@ -83,23 +83,18 @@ const NewEvent: React.FC = () => {
 
   const createEvent = useMutation({
     mutationFn: async () => {
-      try {
-        await axios.post('/api/event/create', {
-          data: {
-            ...eventDetails,
-          },
-        })
-
-        toast({
-          description: 'Your event has been created.',
-          variant: 'success',
-        })
-      } catch (error) {
-        console.log(error)
-      }
+      await axios.post('/api/event/create', {
+        data: {
+          ...eventDetails,
+        },
+      })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['my-events'] })
+      toast({
+        description: 'Your event has been created.',
+        variant: 'success',
+      })
 
       reset()
       resetFormData()
@@ -154,9 +149,9 @@ const NewEvent: React.FC = () => {
         <div className="mt-8">
           <FormProvider {...form}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              {getStepContent(activeStep)}
+              <div className="lg:pb-12">{getStepContent(activeStep)}</div>
 
-              <div className="flex justify-center gap-4 my-6 relative lg:absolute lg:bottom-0 lg:right-6">
+              <div className="flex justify-center gap-4 my-6 relative lg:absolute lg:bottom-0 lg:right-8">
                 {activeStep > 0 && (
                   <Button
                     onClick={handleBack}

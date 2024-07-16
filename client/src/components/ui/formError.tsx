@@ -33,7 +33,7 @@ export function Message({ msg }: { msg: string }) {
   )
 }
 
-export default function FormError(errorField: any) {
+export default function FormError({ errorField }: { errorField: any }) {
   return (
     <AnimatePresence>
       {errorField ? <Message msg={errorField?.message} /> : null}

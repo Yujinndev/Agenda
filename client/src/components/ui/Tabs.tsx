@@ -12,9 +12,14 @@ interface Tab {
 type Props = {
   tabs: Tab[]
   activeTabClassName: string
+  disabled?: boolean
 }
 
-export const Tabs = ({ tabs: propTabs, activeTabClassName }: Props) => {
+export const Tabs = ({
+  tabs: propTabs,
+  activeTabClassName,
+  disabled,
+}: Props) => {
   const [active, setActive] = useState<Tab>(propTabs[0])
 
   const moveSelectedTabToTop = (idx: number) => {
@@ -35,6 +40,7 @@ export const Tabs = ({ tabs: propTabs, activeTabClassName }: Props) => {
             onClick={() => {
               moveSelectedTabToTop(idx)
             }}
+            disabled={disabled}
             className="relative rounded-full px-4"
             style={{
               transformStyle: 'preserve-3d',

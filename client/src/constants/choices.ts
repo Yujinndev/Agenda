@@ -5,6 +5,12 @@ export const EVENT_CATEGORIES = [
   { label: 'Cancelled', value: 'CANCELLED' },
 ]
 
+export const EVENT_COMMITTEE_INQUIRIES = [
+  { label: 'Requesting Revision', value: 'REQUESTING_REVISION' },
+  { label: 'Rejected', value: 'REJECTED' },
+  { label: 'Approved', value: 'APPROVED' },
+]
+
 export const EVENT_AUDIENCE = [
   {
     label: 'Open to All',
