@@ -15,12 +15,14 @@ import {
   MessageCircleQuestion,
   X,
 } from 'lucide-react'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 
 const EventDetails = () => {
   const { id } = useParams()
   const { auth } = useAuth()
   const { data, isLoading } = useGetEventById(id as string)
+
+  const navigate = useNavigate()
 
   const tabs = [
     {
@@ -49,11 +51,23 @@ const EventDetails = () => {
     committees: data.committee,
     currentUser: user,
   })
+  const isOrganizer = data?.organizer?.email === auth.user
+  const isUserAlreadyJoined = data?.participants?.find(
+    (el: any) => el.email === auth.user
+  )
+
   const eventStatus = EVENT_CATEGORIES.find((el) => el.value === data.status)
+
+  const tabsToShow = isOrganizer || isNextToApprove.isNext ? tabs.length : 1
+  const visibleTabs = tabs.slice(0, tabsToShow)
+
+  const handleEventCommitteeStep = (status: string) => {
+    navigate(`/response-form/?id=${id}&status=${status}&user=${auth.user}`)
+  }
 
   return (
     <div className="w-full pt-8">
-      <div className="relative bg-green-900 px-8 mb-8 pt-4 rounded-md text-white flex flex-col-reverse justify-between md:flex-row md:items-center">
+      <div className="relative bg-green-900 px-8 mb-8 py-6 rounded-md text-white flex flex-col items-start justify-between md:flex-row md:items-center">
         <Button
           size="sm"
           variant="outline"
@@ -65,7 +79,7 @@ const EventDetails = () => {
           </Link>
         </Button>
 
-        <div className="flex flex-1 flex-col items-start gap-1 py-4 md:w-2/3 lg:w-1/2">
+        <div className="flex flex-1 flex-col items-start gap-1 md:w-2/3 lg:w-1/2">
           <div className="space-x-1 mb-2">
             <Badge
               variant="secondary"
@@ -82,44 +96,64 @@ const EventDetails = () => {
             {data.title}
           </h1>
         </div>
-        {!isNextToApprove.isNext && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
-            asChild
-          >
-            <Link to="/events/my-events" className="text-black">
-              My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
-            </Link>
-          </Button>
-        )}
-        {isNextToApprove.isNext ? (
-          isNextToApprove?.status === 'WAITING' ? (
-            <div className="flex gap-2">
-              <Button size="icon" variant="secondary" className="rounded-full">
-                <MessageCircleQuestion className="flex-shrink-0" />
-              </Button>
-              <Button size="icon" variant="secondary" className="rounded-full">
-                <Check className="flex-shrink-0" />
-              </Button>
-              <Button
-                size="icon"
-                variant="destructive"
-                className="rounded-full"
+        <div className="py-2">
+          {!isNextToApprove.isNext && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
+              asChild
+            >
+              <Link to="/events/my-events" className="text-black">
+                My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
+              </Link>
+            </Button>
+          )}
+
+          {isNextToApprove.isNext ? (
+            isNextToApprove?.status === 'WAITING' ? (
+              <div className="flex items-center gap-3 justify-center pb-6 lg:pb-0">
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="rounded-full"
+                  onClick={() =>
+                    handleEventCommitteeStep('REQUESTING_REVISION')
+                  }
+                >
+                  <MessageCircleQuestion className="flex-shrink-0" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="secondary"
+                  className="rounded-full"
+                  onClick={() => handleEventCommitteeStep('APPROVED')}
+                >
+                  <Check className="flex-shrink-0" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="destructive"
+                  className="rounded-full"
+                  onClick={() => handleEventCommitteeStep('REJECTED')}
+                >
+                  <X className="flex-shrink-0" />
+                </Button>
+              </div>
+            ) : (
+              <Badge
+                variant="outline"
+                className="text-white flex items-center gap-3 py-2 justify-center"
               >
-                <X className="flex-shrink-0" />
-              </Button>
-            </div>
-          ) : (
-            <Badge variant="outline" className="text-white py-2">
-              {isNextToApprove?.status}
-            </Badge>
-          )
-        ) : null}
+                {isNextToApprove?.status}
+                <li>{isUserAlreadyJoined && ' JOINED'}</li>
+              </Badge>
+            )
+          ) : null}
+        </div>
       </div>
 
-      <Tabs tabs={tabs} activeTabClassName={'bg-green-700'} />
+      <Tabs tabs={visibleTabs} activeTabClassName={'bg-green-700'} />
     </div>
   )
 }

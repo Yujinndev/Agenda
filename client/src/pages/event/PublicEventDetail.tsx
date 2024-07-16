@@ -26,7 +26,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import { format, formatDistance } from 'date-fns'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -34,12 +34,55 @@ import { Event } from '@/components/Calendar'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import ScrollTop from '@/components/ui/ScrollToTop'
 import Loading from '@/components/Loading'
+import useAuth from '@/hooks/useAuth'
+import { QueryClient, useMutation } from '@tanstack/react-query'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { toast } from '@/components/ui/use-toast'
 
 const PublicEventDetail = () => {
+  const queryClient = new QueryClient()
+
   const { id } = useParams()
-  const { data, isLoading } = useGetEventById(id as string)
-  const event: Event = data
+  const { auth } = useAuth()
+  const navigate = useNavigate()
+  const axios = useAxiosPrivate()
+
+  const { data, isLoading, isSuccess } = useGetEventById(id as string)
+  const event: Event = isSuccess && data
+  const { mutate: handleJoinEvent } = useMutation({
+    mutationFn: async () => {
+      await axios.post('/api/event/join', {
+        data: {
+          email: auth.user,
+          eventId: event.id,
+        },
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-events'] })
+      toast({
+        description: 'You have confirmed your participation.',
+        variant: 'success',
+      })
+      navigate('/dashboard')
+    },
+    onError: () => {
+      toast({
+        description: 'Failed to join the event.',
+        variant: 'destructive',
+      })
+    },
+  })
+
   const currentParticipantsCount = event?.participants?.length
+  const isUserTheOrganizer = event.organizer?.email === auth.user
+  console.log(
+    '🚀 ~ PublicEventDetail ~ isUserTheOrganizer:',
+    isUserTheOrganizer
+  )
+  const isUserAlreadyJoined = event?.participants?.find(
+    (el: any) => el.email === auth.user
+  )
 
   if (isLoading) {
     return <Loading />
@@ -80,94 +123,122 @@ const PublicEventDetail = () => {
           </h1>
           <div className="absolute right-0">
             <div className="lg:block hidden">
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="w-max rounded-full py-4 px-6 h-7"
+              {!isUserTheOrganizer ? (
+                isUserAlreadyJoined ? (
+                  <Badge
+                    className="text-lg px-6 py-2 text-white"
+                    variant="outline"
                   >
-                    Join Event <LogIn size={18} className="ms-1" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent>
-                  <SheetHeader>
-                    <SheetTitle>Are you sure you want to proceed?</SheetTitle>
-                    <SheetDescription className="text-justify pt-10 text-base">
-                      Please note that payments are to be made onsite during the
-                      event. The organizer will handle all payments, and
-                      attendees are advised to contact the organizer directly
-                      for further details. We would like to clarify that this
-                      system is exclusively for event creation and management,
-                      and we regretfully cannot assume responsibility for
-                      refunds or payment disputes. Your understanding and
-                      cooperation are greatly appreciated, and we look forward
-                      to welcoming you to the event.
-                    </SheetDescription>
-                    <SheetDescription className="text-justify pt-10 text-slate-400">
-                      Disclaimer: By registering for and attending this event,
-                      you acknowledge and agree to the following terms and
-                      conditions. Participation in this event is at your own
-                      risk, and the organizers, sponsors, and venue providers
-                      are not responsible for any personal injury, loss, or
-                      damage to property that may occur during the event.
-                    </SheetDescription>
-                  </SheetHeader>
-                  <SheetHeader className="w-full pt-10">
-                    <Button onClick={() => console.log('click')}>
-                      Confirm
-                    </Button>
-                    <SheetClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </SheetClose>
-                  </SheetHeader>
-                </SheetContent>
-              </Sheet>
+                    Joined
+                  </Badge>
+                ) : (
+                  <Sheet>
+                    <SheetTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="w-max rounded-full py-4 px-6 h-7"
+                      >
+                        Join Event <LogIn size={18} className="ms-1" />
+                      </Button>
+                    </SheetTrigger>
+                    <SheetContent>
+                      <SheetHeader>
+                        <SheetTitle>
+                          Are you sure you want to proceed?
+                        </SheetTitle>
+                        <SheetDescription className="text-justify pt-10 text-base">
+                          Please note that payments are to be made onsite during
+                          the event. The organizer will handle all payments, and
+                          attendees are advised to contact the organizer
+                          directly for further details. We would like to clarify
+                          that this system is exclusively for event creation and
+                          management, and we regretfully cannot assume
+                          responsibility for refunds or payment disputes. Your
+                          understanding and cooperation are greatly appreciated,
+                          and we look forward to welcoming you to the event.
+                        </SheetDescription>
+                        <SheetDescription className="text-justify pt-10 text-slate-400">
+                          Disclaimer: By registering for and attending this
+                          event, you acknowledge and agree to the following
+                          terms and conditions. Participation in this event is
+                          at your own risk, and the organizers, sponsors, and
+                          venue providers are not responsible for any personal
+                          injury, loss, or damage to property that may occur
+                          during the event.
+                        </SheetDescription>
+                      </SheetHeader>
+                      <SheetHeader className="w-full pt-10">
+                        <Button onClick={() => handleJoinEvent()}>
+                          Confirm
+                        </Button>
+                        <SheetClose asChild>
+                          <Button variant="outline">Cancel</Button>
+                        </SheetClose>
+                      </SheetHeader>
+                    </SheetContent>
+                  </Sheet>
+                )
+              ) : null}
             </div>
             <div className="lg:hidden">
-              <Drawer>
-                <DrawerTrigger asChild>
-                  <Button
-                    size="sm"
-                    variant="secondary"
-                    className="w-max rounded-full py-4 px-6 h-7"
+              {!isUserTheOrganizer ? (
+                isUserAlreadyJoined ? (
+                  <Badge
+                    className="text-lg px-6 py-2 text-white"
+                    variant="outline"
                   >
-                    Join Event <LogIn size={18} className="ms-1" />
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                  <DrawerHeader>
-                    <DrawerTitle>Are you sure you want to proceed?</DrawerTitle>
-                    <DrawerDescription className="text-justify pt-4">
-                      Please note that payments are to be made onsite during the
-                      event. The organizer will handle all payments, and
-                      attendees are advised to contact the organizer directly
-                      for further details. We would like to clarify that this
-                      system is exclusively for event creation and management,
-                      and we regretfully cannot assume responsibility for
-                      refunds or payment disputes. Your understanding and
-                      cooperation are greatly appreciated, and we look forward
-                      to welcoming you to the event.
-                    </DrawerDescription>
-                    <DrawerDescription className="text-justify pt-4 text-slate-400">
-                      Disclaimer: By registering for and attending this event,
-                      you acknowledge and agree to the following terms and
-                      conditions. Participation in this event is at your own
-                      risk, and the organizers, sponsors, and venue providers
-                      are not responsible for any personal injury, loss, or
-                      damage to property that may occur during the event.
-                    </DrawerDescription>
-                  </DrawerHeader>
-                  <DrawerFooter className="pt-4">
-                    <Button onClick={() => console.log('click')}>
-                      Confirm
-                    </Button>
-                    <DrawerClose asChild>
-                      <Button variant="outline">Cancel</Button>
-                    </DrawerClose>
-                  </DrawerFooter>
-                </DrawerContent>
-              </Drawer>
+                    Joined
+                  </Badge>
+                ) : (
+                  <Drawer>
+                    <DrawerTrigger asChild>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        className="w-max rounded-full py-4 px-6 h-7"
+                      >
+                        Join Event <LogIn size={18} className="ms-1" />
+                      </Button>
+                    </DrawerTrigger>
+                    <DrawerContent>
+                      <DrawerHeader>
+                        <DrawerTitle>
+                          Are you sure you want to proceed?
+                        </DrawerTitle>
+                        <DrawerDescription className="text-justify pt-4">
+                          Please note that payments are to be made onsite during
+                          the event. The organizer will handle all payments, and
+                          attendees are advised to contact the organizer
+                          directly for further details. We would like to clarify
+                          that this system is exclusively for event creation and
+                          management, and we regretfully cannot assume
+                          responsibility for refunds or payment disputes. Your
+                          understanding and cooperation are greatly appreciated,
+                          and we look forward to welcoming you to the event.
+                        </DrawerDescription>
+                        <DrawerDescription className="text-justify pt-4 text-slate-400">
+                          Disclaimer: By registering for and attending this
+                          event, you acknowledge and agree to the following
+                          terms and conditions. Participation in this event is
+                          at your own risk, and the organizers, sponsors, and
+                          venue providers are not responsible for any personal
+                          injury, loss, or damage to property that may occur
+                          during the event.
+                        </DrawerDescription>
+                      </DrawerHeader>
+                      <DrawerFooter className="pt-4">
+                        <Button onClick={() => handleJoinEvent()}>
+                          Confirm
+                        </Button>
+                        <DrawerClose asChild>
+                          <Button variant="outline">Cancel</Button>
+                        </DrawerClose>
+                      </DrawerFooter>
+                    </DrawerContent>
+                  </Drawer>
+                )
+              ) : null}
             </div>
           </div>
         </div>
