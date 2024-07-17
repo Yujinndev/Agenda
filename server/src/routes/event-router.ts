@@ -1,17 +1,18 @@
 import { Router } from 'express'
-
-import { getEventHandler } from '../controllers/event/get-event'
-import { createEventHandler } from '../controllers/event/create-event'
-import { getUserEventsHandler } from '../controllers/event/get-user-events'
-import { getRequestedEventsForCommitteeUserData } from '../controllers/event/get-requested-events-committee-user'
+import { createEventHandler } from '../controllers/event/create-event-handler'
+import { getUserEventsHandler } from '../controllers/event/get-user-events-handler'
+import { getRequestedEventsHandler } from '../controllers/event/get-requested-events-handler'
+import { createParticipantHandler } from '../controllers/event/create-participant-handler'
+import { updateEventHandler } from '../controllers/event/update-event-handler'
 
 export const eventRouter = () => {
   const router = Router()
 
   router.post('/create', createEventHandler)
-  router.get('/:id', getEventHandler)
+  router.post('/join', createParticipantHandler)
+  router.post('/update', updateEventHandler)
   router.get('/me/all', getUserEventsHandler)
-  router.get('/me/c/requests', getRequestedEventsForCommitteeUserData)
+  router.get('/me/c/requests', getRequestedEventsHandler)
 
   return router
 }

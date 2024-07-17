@@ -13,7 +13,16 @@ export const getUserEventsHandler = async (req: Request, res: Response) => {
   try {
     const records = await prisma.event.findMany({
       where: {
-        organizerId: { equals: userId },
+        OR: [
+          {
+            participants: {
+              some: {
+                userId,
+              },
+            },
+          },
+          { organizerId: { equals: userId } },
+        ],
       },
       orderBy: {
         startDateTime: 'asc',
@@ -22,10 +31,6 @@ export const getUserEventsHandler = async (req: Request, res: Response) => {
         participants: true,
       },
     })
-
-    if (!records || records.length < 0) {
-      return res.status(204).json({ message: 'No events found' })
-    }
 
     return res.status(200).json({ records })
   } catch {

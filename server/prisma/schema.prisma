@@ -104,18 +104,20 @@ model EventSentEmailCommittee {
   id             Int      @id @unique @default(autoincrement())
   isSent         Boolean
   committeeEmail String
+  messageId      String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }
 
 model EventCommitteeInquiry {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   committeeEmail   String
   committeeEventId String
-  committee        EventCommittee @relation("CommitteeInquiries", fields: [committeeEmail, committeeEventId], references: [email, eventId])
+  committee        EventCommittee    @relation("CommitteeInquiries", fields: [committeeEmail, committeeEventId], references: [email, eventId])
   content          String?
+  eventHistoryLogs EventHistoryLog[]
   responseType     ResponseType
-  date             DateTime       @default(now())
+  date             DateTime          @default(now())
 }
 
 enum ResponseType {
@@ -171,20 +173,23 @@ model EventFeedback {
 }
 
 model EventHistoryLog {
-  id         Int           @id @default(autoincrement())
-  eventId    String
-  event      Event         @relation("HistoryLogs", fields: [eventId], references: [id])
-  email      String
-  message    String
-  oldValues  String?
-  newValues  String?
-  action     HistoryAction
-  actionTime DateTime      @default(now())
+  id                 Int                    @id @default(autoincrement())
+  eventId            String
+  event              Event                  @relation("HistoryLogs", fields: [eventId], references: [id])
+  email              String
+  message            String
+  oldValues          String?
+  newValues          String?
+  committeeInquiryId Int?
+  committeeInquiry   EventCommitteeInquiry? @relation(fields: [committeeInquiryId], references: [id])
+  action             HistoryAction
+  actionTime         DateTime               @default(now())
 }
 
 enum HistoryAction {
   CREATED
   UPDATED
+  SUBMITTED
   INQUIRED
   REJECTED
   APPROVED

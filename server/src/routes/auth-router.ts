@@ -1,8 +1,8 @@
 import { Router } from 'express'
 
-import { loginUserHandler } from '../controllers/auth/login-user'
-import { logoutUserHandler } from '../controllers/auth/logout-user'
-import { registerUserHandler } from '../controllers/auth/register-user'
+import { loginUserHandler } from '../controllers/user/login-user-handler'
+import { logoutUserHandler } from '../controllers/user/logout-user-handler'
+import { registerUserHandler } from '../controllers/user/register-user-handler'
 
 export const authRouter = () => {
   const router = Router()

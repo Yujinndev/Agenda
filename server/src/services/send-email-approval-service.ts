@@ -1,53 +1,51 @@
 import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
-import { createEmailLinkWithToken } from './create-email-magic-link'
+import { Prisma, type PrismaClient } from '@prisma/client'
+import { getUserData } from '../data/user/get-user'
+import { concatenateStrings } from '../utils/concatenate-strings'
+import { createEmailLinkWithToken } from '../helpers/create-email-magic-link'
+import { getEventData } from '../data/event/get-event'
+import { createHistoryLogData } from '../data/history/create-history-log'
+import { updateSentEmailCommitteeData } from '../data/committee/update-sent-email-committee'
+import { getSentEmailCommitteeData } from '../data/committee/get-sent-email-committee'
 
-type SendEmailProps = {
-  email: string
-  eventCreator: string
+export type SendEmailApprovalServiceArgs = {
+  prisma: PrismaClient | Prisma.TransactionClient
+  committeeEmail: string
   eventId: string
-  eventTitle: string
-  eventStartDateTime: Date
-  eventEndDateTime: Date
-  eventPurpose: string
-  eventDetails: string
-  eventLocation: string
-  eventCategory: string
-  eventEstimatedAttendees: number
-  eventExpenses: any
-  eventFee: any
 }
 
-export const sendEmail = async ({
-  email,
-  eventCreator,
+export const sendEmailApprovalService = async ({
+  prisma,
+  committeeEmail,
   eventId,
-  eventTitle,
-  eventStartDateTime,
-  eventEndDateTime,
-  eventPurpose,
-  eventDetails,
-  eventLocation,
-  eventCategory,
-  eventEstimatedAttendees,
-  eventExpenses,
-  eventFee,
-}: SendEmailProps) => {
-  const startDateTime = format(new Date(eventStartDateTime), 'PPp')
-  const endDateTime = format(new Date(eventEndDateTime), 'PPp')
+}: SendEmailApprovalServiceArgs) => {
+  const event = await getEventData({ prisma, id: eventId })
+
+  const organizer = await getUserData({
+    prisma,
+    id: event.organizerId,
+  })
+  const organizerFullName = concatenateStrings(
+    organizer?.firstName,
+    organizer?.lastName,
+  )
+
+  const startDateTime = format(new Date(event.startDateTime), 'PPp')
+  const endDateTime = format(new Date(event.endDateTime), 'PPp')
 
   const requestRevisionLink = createEmailLinkWithToken({
-    email,
+    email: committeeEmail,
     eventId: eventId,
     status: 'REQUESTING_REVISION',
   })
   const rejectLink = createEmailLinkWithToken({
-    email,
+    email: committeeEmail,
     eventId: eventId,
     status: 'REJECTED',
   })
   const approveLink = createEmailLinkWithToken({
-    email,
+    email: committeeEmail,
     eventId: eventId,
     status: 'APPROVED',
   })
@@ -62,8 +60,8 @@ export const sendEmail = async ({
 
   const sentEmail = await transporter.sendMail({
     from: `Agenda Inc. <${process.env.SMTP_GMAIL_USER}>`,
-    to: email,
-    subject: `Requesting Approval for ${eventTitle}`,
+    to: committeeEmail,
+    subject: `Requesting Approval for ${event.title}`,
     headers: {
       Priority: 'urgent',
       Importance: 'high',
@@ -149,7 +147,17 @@ export const sendEmail = async ({
           <div style="padding: 1rem;">
             <div>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">To whom it may concern,</p>
-              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">I am writing to request your approval for <b>${eventTitle}</b>, which is planned to take place on <b>${startDateTime}</b> until <b>${endDateTime}</b> at <b>${eventLocation}</b>. The purpose of this event is/are: <b>${eventPurpose}</b>. This event falls under the category of <b>${eventCategory}</b>. We anticipate an attendance of approximately <b>${eventEstimatedAttendees}</b> people. Additionally, we have prepared a budget outlining the estimated expenses, which amount to <b>${new Intl.NumberFormat(
+              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">I am writing to request your approval for <b>${
+                event.title
+              }</b>, which is planned to take place on <b>${startDateTime}</b> until <b>${endDateTime}</b> at <b>${
+      event.location
+    }</b>. The purpose of this event is/are: <b>${
+      event.purpose
+    }</b>. This event falls under the category of <b>${
+      event.category
+    }</b>. We anticipate an attendance of approximately <b>${
+      event.estimatedAttendees
+    }</b> people. Additionally, we have prepared a budget outlining the estimated expenses, which amount to <b>${new Intl.NumberFormat(
       'fil-PH',
       {
         style: 'currency',
@@ -157,7 +165,7 @@ export const sendEmail = async ({
         maximumFractionDigits: 2,
       },
     ).format(
-      parseFloat(eventExpenses),
+      parseFloat(event.estimatedExpense?.toString()!),
     )}</b>. There would be a joining fee for the participants that costs <b>${new Intl.NumberFormat(
       'fil-PH',
       {
@@ -165,13 +173,15 @@ export const sendEmail = async ({
         currency: 'PHP',
         maximumFractionDigits: 2,
       },
-    ).format(parseFloat(eventFee))}</b>.</p>
-              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">${eventDetails}</p>
+    ).format(parseFloat(event.price?.toString()!))}</b>.</p>
+              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">${
+                event.details
+              }</p>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">To ensure everything proceeds smoothly, we seek your valuable approval. Please let us know if you require any additional information or have any questions regarding the event. Your feedback is important to us, and we are open to any suggestions you may have.</p>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">Thank you for considering this proposal. I look forward to your positive response.</p>
               <br/>
               <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;">Sincerely,</p>
-              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"><b>${eventCreator}</b></p>
+              <p style="font-family: Helvetica, sans-serif; font-size: 16px; font-weight: normal; margin: 0; margin-bottom: 16px;"><b>${organizerFullName}</b></p>
             </div>
 
             <br/>
@@ -196,5 +206,29 @@ export const sendEmail = async ({
     </html>`,
   })
 
-  console.log(sentEmail)
+  if (sentEmail.messageId) {
+    const findCommitteeId = await getSentEmailCommitteeData({
+      prisma,
+      email: committeeEmail,
+    })
+
+    await updateSentEmailCommitteeData({
+      prisma,
+      id: findCommitteeId.id,
+      values: { isSent: true, messageId: sentEmail.messageId },
+    })
+
+    await createHistoryLogData({
+      prisma,
+      values: {
+        message: `Sent email approval to ${committeeEmail}`,
+        action: 'SUBMITTED',
+        email: organizer.email,
+        eventId: event.id,
+        committeeInquiryId: null,
+      },
+    })
+  }
+
+  return sentEmail
 }
