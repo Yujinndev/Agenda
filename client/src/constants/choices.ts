@@ -6,9 +6,14 @@ export const EVENT_CATEGORIES = [
 ]
 
 export const EVENT_COMMITTEE_INQUIRIES = [
-  { label: 'Requesting Revision', value: 'REQUESTING_REVISION' },
+  { label: 'Created', value: 'CREATED' },
+  { label: 'Updated', value: 'UPDATED' },
   { label: 'Rejected', value: 'REJECTED' },
   { label: 'Approved', value: 'APPROVED' },
+  { label: 'Submitted', value: 'SUBMITTED' },
+  { label: 'Published', value: 'PUBLISHED' },
+  { label: 'Requesting Revision', value: 'REQUESTING_REVISION' },
+  { label: 'On hold - Requested for Revision', value: 'ON_HOLD' },
 ]
 
 export const EVENT_AUDIENCE = [

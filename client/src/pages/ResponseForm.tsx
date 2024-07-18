@@ -29,59 +29,59 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from '@/components/ui/use-toast'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { EVENT_COMMITTEE_INQUIRIES } from '@/constants/choices'
-
-const noMessageSchema = z.object({
-  responseType: z.string(),
-  email: z.string().email(),
-  withContent: z.literal(false),
-})
-
-const withMessageSchema = z.object({
-  responseType: z.string(),
-  email: z.string().email(),
-  withContent: z.literal(true),
-  content: z.string().min(25, {
-    message:
-      'Kindly enter your message or inquiry to the organizer (20 characters)',
-  }),
-})
+import { QueryClient, useMutation } from '@tanstack/react-query'
+import useAuth from '@/hooks/useAuth'
+import Loading from '@/components/Loading'
+import { useState } from 'react'
+import SuccessDialog from '@/components/SuccessDialog'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 const responseFormSchema = z.discriminatedUnion('withContent', [
-  noMessageSchema,
-  withMessageSchema,
+  z.object({
+    responseType: z.string(),
+    committeeEmail: z.string().email(),
+    withContent: z.literal(false),
+  }),
+  z.object({
+    responseType: z.string(),
+    committeeEmail: z.string().email(),
+    withContent: z.literal(true),
+    content: z
+      .string()
+      .min(
+        10,
+        'Kindly enter your message or inquiry to the organizer (10 characters minimum)'
+      ),
+  }),
 ])
 
 type ResponseFormSchemaType = z.infer<typeof responseFormSchema>
 
 const ResponseForm = () => {
-  const location = useLocation()
+  const [isOpen, setIsOpen] = useState<boolean>(false)
+  const { auth } = useAuth()
+  const axios = useAxiosPrivate()
   const navigate = useNavigate()
-  const searchParams = new URLSearchParams(location.search)
+  const location = useLocation()
+  const queryClient = new QueryClient()
 
+  const searchParams = new URLSearchParams(location.search)
   const id = searchParams.get('id')
   const status = searchParams.get('status')
-  const user = searchParams.get('user') as string
+  const user = searchParams.get('user') || auth.user
+
+  const { data: eventDetails, isLoading } = useGetEventById(id as string)
 
   const eventCommitteeInquiry = EVENT_COMMITTEE_INQUIRIES.find(
     (inquiry) => inquiry.value === status
   )
 
-  if (!eventCommitteeInquiry || !id) {
-    return <Navigate to="/" />
-  }
-
-  const { data, isSuccess, isError } = useGetEventById(id)
-
-  if (isError) {
-    return <Navigate to="/" />
-  }
-
   const form = useForm<ResponseFormSchemaType>({
     resolver: zodResolver(responseFormSchema),
     defaultValues: {
+      withContent: eventCommitteeInquiry?.value === 'APPROVED' ? false : true,
       responseType: eventCommitteeInquiry?.value,
-      email: user,
-      withContent: eventCommitteeInquiry.value === 'APPROVED' ? false : true,
+      committeeEmail: user,
       content: '',
     },
   })
@@ -89,19 +89,46 @@ const ResponseForm = () => {
   const isWithContent = form.watch('withContent')
 
   const onSubmit = (data: ResponseFormSchemaType) => {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    })
+    const { withContent, ...rest } = data
+    mutateAsync({ ...rest })
+  }
+
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: async (values: Omit<ResponseFormSchemaType, 'withContent'>) => {
+      await axios.post('/api/event/c/response', {
+        data: {
+          ...values,
+          eventId: id,
+          token: searchParams?.get('token'),
+        },
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['event', id] })
+      setIsOpen(true)
+    },
+    onError: () => {
+      toast({
+        title: 'Unable to send response.',
+        description:
+          'Please try again later, or you may contact the organizer directly',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  if (isLoading) {
+    return <Loading />
+  }
+
+  if (!eventDetails || !eventCommitteeInquiry) {
+    return <Navigate to="/not-found" />
   }
 
   return (
     <div className="grid lg:grid-cols-3 gap-8 pt-12 p-4 w-full lg:w-4/5">
-      {isSuccess && <EventCard event={data} extendedVariant />}
+      <EventCard event={eventDetails} extendedVariant />
+      <SuccessDialog isDialogOpen={isOpen} setIsDialogOpen={setIsOpen} />
 
       <Form {...form}>
         <form
@@ -149,7 +176,7 @@ const ResponseForm = () => {
 
           <FormField
             control={form.control}
-            name="email"
+            name="committeeEmail"
             render={({ field }) => (
               <FormItem>
                 <Label>Your Email</Label>
@@ -196,7 +223,9 @@ const ResponseForm = () => {
               )}
             />
           )}
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? 'Submitting ...' : 'Submit'}
+          </Button>
         </form>
       </Form>
     </div>

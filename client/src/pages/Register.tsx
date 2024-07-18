@@ -182,7 +182,11 @@ const Register = () => {
                   Create Account
                 </Button>
 
-                <Button variant="outline" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-full py-6"
+                  asChild
+                >
                   <Link to="/onboarding/signin">
                     Already have an account? Login here
                   </Link>

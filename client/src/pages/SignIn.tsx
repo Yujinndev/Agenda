@@ -133,7 +133,11 @@ const SignIn = () => {
                 >
                   Sign in
                 </Button>
-                <Button variant="outline" asChild>
+                <Button
+                  variant="outline"
+                  className="w-full rounded-full py-6"
+                  asChild
+                >
                   <Link to="/onboarding/register">
                     Don't have an account? Register here
                   </Link>

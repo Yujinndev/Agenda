@@ -1,21 +1,34 @@
-import EventOverview from '@/components/event/EventOverview'
-import EventParticipantsList from '@/components/event/EventParticipantsList'
-import Loading from '@/components/Loading'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Tabs } from '@/components/ui/Tabs'
-import { EVENT_CATEGORIES } from '@/constants/choices'
-import { useGetEventById } from '@/hooks/api/useGetEventById'
-import useAuth from '@/hooks/useAuth'
-import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
   ArrowUpLeft,
   ArrowUpRight,
   Check,
+  Ellipsis,
   MessageCircleQuestion,
   X,
 } from 'lucide-react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import useAuth from '@/hooks/useAuth'
+import { useGetEventById } from '@/hooks/api/useGetEventById'
+import {
+  EVENT_CATEGORIES,
+  EVENT_COMMITTEE_INQUIRIES,
+} from '@/constants/choices'
+import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
+import EventOverview from '@/components/event/EventOverview'
+import EventParticipantsList from '@/components/event/EventParticipantsList'
+import EventHistoryTimeline from '@/components/event/EventHistoryTimeline'
+import Loading from '@/components/Loading'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Tabs } from '@/components/ui/Tabs'
 
 const EventDetails = () => {
   const { id } = useParams()
@@ -31,14 +44,19 @@ const EventDetails = () => {
       content: <EventOverview id={id as string} />,
     },
     {
+      title: 'Finance',
+      value: 'finance',
+      content: <h1>Finance</h1>,
+    },
+    {
       title: 'Participants',
       value: 'participants',
       content: <EventParticipantsList id={id as string} />,
     },
     {
-      title: 'Finance',
-      value: 'finance',
-      content: <h1>Finance</h1>,
+      title: 'History Timeline',
+      value: 'timeline',
+      content: <EventHistoryTimeline id={id as string} />,
     },
   ]
 
@@ -57,12 +75,19 @@ const EventDetails = () => {
   )
 
   const eventStatus = EVENT_CATEGORIES.find((el) => el.value === data.status)
+  const approvalStatus = EVENT_COMMITTEE_INQUIRIES.find(
+    (el) => el.value === isNextToApprove?.status
+  )
 
-  const tabsToShow = isOrganizer || isNextToApprove.isNext ? tabs.length : 1
+  const tabsToShow = isOrganizer
+    ? tabs.length
+    : isNextToApprove.isNext
+    ? tabs.length - 1
+    : 1
   const visibleTabs = tabs.slice(0, tabsToShow)
 
   const handleEventCommitteeStep = (status: string) => {
-    navigate(`/response-form/?id=${id}&status=${status}&user=${auth.user}`)
+    navigate(`/response-form/?id=${id}&status=${status}`)
   }
 
   return (
@@ -97,18 +122,38 @@ const EventDetails = () => {
           </h1>
         </div>
         <div className="py-2">
-          {!isNextToApprove.isNext && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
-              asChild
-            >
-              <Link to="/events/my-events" className="text-black">
-                My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
-              </Link>
-            </Button>
-          )}
+          <div className="flex gap-2">
+            {!isNextToApprove.isNext && (
+              <Button
+                size="sm"
+                variant="outline"
+                className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
+                asChild
+              >
+                <Link to="/events/my-events" className="text-black">
+                  My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
+                </Link>
+              </Button>
+            )}
+            {isOrganizer && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="secondary"
+                    size="icon"
+                    className="rounded-full"
+                  >
+                    <Ellipsis className="flex-shrink-0" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Update</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
 
           {isNextToApprove.isNext ? (
             isNextToApprove?.status === 'WAITING' ? (
@@ -145,8 +190,8 @@ const EventDetails = () => {
                 variant="outline"
                 className="text-white flex items-center gap-3 py-2 justify-center"
               >
-                {isNextToApprove?.status}
-                <li>{isUserAlreadyJoined && ' JOINED'}</li>
+                {approvalStatus?.label}
+                {isUserAlreadyJoined && <li> JOINED</li>}
               </Badge>
             )
           ) : null}

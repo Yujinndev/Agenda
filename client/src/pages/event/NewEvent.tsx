@@ -133,7 +133,7 @@ const NewEvent: React.FC = () => {
   }
 
   return (
-    <Card className="m-4 p-2 grid lg:grid-cols-5 relative lg:min-h-[80vh] h-full w-full">
+    <Card className="my-8 lg:p-2 grid lg:grid-cols-5 relative lg:min-h-[80vh] h-full w-full">
       <div className="relative hidden lg:flex w-full rounded-lg col-span-2 justify-center overflow-hidden bg-white z-10">
         <img
           src={heroImg}

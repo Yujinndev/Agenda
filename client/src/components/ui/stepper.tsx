@@ -9,7 +9,7 @@ const Stepper = ({
   activeStep: number
 }) => {
   return (
-    <nav className="pb-12 lg:pb-4" aria-label="Progress">
+    <nav className="pb-12 lg:pb-4 md:py-6 lg:pt-0" aria-label="Progress">
       <ol
         role="list"
         className="space-y-4 flex justify-between items-center md:space-x-8 md:space-y-0 relative"

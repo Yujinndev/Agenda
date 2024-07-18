@@ -4,6 +4,7 @@ import { useGetAllPublicEvents } from '@/hooks/api/useGetAllPublicEvents'
 import Loading from '@/components/Loading'
 import { Link } from 'react-router-dom'
 import useAuth from '@/hooks/useAuth'
+import ResultMessage from '@/components/ui/resultMessage'
 
 const EventPage = () => {
   const { data: allEvents, isLoading } = useGetAllPublicEvents()
@@ -33,7 +34,7 @@ const EventPage = () => {
           ))}
         </div>
       ) : (
-        <p>No events to show!</p>
+        <ResultMessage label="No events to show." />
       )}
     </section>
   )

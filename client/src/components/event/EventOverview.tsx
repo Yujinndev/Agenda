@@ -39,7 +39,7 @@ const EventOverview = ({ id }: { id: string }) => {
           </CardContent>
         </Card>
 
-        <Card className="shadow-none rounded-lg">
+        <Card className="shadow-none rounded-lg h-full">
           <CardContent className="flex flex-col gap-2 p-8">
             <h1 className="text-xl font-black">Timeline:</h1>
             <div className="ms-6 flex items-center gap-4 text-base lg:text-lg">
@@ -99,7 +99,7 @@ const EventOverview = ({ id }: { id: string }) => {
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-none md:min-h-[18rem] lg:min-h-[20rem]">
+        <Card className="shadow-none md:min-h-[18rem] lg:min-h-[20rem] h-full">
           <CardContent className="flex flex-col gap-2 p-8">
             <div>
               <h1 className="text-xl font-black">Description:</h1>
