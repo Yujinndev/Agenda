@@ -15,7 +15,7 @@ export const getEventData = async ({ prisma, id }: GetEventDataArgs) => {
       include: {
         participants: true,
         organizer: true,
-        EventHistoryLogs: {
+        eventHistoryLogs: {
           include: {
             committeeInquiry: true,
           },

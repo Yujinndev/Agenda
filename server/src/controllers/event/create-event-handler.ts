@@ -11,16 +11,25 @@ export const createEventHandler = async (req: Request, res: Response) => {
     res.sendStatus(400)
   }
 
-  const parsedPrice = parseFloat(data.price) ?? 0
-  const parsedEstimatedAttendees = parseInt(data.estimatedAttendees) ?? 0
-  const parsedEstimatedExpense = parseFloat(data.estimatedExpense) ?? 0
+  const parsedPrice = data.price ? parseFloat(data.price) : 0
+  const parsedEstimatedAttendees = data.estimatedAttendees
+    ? parseInt(data.estimatedAttendees)
+    : 0
+  const parsedEstimatedExpense = data.estimatedExpense
+    ? parseFloat(data.estimatedExpense)
+    : 0
+  const parsedDate = (value: string) => {
+    return value ? new Date(value).toISOString() : null
+  }
 
   const { committees, ...rest } = data
 
   const values = {
     ...rest,
-    startDateTime: new Date(data.startDateTime).toISOString(),
-    endDateTime: new Date(data.endDateTime).toISOString(),
+    startDateTime: parsedDate(data.startDateTime),
+    endDateTime: parsedDate(data.endDateTime),
+    category: data.category !== '' ? data.category : 'PERSONAL',
+    audience: data.audience !== '' ? data.audience : 'ONLY_ME',
     price: parsedPrice,
     estimatedAttendees: parsedEstimatedAttendees,
     estimatedExpense: parsedEstimatedExpense,

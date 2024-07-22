@@ -31,8 +31,12 @@ export const sendEmailApprovalService = async ({
     organizer?.lastName,
   )
 
-  const startDateTime = format(new Date(event.startDateTime), 'PPp')
-  const endDateTime = format(new Date(event.endDateTime), 'PPp')
+  const startDateTime = event.startDateTime
+    ? format(new Date(event.startDateTime)!, 'PPp')
+    : null
+  const endDateTime = event.endDateTime
+    ? format(new Date(event.endDateTime)!, 'PPp')
+    : null
 
   const requestRevisionLink = createEmailLinkWithToken({
     email: committeeEmail,
@@ -223,9 +227,7 @@ export const sendEmailApprovalService = async ({
       values: {
         message: `Sent email approval to ${committeeEmail}`,
         action: 'SUBMITTED',
-        email: organizer.email,
         eventId: event.id,
-        committeeInquiryId: null,
       },
     })
   }

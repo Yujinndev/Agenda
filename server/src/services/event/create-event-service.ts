@@ -24,6 +24,21 @@ export const createEventService = async ({
     const event = await createEventData({ prisma: prismaTx, values, userId })
 
     if (!event) throw new ValidationError('Event is not created.')
+    const organizer = await getUserData({
+      prisma: prismaTx,
+      id: event.organizerId,
+    })
+
+    const msg = event.status === 'DRAFT' ? 'Draft.' : ''
+    await createHistoryLogData({
+      prisma: prismaTx,
+      values: {
+        message: `New Event ${msg}`,
+        action: 'CREATED',
+        email: organizer.email,
+        eventId: event.id,
+      },
+    })
 
     if (committees.length < 1) {
       return event
@@ -65,22 +80,6 @@ export const createEventService = async ({
         },
       })
     }
-
-    const organizer = await getUserData({
-      prisma: prismaTx,
-      id: event.organizerId,
-    })
-
-    await createHistoryLogData({
-      prisma: prismaTx,
-      values: {
-        message: 'New Event',
-        action: 'CREATED',
-        email: organizer.email,
-        eventId: event.id,
-        committeeInquiryId: null,
-      },
-    })
 
     const firstCommittee: string = committees[0]?.email
 

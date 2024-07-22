@@ -14,11 +14,11 @@ export const getEventHandler = async (req: Request, res: Response) => {
 
   try {
     const event = await getEventData({ prisma, id })
-    const committee = await getCommitteesData({ prisma, eventIds: id })
+    const committees = await getCommitteesData({ prisma, eventIds: id })
 
     const record = {
       ...event,
-      committee,
+      committees,
     }
 
     return res.status(200).json(record)

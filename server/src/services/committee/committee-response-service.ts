@@ -103,10 +103,19 @@ export const committeeResponseService = async ({
       })
     }
 
-    return await updateEventData({
+    await updateEventData({
       prisma: prismaTx,
       id: eventId,
       values: { status: 'UPCOMING' },
+    })
+
+    return await createHistoryLogData({
+      prisma: prismaTx,
+      values: {
+        eventId,
+        action: 'PUBLISHED',
+        message: 'Event viewable to your audience',
+      },
     })
   })
 

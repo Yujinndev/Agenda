@@ -2,10 +2,8 @@ import { EventHistoryLog, Prisma, type PrismaClient } from '@prisma/client'
 
 export type CreateHistoryLogDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
-  values: Pick<
-    EventHistoryLog,
-    'eventId' | 'email' | 'action' | 'message' | 'committeeInquiryId'
-  >
+  values: Pick<EventHistoryLog, 'eventId' | 'action' | 'message'> &
+    Partial<Pick<EventHistoryLog, 'email' | 'committeeInquiryId'>>
 }
 
 export const createHistoryLogData = async ({

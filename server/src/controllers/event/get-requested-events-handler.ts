@@ -14,17 +14,14 @@ export const getRequestedEventsHandler = async (
   const events = await getEventsData({
     prisma,
     where: {
-      AND: [
-        {
-          committee: {
-            some: {
-              userId,
-            },
-          },
+      committees: {
+        some: {
+          userId,
         },
-        { status: { equals: 'FOR_APPROVAL' } },
-      ],
+      },
     },
+    sortBy: 'status',
+    orderBy: 'asc',
   })
 
   const eventIds = events.map((event) => event.id)
@@ -33,7 +30,9 @@ export const getRequestedEventsHandler = async (
   // Map committees to their respective events
   const records = events.map((event) => ({
     ...event,
-    committee: committees.filter((committee) => committee.eventId === event.id),
+    committees: committees.filter(
+      (committee) => committee.eventId === event.id,
+    ),
   }))
 
   res.json({ records })

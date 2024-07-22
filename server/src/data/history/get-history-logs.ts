@@ -16,7 +16,7 @@ export const getHistoryLogsData = async ({
         eventId,
       },
       orderBy: {
-        actionTime: 'desc',
+        createdAt: 'desc',
       },
     })
     .catch(() => {
