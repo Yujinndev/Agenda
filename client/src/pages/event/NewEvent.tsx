@@ -1,70 +1,63 @@
-import React, { useEffect, useState } from 'react'
-import { QueryClient, useMutation } from '@tanstack/react-query'
-import { useNavigate } from 'react-router-dom'
-import { FormProvider, useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { FormProvider } from 'react-hook-form'
 import { z } from 'zod'
-import { useToast } from '@/components/ui/use-toast'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import {
   eventApprovalSchema,
   eventConfirmationSchema,
   eventDetailsSchema,
+  EventFormValues,
   eventGuestDetailSchema,
 } from '@/schema/event'
-import useAxiosPrivate from '@/hooks/useAxiosPrivate'
-import CompletedForm from '@/components/event/CompletedForm'
+import { Card } from '@/components/ui/card'
+import Stepper from '@/components/ui/stepper'
+import { Button } from '@/components/ui/button'
 import BudgetForm from '@/components/event/BudgetForm'
 import DetailsForm from '@/components/event/DetailsForm'
+import CompletedForm from '@/components/event/CompletedForm'
 import ParticipantsForm from '@/components/event/ParticipantsForm'
 import useEventFormStore from '@/services/state/useEventFormStore'
+import { usePostEventMutation } from '@/hooks/api/usePostEventMutation'
+import useDynamicForm from '@/hooks/useDynamicForm'
 import heroImg from '@/assets/hero-image.png'
-import Stepper from '@/components/ui/stepper'
 
-// Define the form data type based on all schemas
-type FormData = z.infer<typeof eventDetailsSchema> &
-  z.infer<typeof eventGuestDetailSchema> &
-  z.infer<typeof eventApprovalSchema> &
-  z.infer<typeof eventConfirmationSchema>
-
-const SCHEMAS = [
+export const SCHEMAS = [
   eventDetailsSchema,
   eventGuestDetailSchema,
   eventApprovalSchema,
   eventConfirmationSchema,
 ]
 
+// Create a type that gets the schema type based on the index
+export type SchemaArray = typeof SCHEMAS
+export type SchemaType<T extends number> = z.infer<SchemaArray[T]>
+
 const NewEvent: React.FC = () => {
-  const queryClient = new QueryClient()
-
   const [activeStep, setActiveStep] = useState(0)
-  const { toast } = useToast()
-  const navigate = useNavigate()
-  const axios = useAxiosPrivate()
-
   const STEPS = ['Details Form', 'Participants Form', 'Budget Form', 'Confirm']
 
-  const {
-    formData: eventDetails,
-    updateFormData,
-    resetFormData,
-  } = useEventFormStore()
+  const { updateFormData, resetFormData } = useEventFormStore()
 
-  const form = useForm<FormData>({
-    shouldUnregister: false,
-    defaultValues: eventDetails,
-    resolver: zodResolver(SCHEMAS[activeStep]),
-    mode: 'onChange',
+  const { form } = useDynamicForm<SchemaType<typeof activeStep>>({
+    schema: SCHEMAS[activeStep],
+    dynamicFields: [{ name: 'committees', defaultValue: { email: '' } }],
+    formOptions: {
+      defaultValues: useEventFormStore.getState().formData,
+      shouldUnregister: false,
+    },
   })
 
-  const { handleSubmit, trigger, getValues, reset, formState } = form
-  const { isSubmitting } = formState
+  const {
+    handleSubmit,
+    trigger,
+    getValues,
+    reset,
+    formState: { isSubmitting },
+  } = form
 
-  // Use useEffect to update form values when eventDetails change
+  // to update form values when eventDetails change
   useEffect(() => {
-    reset(eventDetails)
-  }, [eventDetails, reset])
+    reset(useEventFormStore.getState().formData)
+  }, [useEventFormStore.getState().formData, reset])
 
   const getStepContent = (step: number) => {
     switch (step) {
@@ -81,55 +74,51 @@ const NewEvent: React.FC = () => {
     }
   }
 
-  const createEvent = useMutation({
-    mutationFn: async () => {
-      await axios.post('/api/event/create', {
-        data: {
-          ...eventDetails,
-        },
-      })
-    },
+  const createEvent = usePostEventMutation('/api/event/create', {
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-events'] })
-      toast({
-        description: 'Your event has been created.',
-        variant: 'success',
-      })
-
       reset()
       resetFormData()
-      navigate('/dashboard', { replace: true })
     },
-    onError: (error) => {
-      console.log(error)
-      toast({
-        description: 'Failed to create event.',
-        variant: 'destructive',
-      })
-    },
+    navigateTo: '/dashboard',
+    invalidateQueryKey: ['my-events'],
   })
 
-  const onSubmit = async () => {
-    if (activeStep === STEPS.length - 1) {
-      updateFormData(getValues())
-      createEvent.mutate()
-    } else {
-      handleNext()
-    }
+  const updateFormDataPromise = (
+    newData: Partial<EventFormValues>
+  ): Promise<void> => {
+    return new Promise((resolve) => {
+      updateFormData(newData)
+      resolve()
+    })
   }
 
-  const handleNext = async () => {
-    const isStepValid = await trigger()
-    updateFormData(getValues())
-    console.log(eventDetails)
+  const onSubmit = async () => {
+    updateFormDataPromise(getValues()).then(async () => {
+      const isStepValid = await trigger()
+      if (!isStepValid) return
 
-    if (isStepValid) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1)
-    }
+      const isFinalPage = activeStep === STEPS.length - 1
+      if (isFinalPage) {
+        createEvent.mutate(useEventFormStore.getState().formData)
+      } else {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1)
+      }
+    })
   }
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const handleSaveDraft = async () => {
+    let newValues = getValues()
+
+    updateFormDataPromise({ ...newValues, status: 'DRAFT' }).then(async () => {
+      const isDraftValid = await trigger('title')
+      if (!isDraftValid) return
+
+      createEvent.mutate(useEventFormStore.getState().formData)
+    })
   }
 
   return (
@@ -151,28 +140,38 @@ const NewEvent: React.FC = () => {
             <form onSubmit={handleSubmit(onSubmit)}>
               <div className="lg:pb-12">{getStepContent(activeStep)}</div>
 
-              <div className="flex justify-center gap-4 my-6 relative lg:absolute lg:bottom-0 lg:right-8">
-                {activeStep > 0 && (
-                  <Button
-                    onClick={handleBack}
-                    type="button"
-                    variant="outline"
-                    className="px-8"
-                  >
-                    Back
-                  </Button>
-                )}
+              <div className="flex items-center justify-between gap-4 my-4 lg:px-8 relative lg:absolute lg:-bottom-2 lg:left-0 w-full">
                 <Button
-                  type="submit"
-                  className="px-8 w-full"
+                  onClick={() => handleSaveDraft()}
                   disabled={createEvent.isPending}
+                  type="button"
+                  variant="outline"
                 >
-                  {createEvent.isPending || isSubmitting
-                    ? 'Creating ..'
-                    : activeStep === STEPS.length - 1
-                    ? 'Create Event'
-                    : 'Next'}
+                  {createEvent.isPending ? 'Saving ..' : 'Save Draft'}
                 </Button>
+                <div className="flex gap-2 right-8">
+                  {activeStep > 0 && (
+                    <Button
+                      onClick={handleBack}
+                      type="button"
+                      variant="secondary"
+                      className="px-8"
+                    >
+                      Back
+                    </Button>
+                  )}
+                  <Button
+                    type="submit"
+                    className="px-8 w-full"
+                    disabled={createEvent.isPending}
+                  >
+                    {createEvent.isPending || isSubmitting
+                      ? 'Saving ..'
+                      : activeStep === STEPS.length - 1
+                      ? 'Create Event'
+                      : 'Next'}
+                  </Button>
+                </div>
               </div>
             </form>
           </FormProvider>

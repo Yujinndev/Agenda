@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { useFormContext, useWatch } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { Plus, Trash } from 'lucide-react'
-import useDynamicForm from '@/hooks/useDynamicForm'
 import useEventFormStore from '@/services/state/useEventFormStore'
 import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
@@ -10,41 +9,53 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import FormError from '@/components/ui/formError'
+import useDynamicForm from '@/hooks/useDynamicForm'
+import { SCHEMAS, SchemaType } from '@/pages/event/NewEvent'
+import { EventStatus } from '@/schema/event'
 
 const BudgetForm = () => {
   const { formData, updateFormData } = useEventFormStore()
   const isNeedingApproval = formData.status === 'FOR_APPROVAL'
   const [isChecked, setIsChecked] = useState<boolean>(isNeedingApproval)
+  const [activeStep] = useState(2)
+
+  const { control, getValues } = useFormContext()
+  const { fieldArrays, handleAppend, handleRemove } = useDynamicForm<
+    SchemaType<typeof activeStep>
+  >({
+    schema: SCHEMAS[activeStep],
+    dynamicFields: [{ name: 'committees', defaultValue: { email: '' } }],
+    existingForm: useFormContext(),
+  })
+
+  const committees = fieldArrays.committees
 
   const onCheckBoxChange = () => {
     setIsChecked((prev) => !prev)
 
+    const estimatedExpense = getValues('estimatedExpense')
+    const price = getValues('price')
     let newData
 
     if (!isChecked) {
-      newData = { ...formData, status: 'FOR_APPROVAL' }
+      newData = {
+        ...formData,
+        status: 'FOR_APPROVAL' as EventStatus,
+        committees: [{ email: '' }],
+        estimatedExpense,
+        price,
+      }
     } else {
-      newData = { ...formData, status: 'UPCOMING' }
+      newData = {
+        ...formData,
+        status: 'UPCOMING' as EventStatus,
+        committees: [],
+        estimatedExpense,
+        price,
+      }
     }
 
     updateFormData(newData)
-  }
-
-  const { control } = useFormContext()
-  const guests = useWatch({ name: 'committees' }) || []
-  const {
-    fields,
-    handleAppend,
-    handleRemove: handleRemoveFromDynamicForm,
-  } = useDynamicForm(formData.committees)
-
-  const onHandleRemove = (index: number) => {
-    handleRemoveFromDynamicForm(index)
-
-    // Update Zustand store immediately after removing
-    const updatedCommittee = [...guests]
-    updatedCommittee.splice(index, 1)
-    updateFormData({ committees: updatedCommittee })
   }
 
   return (
@@ -75,14 +86,14 @@ const BudgetForm = () => {
               type="button"
               className="flex gap-2 my-2 p-0 lg:p-6"
               variant="ghost"
-              onClick={() => handleAppend()}
+              onClick={() => handleAppend('committees')}
             >
               <Plus /> <span className="hidden lg:flex">Add new committee</span>
             </Button>
           </div>
 
           <div className="grid gap-2">
-            {fields.map((field, index) => (
+            {committees.fields.map((field, index) => (
               <FormField
                 key={field.id}
                 control={control}
@@ -93,12 +104,13 @@ const BudgetForm = () => {
                       <FormControl>
                         <Input placeholder="agenda@gmail.com" {...field} />
                       </FormControl>
-                      <FormError />
+                      <FormError errorField={field.name} />
                     </FormItem>
                     <Button
                       type="button"
                       onClick={() => {
-                        if (fields.length > 1) onHandleRemove(index)
+                        if (committees.fields.length > 1)
+                          handleRemove('committees', index)
                       }}
                       size="sm"
                       variant="link"
