@@ -1,7 +1,7 @@
 import useEventFormStore from '@/services/state/useEventFormStore'
 import { format, formatDistance, subDays } from 'date-fns'
 import { Card, CardContent, CardDescription, CardTitle } from '../ui/card'
-import { EVENT_CATEGORIES } from '@/constants/choices'
+import { EVENT_AUDIENCE, EVENT_CATEGORIES } from '@/constants/choices'
 
 const CompletedForm = () => {
   const { formData } = useEventFormStore()
@@ -22,6 +22,7 @@ const CompletedForm = () => {
   } = formData
 
   const getStatus = EVENT_CATEGORIES.find((el) => el.value === status)
+  const getAudience = EVENT_AUDIENCE.find((el) => el.value === audience)
 
   return (
     <Card className="border-0 grid gap-2 py-4 shadow-none bg-transparent">
@@ -75,22 +76,22 @@ const CompletedForm = () => {
         </CardContent>
         <CardContent className="border-b-[1px] lg:border-0 px-0">
           <CardDescription>Published/Shared to:</CardDescription>
-          <CardTitle>{audience}</CardTitle>
+          <CardTitle>{getAudience?.label}</CardTitle>
         </CardContent>
       </div>
 
-      <CardContent className="border-b-[1px] px-0">
-        <CardDescription>Committee/s:</CardDescription>
-        <CardTitle>
-          <ol>
-            {committees.length > 0
-              ? committees.map((item) => (
-                  <li key={item.email}>* {item.email}</li>
-                ))
-              : 'No worries, You can invite in the event dashboard later!'}
-          </ol>
-        </CardTitle>
-      </CardContent>
+      {committees.length > 0 && (
+        <CardContent className="border-b-[1px] px-0">
+          <CardDescription>Committee/s:</CardDescription>
+          <CardTitle>
+            <ol>
+              {committees.map((item) => (
+                <li key={item.email}>* {item.email}</li>
+              ))}
+            </ol>
+          </CardTitle>
+        </CardContent>
+      )}
 
       <div className="grid lg:grid-cols-2 border-b-[1px]">
         <CardContent className="border-b-[1px] lg:border-0 px-0">

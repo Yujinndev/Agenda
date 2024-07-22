@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
-export interface Event {
+export type Event = {
   id: number
   title: string
   purpose: string
@@ -32,7 +32,7 @@ export interface Event {
   endDateTime: Date
   organizer?: any
   participants?: any
-  committee?: any
+  committees?: any
 }
 
 type DateBlockProps = {
@@ -69,7 +69,8 @@ const Calendar = ({ events }: { events: Event[] }) => {
   // get the events on each date
   const eventsByDate = useMemo(() => {
     return events.reduce((acc: any, event: Event) => {
-      const dateKey = format(event.startDateTime, 'yyyy-MM-dd')
+      const eventStartDate = event.startDateTime ?? '2000-01-01 00:00:00'
+      const dateKey = format(eventStartDate, 'yyyy-MM-dd')
       return {
         ...acc,
         [dateKey]: [...(acc[dateKey] || []), event],
@@ -155,14 +156,14 @@ const AllDays = ({
       {daysInMonth.map((day, index) => {
         const dateKey: any = format(day, 'yyyy-MM-dd')
         const todaysEvents: Event[] = eventsByDate[dateKey] || []
+
         return (
           <DateBlock
             key={index}
             className={cn(
               'relative gap-2 rounded-md bg-slate-100 text-base overflow-hidden',
               {
-                'bg-slate-500': isToday(day),
-                'text-black': isToday(day),
+                'bg-slate-500 text-white': isToday(day),
               }
             )}
           >
@@ -188,7 +189,7 @@ const AllDays = ({
                   to={`/events/detail/${event.id}`}
                   key={event.title}
                   className={cn(
-                    'rounded-e-sm hidden px-4 py-2 text-center text-xs text-black lg:line-clamp-none lg:text-left text-balance',
+                    'rounded-e-sm hidden px-4 py-2 text-center text-xs text-white bg-gray-700 lg:line-clamp-none lg:text-left text-balance',
                     {
                       'bg-green-900 hover:bg-green-900/80 text-white':
                         event.status === 'UPCOMING',

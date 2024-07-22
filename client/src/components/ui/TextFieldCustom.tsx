@@ -42,7 +42,7 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
             )}
           </FormControl>
 
-          <FormError errorField={formState.errors.name} />
+          <FormError errorField={formState.errors} />
         </FormItem>
       )}
     />

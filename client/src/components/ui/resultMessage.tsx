@@ -9,7 +9,7 @@ type ResultMessageProps = {
 
 const ResultMessage = ({ label, variant = 'failed' }: ResultMessageProps) => {
   return (
-    <div className="flex flex-col items-center justify-center text-center pt-16 gap-8 text-lg">
+    <div className="flex flex-col items-center justify-center text-center pt-12 gap-8 text-lg">
       <Button variant="secondary" className="p-8 rounded-full h-28 w-28">
         {variant === 'failed' ? (
           <FaExclamation size={60} />

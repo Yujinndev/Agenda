@@ -38,7 +38,7 @@ export function SelectFieldCustom({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <Label>{label}</Label>
+          <Label className="ubuntu-bold">{label}</Label>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger>
@@ -53,7 +53,7 @@ export function SelectFieldCustom({
               ))}
             </SelectContent>
           </Select>
-          <FormError errorField={formState.errors.name} />
+          <FormError errorField={formState.errors} />
         </FormItem>
       )}
     />

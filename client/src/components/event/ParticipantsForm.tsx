@@ -16,7 +16,7 @@ const ParticipantsForm = () => {
           name="category"
           choices={CATEGORY_CHOICES}
           label="Event Category"
-          placeholder="Who can view this event?"
+          placeholder="What category does this event fall under?"
           className="lg:col-span-2"
         />
       </div>

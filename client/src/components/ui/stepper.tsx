@@ -26,7 +26,7 @@ const Stepper = ({
                       <Check size={16} />
                     )}
                   </div>
-                  <span className="text pt-2 text-amber-300 font-medium">
+                  <span className="text pt-2 text-amber-300 font-medium line-clamp-1">
                     {step}
                   </span>
                 </div>

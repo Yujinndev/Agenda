@@ -29,6 +29,9 @@ import Loading from '@/components/Loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/Tabs'
+import UpdateFormDialog from '@/components/event/UpdateForm'
+import EventCommitteesList from '@/components/event/EventCommiteesList'
+import EventFinances from '@/components/event/EventFinance'
 
 const EventDetails = () => {
   const { id } = useParams()
@@ -46,12 +49,17 @@ const EventDetails = () => {
     {
       title: 'Finance',
       value: 'finance',
-      content: <h1>Finance</h1>,
+      content: <EventFinances id={id as string} />,
     },
     {
       title: 'Participants',
       value: 'participants',
       content: <EventParticipantsList id={id as string} />,
+    },
+    {
+      title: 'Committees',
+      value: 'committees',
+      content: <EventCommitteesList id={id as string} />,
     },
     {
       title: 'History Timeline',
@@ -66,7 +74,7 @@ const EventDetails = () => {
 
   const user = auth!.user as string
   const isNextToApprove = isCommitteeNextToApprove({
-    committees: data.committee,
+    committees: data.committees,
     currentUser: user,
   })
   const isOrganizer = data?.organizer?.email === auth.user
@@ -146,10 +154,11 @@ const EventDetails = () => {
                     <Ellipsis className="flex-shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
+                <DropdownMenuContent className="m-2 space-y-1">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Update</DropdownMenuItem>
+                  <UpdateFormDialog id={id as string} />
+                  <DropdownMenuItem>Send Approval</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
@@ -188,10 +197,10 @@ const EventDetails = () => {
             ) : (
               <Badge
                 variant="outline"
-                className="text-white flex items-center gap-3 py-2 justify-center"
+                className="text-white flex items-center gap-3 py-2 text-sm justify-center"
               >
                 {approvalStatus?.label}
-                {isUserAlreadyJoined && <li> JOINED</li>}
+                {isUserAlreadyJoined && <li>Joined</li>}
               </Badge>
             )
           ) : null}

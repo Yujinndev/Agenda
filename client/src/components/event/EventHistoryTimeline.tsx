@@ -8,12 +8,12 @@ const EventHistoryTimeline = ({ id }: { id: string }) => {
   const { auth } = useAuth()
   const { data, isSuccess } = useGetEventById(id)
 
-  const history = isSuccess && data?.EventHistoryLogs
+  const history = isSuccess && data?.eventHistoryLogs
 
   return (
     <div>
       {history.map((timeline: any) => {
-        const actionTime = new Date(timeline.actionTime)
+        const actionTime = new Date(timeline.createdAt)
         const action =
           timeline.action === 'INQUIRED'
             ? timeline?.committeeInquiry?.responseType
@@ -26,7 +26,7 @@ const EventHistoryTimeline = ({ id }: { id: string }) => {
         const inquiryMessage = timeline?.committeeInquiry?.content
 
         return (
-          <div className="flex gap-x-3">
+          <div className="flex gap-x-3" key={timeline.id}>
             <div className="min-w-24 w-24 lg:min-w-40 md:w-40 text-end flex flex-col gap-2">
               <span className="text-xs md:text-sm capitalize w-full">
                 {formatDistance(actionTime, new Date(), {

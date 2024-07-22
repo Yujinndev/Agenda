@@ -6,17 +6,27 @@ import { EVENT_AUDIENCE } from '@/constants/choices'
 import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
 import useAuth from '@/hooks/useAuth'
 import MarkdownFormat from '@/utils/MarkdownFormat'
+import { concatenateStrings } from '@/utils/helpers/concatenateStrings'
 
 const EventOverview = ({ id }: { id: string }) => {
   const { data } = useGetEventById(id)
   const { auth } = useAuth()
-  const convertDate = new Date(data.startDateTime)
-  const startDateTime = format(convertDate, 'PPp')
-  const endDateTime = format(new Date(data.endDateTime), 'PPp')
+
+  const convertStartDate = data.startDateTime ? new Date(data.startDateTime) : 0
+
+  const startDateTime = data.startDateTime
+    ? format(new Date(data.startDateTime), 'PPp')
+    : undefined
+  const endDateTime = data.endDateTime
+    ? format(new Date(data.endDateTime), 'PPp')
+    : undefined
+
   const eventAudience = EVENT_AUDIENCE.find((el) => el.value === data.audience)
-  const eventOrganizer = `${data?.organizer?.firstName} ${
-    data?.organizer?.middleName ?? ''
-  } ${data?.organizer?.lastName}`
+  const eventOrganizer = concatenateStrings(
+    data?.organizer?.firstName,
+    data?.organizer?.middleName ?? '',
+    data?.organizer?.lastName
+  )
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
@@ -31,9 +41,9 @@ const EventOverview = ({ id }: { id: string }) => {
 
           <CardContent className="absolute -mt-20 flex items-center gap-2">
             <div className="flex flex-col items-center justify-center rounded-sm border bg-white px-4 py-2">
-              <p className="-mb-1 text-sm">{format(convertDate, 'MMM')}</p>
+              <p className="-mb-1 text-sm">{format(convertStartDate, 'MMM')}</p>
               <p className="mb-0 text-xl font-black">
-                {format(convertDate, 'dd')}
+                {format(convertStartDate, 'dd')}
               </p>
             </div>
           </CardContent>
@@ -45,17 +55,19 @@ const EventOverview = ({ id }: { id: string }) => {
             <div className="ms-6 flex items-center gap-4 text-base lg:text-lg">
               <Clock8 size={24} className="flex-shrink-0" />
               <span className="capitalize">
-                {formatDistance(
-                  subDays(new Date(endDateTime), 0),
-                  new Date(startDateTime)
-                )}
+                {startDateTime && endDateTime
+                  ? formatDistance(
+                      subDays(new Date(endDateTime), 0),
+                      new Date(startDateTime)
+                    )
+                  : ''}
               </span>
             </div>
             <div className="ms-6 flex items-center gap-4 text-base lg:text-lg">
               <Calendar size={24} className="flex-shrink-0" />
               <div className="flex gap-2">
                 <p className="line-clamp-3">{startDateTime}</p>
-                <small>-</small>
+                <small>{startDateTime && endDateTime ? '-' : ''}</small>
                 <p className="line-clamp-3">{endDateTime}</p>
               </div>
             </div>

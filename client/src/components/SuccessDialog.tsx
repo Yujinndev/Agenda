@@ -10,15 +10,12 @@ import {
 import { Button } from '@/components/ui/button'
 import ResultMessage from '@/components/ui/resultMessage'
 
-type SuccessDialogProps = {
+export type DialogProps = {
   isDialogOpen: boolean
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const SuccessDialog = ({
-  isDialogOpen,
-  setIsDialogOpen,
-}: SuccessDialogProps) => {
+const SuccessDialog = ({ isDialogOpen, setIsDialogOpen }: DialogProps) => {
   const navigate = useNavigate()
   const handleClose = () => {
     setIsDialogOpen(false)
