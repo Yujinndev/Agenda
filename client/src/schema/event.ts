@@ -35,19 +35,28 @@ export const eventBudgetSchema = z.object({
 export const eventCommitteeSchema = z.object({
   committees: z.array(
     z.object({
-      email: z
-        .string()
-        .email({
-          message: 'Kindly enter valid email',
-        })
-        .or(z.literal('')),
+      email: z.string().email({
+        message: 'Kindly enter valid email',
+      }),
     })
   ),
 })
 
+const EVENT_STATUS_OPTIONS = [
+  'DRAFT',
+  'FOR_ACKNOWLEDGEMENT',
+  'FOR_APPROVAL',
+  'UPCOMING',
+  'DONE',
+  'RESCHEDULED',
+  'CANCELLED',
+] as const
+
 export const eventConfirmationSchema = z.object({
-  status: z.string().min(1),
+  status: z.enum(EVENT_STATUS_OPTIONS),
 })
+
+export type EventStatus = (typeof EVENT_STATUS_OPTIONS)[number]
 
 export const eventApprovalSchema = eventBudgetSchema.merge(eventCommitteeSchema)
 

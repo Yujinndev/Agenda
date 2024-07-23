@@ -15,6 +15,8 @@ module.exports = {
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    "./node_modules/flowbite/**/*.js",
+    "./public/**/*.html",
   ],
   prefix: '',
   theme: {
@@ -84,6 +86,7 @@ module.exports = {
   },
   plugins: [
     require('tailwindcss-animate'),
+    require('flowbite/plugin'),
     function ({ matchUtilities, theme }) {
       matchUtilities(
         {
@@ -107,4 +110,12 @@ module.exports = {
       )
     },
   ],
+  // flowbite
+  variants: {
+    fill: [],
+    extend: {
+      borderColor: ['focus-visible'],
+      opacity: ['disabled'],
+    }
+  },
 }

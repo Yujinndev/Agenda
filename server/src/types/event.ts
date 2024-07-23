@@ -8,9 +8,10 @@ export interface EventProps {
   id?: string
   title: string
   purpose: string
-  startDateTime: string
-  endDateTime: string
+  startDateTime: Date
+  endDateTime: Date
   location: string
+  details: string
   estimatedAttendees: string
   category: EventCategory
   audience: EventAudience

@@ -1,6 +1,9 @@
 import { Dot } from 'lucide-react'
 
 const MarkdownFormat = ({ details }: { details: string }) => {
+  if (!details) {
+    return null
+  }
   const splitedWords = details.split('/')
 
   return splitedWords.map((segment: string, index: number) => (

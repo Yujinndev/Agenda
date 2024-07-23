@@ -1,37 +1,81 @@
-import { eventCommitteeSchema } from '@/schema/event'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useFieldArray, useForm } from 'react-hook-form'
+import {
+  useFieldArray,
+  useForm,
+  UseFormReturn,
+  FieldValues,
+  UseFormProps,
+  ArrayPath,
+  FieldArray,
+  UseFieldArrayReturn,
+} from 'react-hook-form'
 import { z } from 'zod'
 
-const useDynamicForm = (initialGuests: { email: string }[] = []) => {
-  const form = useForm<z.infer<typeof eventCommitteeSchema>>({
-    resolver: zodResolver(eventCommitteeSchema),
-    defaultValues: {
-      committees: initialGuests.length > 0 ? initialGuests : [{ email: '' }],
-    },
-  })
+type DynamicFieldConfig<T extends FieldValues> = {
+  name: ArrayPath<T>
+  defaultValue: any
+}
 
-  const onSubmit = (data: z.infer<typeof eventCommitteeSchema>) => {
-    console.log(data)
-  }
+type UseDynamicFormOptions<T extends FieldValues> = {
+  schema: z.ZodType<T>
+  dynamicFields: DynamicFieldConfig<T>[]
+  existingForm?: UseFormReturn<T>
+  formOptions?: UseFormProps<T>
+}
+
+type FieldArrays<T extends FieldValues> = {
+  [K in ArrayPath<T>]: UseFieldArrayReturn<T, K, 'id'>
+}
+
+const useDynamicForm = <T extends FieldValues>({
+  schema,
+  dynamicFields,
+  existingForm,
+  formOptions = {},
+}: UseDynamicFormOptions<T>) => {
+  const form =
+    existingForm ||
+    useForm<T>({
+      resolver: zodResolver(schema),
+      mode: 'onChange',
+      defaultValues: {
+        ...dynamicFields.reduce((acc, field) => {
+          acc[field.name] = [field.defaultValue] as any
+          return acc
+        }, {} as Partial<T>),
+        ...formOptions.defaultValues,
+      },
+      ...formOptions,
+    })
 
   const { control } = form
-  const { fields, append, remove, update } = useFieldArray({
-    control,
-    name: 'committees',
-  })
 
-  const handleRemove = (index: number) => {
-    form.resetField(`committees.${index}.email`)
-    update(index, { email: '' })
-    remove(index)
+  const fieldArrays = dynamicFields.reduce((acc, field) => {
+    acc[field.name] = useFieldArray({
+      control,
+      name: field.name,
+    })
+    return acc
+  }, {} as FieldArrays<T>)
+
+  const handleAppend = (fieldName: ArrayPath<T>) => {
+    const fieldArray = fieldArrays[fieldName]
+    const defaultValue = dynamicFields.find(
+      (f) => f.name === fieldName
+    )?.defaultValue
+    if (fieldArray && defaultValue) {
+      fieldArray.append(defaultValue as FieldArray<T, ArrayPath<T>>)
+    }
   }
 
-  const handleAppend = () => {
-    append({ email: '' })
+  const handleRemove = (fieldName: ArrayPath<T>, index: number) => {
+    const fieldArray = fieldArrays[fieldName]
+    if (fieldArray) {
+      fieldArray.remove(index)
+    }
   }
 
-  return { form, fields, onSubmit, handleAppend, handleRemove }
+  return { form, fieldArrays, handleAppend, handleRemove }
 }
 
 export default useDynamicForm
