@@ -24,43 +24,53 @@ const MyEvents = () => {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-2 md:flex-row overflow-hidden">
-          <div className="flex flex-1 items-center justify-around gap-2 rounded-xl border bg-white overflow-hidden p-2 md:flex-none lg:flex-wrap">
+          <div className="flex items-center justify-around gap-2 rounded-xl border bg-white overflow-hidden p-2 md:flex-none flex-wrap">
             {EVENT_CATEGORIES.map((el, idx) => {
+              const eventCategoriesLength =
+                isSuccess &&
+                events.filter((event: Event) => event.status == el.value).length
+
               return (
-                <Button
-                  key={idx}
-                  onClick={() =>
-                    setSelectedFilter({ label: el.label, value: el.value })
-                  }
-                  variant="ghost"
-                  size="sm"
-                  className="relative flex-1 lg:p-4 py-2 text-sm"
-                  style={{
-                    transformStyle: 'preserve-3d',
-                  }}
-                >
-                  <span
-                    className={cn(
-                      'relative z-50 block text-gray-600 mt-1 dark:text-white',
-                      {
-                        'text-black': selectedFilter.value === el.value,
-                      }
-                    )}
+                <div key={idx} className="relative">
+                  <Button
+                    onClick={() =>
+                      setSelectedFilter({ label: el.label, value: el.value })
+                    }
+                    variant="ghost"
+                    size="sm"
+                    className="relative flex-1 lg:p-4 py-2 text-sm"
+                    style={{
+                      transformStyle: 'preserve-3d',
+                    }}
                   >
-                    {el.label}
-                  </span>
-                  {selectedFilter.value === el.value && (
-                    <motion.div
-                      layoutId="clickedbutton"
-                      transition={{
-                        type: 'spring',
-                        bounce: 0.25,
-                        duration: 0.75,
-                      }}
-                      className="absolute inset-0 z-10 rounded-md bg-amber-300 dark:bg-zinc-800"
-                    />
+                    <p
+                      className={cn(
+                        'relative z-50 block text-gray-600 mt-1 dark:text-white',
+                        {
+                          'text-black': selectedFilter.value === el.value,
+                        }
+                      )}
+                    >
+                      {el.label}
+                    </p>
+                    {selectedFilter.value === el.value && (
+                      <motion.div
+                        layoutId="clickedbutton"
+                        transition={{
+                          type: 'spring',
+                          bounce: 0.25,
+                          duration: 0.5,
+                        }}
+                        className="absolute inset-0 z-10 rounded-md bg-amber-300 dark:bg-zinc-800"
+                      />
+                    )}
+                  </Button>
+                  {eventCategoriesLength > 0 && (
+                    <span className="text-xs font-mono absolute -top-1 -left-1 h-3 w-3 p-2 text-center flex items-center justify-center bg-green-900 text-white rounded-full">
+                      {eventCategoriesLength}
+                    </span>
                   )}
-                </Button>
+                </div>
               )
             })}
           </div>

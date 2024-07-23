@@ -13,6 +13,7 @@ import {
 interface Choice {
   value: string
   label: string
+  type?: string
 }
 
 interface TextFieldCustomProps {
@@ -40,7 +41,7 @@ export function SelectFieldCustom({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <Label>{label}</Label>
+          <Label className="ubuntu-bold">{label}</Label>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}

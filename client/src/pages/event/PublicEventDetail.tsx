@@ -38,6 +38,7 @@ import useAuth from '@/hooks/useAuth'
 import { QueryClient, useMutation } from '@tanstack/react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { toast } from '@/components/ui/use-toast'
+import MarkdownFormat from '@/utils/MarkdownFormat'
 
 const PublicEventDetail = () => {
   const queryClient = new QueryClient()
@@ -76,10 +77,6 @@ const PublicEventDetail = () => {
 
   const currentParticipantsCount = event?.participants?.length
   const isUserTheOrganizer = event.organizer?.email === auth.user
-  console.log(
-    '🚀 ~ PublicEventDetail ~ isUserTheOrganizer:',
-    isUserTheOrganizer
-  )
   const isUserAlreadyJoined = event?.participants?.find(
     (el: any) => el.email === auth.user
   )
@@ -92,7 +89,7 @@ const PublicEventDetail = () => {
   const endDateTime = new Date(event.endDateTime)
 
   return (
-    <div className="w-full py-12 lg:px-28 xl:px-40">
+    <div className="w-full py-12 lg:px-28">
       <div className="relative w-full lg:h-[500px] h-52 rounded-t-2xl overflow-hidden">
         <div
           className="absolute inset-0 w-full h-full bg-center bg-cover blur-xl"
@@ -110,18 +107,13 @@ const PublicEventDetail = () => {
 
       <div className="bg-green-900 px-8 mb-4 rounded-b-md text-white flex flex-col-reverse justify-between md:flex-row md:items-center">
         <div className="relative flex flex-1 flex-col items-start gap-1 py-4 pt-8 md:w-2/3 lg:w-1/2">
-          <div className="pb-2">
+          <div className="pb-2 flex justify-between w-full">
             <Badge
               variant="secondary"
-              className="lg:text-base pt-1 bg-yellow-300 text-black"
+              className="pt-1 bg-yellow-300 text-black"
             >
               {event.category}
             </Badge>
-          </div>
-          <h1 className="text-4xl dark:text-white md:text-5xl lg:text-6xl">
-            {event.title}
-          </h1>
-          <div className="absolute right-0">
             <div className="lg:block hidden">
               {!isUserTheOrganizer ? (
                 isUserAlreadyJoined ? (
@@ -137,9 +129,9 @@ const PublicEventDetail = () => {
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="w-max rounded-full py-4 px-6 h-7"
+                        className="w-max rounded-full py-4 px-6 h-7 space-x-3"
                       >
-                        Join Event <LogIn size={18} className="ms-1" />
+                        <p>Join Event</p> <LogIn size={18} className="m-1" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent>
@@ -196,9 +188,10 @@ const PublicEventDetail = () => {
                       <Button
                         size="sm"
                         variant="secondary"
-                        className="w-max rounded-full py-4 px-6 h-7"
+                        className="w-max rounded-full py-4 px-6 h-7 space-x-2"
                       >
-                        Join Event <LogIn size={18} className="ms-1" />
+                        <p className="mt-[2px]">Join Event</p>{' '}
+                        <LogIn size={18} className="m-1" />
                       </Button>
                     </DrawerTrigger>
                     <DrawerContent>
@@ -241,6 +234,9 @@ const PublicEventDetail = () => {
               ) : null}
             </div>
           </div>
+          <h1 className="text-4xl dark:text-white lg:text-5xl">
+            {event.title}
+          </h1>
         </div>
       </div>
 
@@ -261,52 +257,81 @@ const PublicEventDetail = () => {
             </div>
           </div>
 
-          <h1 className="text-2xl">Schedule</h1>
-          <div className="pb-4 flex gap-2">
-            <CalendarClock size={20} />
-            <span className="text-gray-600">
-              {format(startDateTime, 'PPp')} - {format(endDateTime, 'PPp')}
-            </span>
-          </div>
+          <DetailsCard
+            title="Schedule"
+            content={`${format(startDateTime, 'PPp')} - ${format(
+              endDateTime,
+              'PPp'
+            )}`}
+            icon={<CalendarClock size={30} className="flex-shrink-0" />}
+          />
 
-          <h1 className="text-2xl mt-6">Venue</h1>
-          <div className="pb-4 flex gap-2">
-            <MapPinIcon size={20} />
-            <span className="text-gray-600">{event.location}</span>
-          </div>
+          <DetailsCard
+            title="Venue"
+            content={`${event.location}`}
+            icon={<MapPinIcon size={30} className="flex-shrink-0" />}
+          />
 
-          <h1 className="text-2xl mt-6">Overview</h1>
-          <div className="pb-4 flex gap-2">
-            <Clock size={20} />
-            <span className="text-gray-600 capitalize">
-              {formatDistance(startDateTime, endDateTime)}
-            </span>
-          </div>
-          <p className="mt-2 lg:w-10/12">{event.details}</p>
-          <p className="mt-2 lg:w-10/12">{event.purpose}</p>
+          <DetailsCard
+            title="Overview"
+            content={formatDistance(startDateTime, endDateTime)}
+            icon={<Clock size={30} className="flex-shrink-0" />}
+            additional={
+              <div className="space-y-4">
+                <MarkdownFormat details={event.details} />
+                <MarkdownFormat details={event.purpose} />
+              </div>
+            }
+          />
 
-          <h1 className="text-2xl mt-6">Participants</h1>
-          <div className="pb-4 flex gap-2">
-            <UserRoundCheck size={20} />
-            <span className="text-gray-600">
-              {currentParticipantsCount} / {event.estimatedAttendees} People
-            </span>
-          </div>
+          <DetailsCard
+            title="Participants"
+            content={`${currentParticipantsCount} / ${event.estimatedAttendees} People`}
+            icon={<UserRoundCheck size={30} className="flex-shrink-0" />}
+          />
 
-          <h1 className="text-2xl mt-6">Event Fee</h1>
-          <div className="pb-4 flex gap-2">
-            <Ticket size={20} />
-            <span className="text-gray-600">
-              {new Intl.NumberFormat('fil-ph', {
-                style: 'currency',
-                currency: 'PHP',
-                minimumFractionDigits: 2,
-              }).format(parseFloat(event.price))}
-            </span>
-          </div>
+          <DetailsCard
+            title="Joining Fee"
+            content={new Intl.NumberFormat('fil-ph', {
+              style: 'currency',
+              currency: 'PHP',
+              minimumFractionDigits: 2,
+            }).format(parseFloat(event.price))}
+            icon={<Ticket size={30} className="flex-shrink-0" />}
+          />
         </div>
       </div>
       <ScrollTop />
+    </div>
+  )
+}
+
+export const DetailsCard = ({
+  title,
+  content,
+  icon,
+  additional,
+}: {
+  title: string
+  content: string
+  icon?: React.ReactNode
+  additional?: React.ReactNode
+}) => {
+  return (
+    <div className="py-4 text-lg">
+      <h1 className="text-2xl">{title}</h1>
+      <div className="py-4 flex items-center gap-4">
+        <Button
+          type="button"
+          size="icon"
+          variant="secondary"
+          className="p-6 pointer-events-none"
+        >
+          {icon}
+        </Button>
+        <span className="capitalize pt-[2px]">{content}</span>
+      </div>
+      {additional}
     </div>
   )
 }

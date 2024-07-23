@@ -9,7 +9,7 @@ const Stepper = ({
   activeStep: number
 }) => {
   return (
-    <nav className="pb-12 lg:pb-4" aria-label="Progress">
+    <nav className="pb-12 lg:pb-4 md:py-6 lg:pt-0" aria-label="Progress">
       <ol
         role="list"
         className="space-y-4 flex justify-between items-center md:space-x-8 md:space-y-0 relative"
@@ -26,7 +26,7 @@ const Stepper = ({
                       <Check size={16} />
                     )}
                   </div>
-                  <span className="text pt-2 text-amber-300 font-medium">
+                  <span className="text pt-2 text-amber-300 font-medium line-clamp-1">
                     {step}
                   </span>
                 </div>

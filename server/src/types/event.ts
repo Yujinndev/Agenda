@@ -1,15 +1,16 @@
-export interface Participant {
+export type Participant = {
   email: string
   eventId?: string
   name?: string
 }
 
-export interface EventProps {
+export type EventProps = {
   id?: string
   title: string
+  details: string
   purpose: string
-  startDateTime: Date
-  endDateTime: Date
+  startDateTime: any
+  endDateTime: any
   location: string
   details: string
   estimatedAttendees: string
@@ -21,7 +22,7 @@ export interface EventProps {
   estimatedExpense: string
   status: EventStatus
   email: string
-  userId?: string
+  organizerId?: string
 }
 
 enum EventCategory {

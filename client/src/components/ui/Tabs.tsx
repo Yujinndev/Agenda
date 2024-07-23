@@ -27,10 +27,10 @@ export const Tabs = ({
   }
 
   return (
-    <div className="relative -mt-5">
+    <div className="relative -mt-5 overflow-hidden">
       <div
         className={
-          'no-scrollbar relative flex w-full max-w-full flex-row items-center justify-start gap-2 overflow-hidden  sm:overflow-visible'
+          'no-scrollbar relative flex w-full max-w-full flex-row items-center justify-start gap-2 overflow-y-hidden'
         }
       >
         {propTabs.map((tab, idx) => (

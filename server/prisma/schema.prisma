@@ -20,11 +20,14 @@ model User {
   firstName          String
   lastName           String
   middleName         String?
-  organizedEvents    Event[]            @relation("OrganizedEvents")
+  organizedEvents    Event[]            @relation("UserEvents")
   participatedEvents EventParticipant[]
   EventFeedback      EventFeedback[]
   refreshToken       String?
   EventCommittee     EventCommittee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([email])
 }
@@ -34,22 +37,22 @@ model Event {
   title              String
   details            String?
   purpose            String?
-  location           String
-  startDateTime      DateTime
-  endDateTime        DateTime
+  location           String?
+  startDateTime      DateTime?
+  endDateTime        DateTime?
   estimatedAttendees Int?
-  category           EventCategory
-  audience           EventAudience      @default(PUBLIC)
-  participants       EventParticipant[]
+  category           EventCategory?     @default(PERSONAL)
+  audience           EventAudience?     @default(PUBLIC)
   estimatedExpense   Decimal?
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
-  finance            EventBudget[]      @relation("Finance")
-  committee          EventCommittee[]   @relation("Committees")
-  EventFeedback      EventFeedback[]    @relation("Feedbacks")
-  EventHistoryLogs   EventHistoryLog[]  @relation("HistoryLogs")
+  finances           EventFinance[]     @relation("Finances")
+  participants       EventParticipant[] @relation("Participants")
+  committees         EventCommittee[]   @relation("Committees")
+  eventFeedbacks     EventFeedback[]    @relation("Feedbacks")
+  eventHistoryLogs   EventHistoryLog[]  @relation("HistoryLogs")
   organizerId        String
-  organizer          User               @relation("OrganizedEvents", fields: [organizerId], references: [id])
+  organizer          User               @relation("UserEvents", fields: [organizerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -72,6 +75,8 @@ enum EventAudience {
 }
 
 enum EventStatus {
+  DRAFT
+  FOR_ACKNOWLEDGEMENT
   FOR_APPROVAL
   UPCOMING
   DONE
@@ -90,6 +95,9 @@ model EventCommittee {
   user                  User?                   @relation(fields: [userId], references: [id])
   event                 Event                   @relation("Committees", fields: [eventId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([email, eventId])
 }
 
@@ -101,21 +109,26 @@ enum ApprovalStatus {
 }
 
 model EventSentEmailCommittee {
-  id             Int      @id @unique @default(autoincrement())
+  id             Int     @id @unique @default(autoincrement())
   isSent         Boolean
   committeeEmail String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  messageId      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model EventCommitteeInquiry {
-  id               Int            @id @default(autoincrement())
+  id               Int               @id @default(autoincrement())
   committeeEmail   String
   committeeEventId String
-  committee        EventCommittee @relation("CommitteeInquiries", fields: [committeeEmail, committeeEventId], references: [email, eventId])
+  committee        EventCommittee    @relation("CommitteeInquiries", fields: [committeeEmail, committeeEventId], references: [email, eventId])
   content          String?
+  eventHistoryLogs EventHistoryLog[]
   responseType     ResponseType
-  date             DateTime       @default(now())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum ResponseType {
@@ -131,12 +144,15 @@ model EventParticipant {
   email   String
   name    String?
   user    User?   @relation(fields: [userId], references: [id])
-  event   Event   @relation(fields: [eventId], references: [id])
+  event   Event   @relation("Participants", fields: [eventId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([email, eventId])
 }
 
-model EventBudget {
+model EventFinance {
   id              Int             @id @default(autoincrement())
   financeCategory FinanceCategory
   transactionType    String
@@ -145,7 +161,7 @@ model EventBudget {
   estimatedAmount   Decimal
   actualAmount      Decimal?
   eventId         String
-  event           Event           @relation("Finance", fields: [eventId], references: [id])
+  event           Event           @relation("Finances", fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -167,26 +183,35 @@ model EventFeedback {
   user    User     @relation(fields: [userId], references: [id])
   event   Event    @relation("Feedbacks", fields: [eventId], references: [id])
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@unique([userId, eventId])
 }
 
 model EventHistoryLog {
-  id         Int           @id @default(autoincrement())
-  eventId    String
-  event      Event         @relation("HistoryLogs", fields: [eventId], references: [id])
-  email      String
-  message    String
-  oldValues  String?
-  newValues  String?
-  action     HistoryAction
-  actionTime DateTime      @default(now())
+  id                 Int                    @id @default(autoincrement())
+  eventId            String
+  event              Event                  @relation("HistoryLogs", fields: [eventId], references: [id])
+  email              String?
+  message            String
+  oldValues          String?
+  newValues          String?
+  committeeInquiryId Int?
+  committeeInquiry   EventCommitteeInquiry? @relation(fields: [committeeInquiryId], references: [id])
+  action             HistoryAction
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum HistoryAction {
   CREATED
   UPDATED
+  SUBMITTED
   INQUIRED
   REJECTED
   APPROVED
   DELETED
+  PUBLISHED
 }

@@ -13,10 +13,23 @@ export const isCommitteeNextToApprove = ({
   const currentUserCommitteeIndex: number = committees.findIndex(
     (el: any) => el.email === currentUser
   )
+  const revisionCommitteeIndex = committees.findIndex(
+    (committee) => committee.approvalStatus === 'REQUESTING_REVISION'
+  )
 
   // If findIndex returns -1, the user is not a committee member
   if (currentUserCommitteeIndex < 0) {
     return { isNext: false }
+  }
+
+  if (
+    revisionCommitteeIndex > 0 &&
+    currentUserCommitteeIndex !== revisionCommitteeIndex
+  ) {
+    return {
+      isNext: true,
+      status: 'ON_HOLD',
+    }
   }
 
   const currentUserStatus = committees[currentUserCommitteeIndex].approvalStatus

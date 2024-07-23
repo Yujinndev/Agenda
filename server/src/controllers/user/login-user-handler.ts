@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../../constant'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import { ValidationError } from '../../utils/errors'
 
 const prisma = new PrismaClient()
 
@@ -22,7 +23,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
 
     const isPasswordMatched = await bcrypt.compare(password, user.password)
 
-    if (!isPasswordMatched) throw new Error()
+    if (!isPasswordMatched) throw new ValidationError('Password not match')
 
     const accessToken = jwt.sign(
       { email: user.email, userId: user.id },

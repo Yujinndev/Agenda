@@ -61,6 +61,7 @@ export const PublicLinks = ({
 }
 
 const Navbar = () => {
+  const location = useLocation()
   const { auth } = useAuth()
   const logout = useLogout()
 
@@ -79,21 +80,23 @@ const Navbar = () => {
       </div>
       <div className="flex w-[30%] items-center justify-end gap-4 xl:gap-8">
         {auth?.accessToken ? (
-          <Button onClick={logout}>
+          <Button onClick={logout} className="rounded-full py-4">
             <div className="flex items-center gap-3 px-4 py-8">
               <CircleUser size={14} />
               <span>@{auth?.user?.split('@')[0]}</span>
             </div>
           </Button>
         ) : (
-          <Button asChild>
-            <Link to="/onboarding/signin">
-              <div className="flex items-center gap-3 px-4 py-8">
-                <CircleUser size={14} />
-                <span>Login</span>
-              </div>
-            </Link>
-          </Button>
+          !location.pathname.startsWith('/response-form') && (
+            <Button className="rounded-full py-4" asChild>
+              <Link to="/onboarding/signin">
+                <div className="flex items-center gap-3 px-4 py-8">
+                  <CircleUser size={14} />
+                  <span>Login</span>
+                </div>
+              </Link>
+            </Button>
+          )
         )}
       </div>
     </div>
