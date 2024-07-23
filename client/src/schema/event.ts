@@ -20,16 +20,20 @@ export const eventDetailsSchema = z.object({
 })
 
 export const eventGuestDetailSchema = z.object({
-  estimatedAttendees: z.string().min(1, 'Required'),
+  estimatedAttendees: z
+    .string({ invalid_type_error: 'Required' })
+    .min(1, 'Required'),
   category: z.string().min(1, 'Kindly Select an Event Category'),
   audience: z.string().min(1, 'Kindly Select an Event Publishing Audience'),
 })
 
 export const eventBudgetSchema = z.object({
   estimatedExpense: z
-    .string()
+    .string({ invalid_type_error: 'Required' })
     .min(1, 'Kindly provide the maximum budget for the event'),
-  price: z.string().min(1, 'Kindly provide the price for joining this event'),
+  price: z
+    .string({ invalid_type_error: 'Required' })
+    .min(1, 'Kindly provide the price for joining this event'),
 })
 
 export const eventCommitteeSchema = z.object({
@@ -47,6 +51,7 @@ const EVENT_STATUS_OPTIONS = [
   'FOR_ACKNOWLEDGEMENT',
   'FOR_APPROVAL',
   'UPCOMING',
+  'ON_HOLD',
   'DONE',
   'RESCHEDULED',
   'CANCELLED',

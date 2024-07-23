@@ -321,7 +321,12 @@ export const DetailsCard = ({
     <div className="py-4 text-lg">
       <h1 className="text-2xl">{title}</h1>
       <div className="py-4 flex items-center gap-4">
-        <Button type="button" size="icon" variant="secondary" className="p-6">
+        <Button
+          type="button"
+          size="icon"
+          variant="secondary"
+          className="p-6 pointer-events-none"
+        >
           {icon}
         </Button>
         <span className="capitalize pt-[2px]">{content}</span>

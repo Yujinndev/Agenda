@@ -13,6 +13,7 @@ import {
 interface Choice {
   value: string
   label: string
+  type?: string
 }
 
 interface TextFieldCustomProps {
@@ -21,6 +22,7 @@ interface TextFieldCustomProps {
   label?: string
   className?: string
   placeholder?: string
+  disabled?: boolean
 }
 
 export function SelectFieldCustom({
@@ -29,6 +31,7 @@ export function SelectFieldCustom({
   className,
   choices,
   placeholder = '',
+  disabled = false,
 }: TextFieldCustomProps) {
   const { control, formState } = useFormContext()
 
@@ -39,7 +42,11 @@ export function SelectFieldCustom({
       render={({ field }) => (
         <FormItem className={className}>
           <Label className="ubuntu-bold">{label}</Label>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+            disabled={disabled}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />

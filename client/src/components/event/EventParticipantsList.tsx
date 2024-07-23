@@ -1,4 +1,5 @@
-import { User } from 'lucide-react'
+import { FaUserSecret } from 'react-icons/fa6'
+
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ResultMessage from '@/components/ui/resultMessage'
@@ -21,9 +22,9 @@ const EventParticipantsList = ({ id }: { id: string }) => {
                 type="button"
                 size="icon"
                 variant="secondary"
-                className="p-12 rounded-full"
+                className="p-8 rounded-full"
               >
-                <User size={50} className="flex-shrink-0" />
+                <FaUserSecret size={40} className="flex-shrink-0" />
               </Button>
 
               <p className="text-center text-lg font-bold line-clamp-2">

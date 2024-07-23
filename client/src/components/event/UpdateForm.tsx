@@ -19,14 +19,15 @@ import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
 import { FormControl, FormField, FormItem } from '@/components/ui/form'
 import { SelectFieldCustom } from '@/components/ui/SelectFieldCustom'
 import { CATEGORY_CHOICES, EVENT_AUDIENCE } from '@/constants/choices'
-import FormError from '../ui/formError'
-import { Input } from '../ui/input'
-import { Label } from '../ui/label'
+import FormError from '@/components/ui/formError'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import useDynamicForm from '@/hooks/useDynamicForm'
 import { usePostEventMutation } from '@/hooks/api/usePostEventMutation'
 
 const UpdateFormDialog = ({ id }: { id: string }) => {
   const { data, isLoading } = useGetEventById(id)
+  const { participants, eventHistoryLogs, ...rest } = data
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   if (isLoading) {
@@ -46,9 +47,10 @@ const UpdateFormDialog = ({ id }: { id: string }) => {
       dynamicFields: [{ name: 'committees', defaultValue: { email: '' } }],
       formOptions: {
         defaultValues: {
-          ...data,
-          estimatedAttendees: data.estimatedAttendees.toString(),
-          committees: data.committee,
+          ...rest,
+          estimatedAttendees:
+            data.estimatedAttendees && data.estimatedAttendees.toString(),
+          committees: data.committees,
           startDateTime,
           endDateTime,
         },
@@ -60,8 +62,8 @@ const UpdateFormDialog = ({ id }: { id: string }) => {
     invalidateQueryKey: ['event', id],
   })
 
-  const onSubmit = (data: any) => {
-    updateEvent.mutate(data)
+  const onSubmit = (values: any) => {
+    updateEvent.mutate({ ...values, id, saveFlag: 'SAVE_ALL' })
   }
 
   const handleSaveDraft = async () => {
@@ -69,18 +71,15 @@ const UpdateFormDialog = ({ id }: { id: string }) => {
     const isDraftValid = await form.trigger('title')
     if (!isDraftValid) return
 
-    updateEvent.mutate(newValues)
+    updateEvent.mutate({ ...newValues, id, saveFlag: 'SAVE_DRAFT' })
   }
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogTrigger asChild>
-        <Button
-          className="w-full flex justify-evenly items-center gap-4"
-          variant="secondary"
-        >
+        <Button className="relative grid grid-cols-4 gap-4" variant="secondary">
           <Edit size={20} />
-          Edit / Update
+          <span>Edit / Revise</span>
         </Button>
       </DialogTrigger>
 
@@ -188,25 +187,24 @@ const UpdateFormDialog = ({ id }: { id: string }) => {
                   ))}
                 </div>
               </div>
-              {updateEvent.isPending && <Loading />}
 
-              <DialogFooter>
+              <div className="h-[1px] w-full rounded-full bg-gray-400" />
+
+              <DialogFooter className="gap-y-2">
                 <Button
                   onClick={() => handleSaveDraft()}
                   disabled={updateEvent.isPending}
                   type="button"
                   variant="outline"
                 >
-                  {updateEvent.isPending ? 'Saving ..' : 'Save Draft'}
+                  Save Draft
                 </Button>
                 <Button
                   type="submit"
                   className="px-8 w-full"
                   disabled={updateEvent.isPending}
                 >
-                  {updateEvent.isPending || form.formState.isSubmitting
-                    ? 'Saving ..'
-                    : 'Update Event'}
+                  Finalize Event
                 </Button>
               </DialogFooter>
             </form>

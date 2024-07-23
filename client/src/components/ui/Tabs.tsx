@@ -30,7 +30,7 @@ export const Tabs = ({
     <div className="relative -mt-5 overflow-hidden">
       <div
         className={
-          'no-scrollbar relative flex w-full max-w-full flex-row items-center justify-start gap-2 overflow-x-auto'
+          'no-scrollbar relative flex w-full max-w-full flex-row items-center justify-start gap-2 overflow-y-hidden'
         }
       >
         {propTabs.map((tab, idx) => (

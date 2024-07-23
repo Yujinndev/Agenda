@@ -14,7 +14,6 @@ export const usePostEventMutation = (
   apiEndpoint: string,
   options: UseCreateEventOptions
 ) => {
-  console.log('🚀 ~ apiEndpoint:', apiEndpoint)
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const axios = useAxiosPrivate()
@@ -41,10 +40,11 @@ export const usePostEventMutation = (
       }
     },
     onError: (error: any) => {
-      console.log('🚀 ~ event mutation:', error)
+      console.log(error)
 
       toast({
-        description: `Failed!`,
+        title: 'Sorry, failed!',
+        description: 'Please try again later.',
         variant: 'destructive',
       })
     },

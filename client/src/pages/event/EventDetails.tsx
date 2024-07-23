@@ -10,7 +10,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -32,6 +31,7 @@ import { Tabs } from '@/components/ui/Tabs'
 import UpdateFormDialog from '@/components/event/UpdateForm'
 import EventCommitteesList from '@/components/event/EventCommiteesList'
 import EventFinances from '@/components/event/EventFinance'
+import SendApprovalDialog from '@/components/event/SendApprovalDialog'
 
 const EventDetails = () => {
   const { id } = useParams()
@@ -143,7 +143,7 @@ const EventDetails = () => {
                 </Link>
               </Button>
             )}
-            {isOrganizer && (
+            {isOrganizer && data.status !== 'FOR_APPROVAL' && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -154,11 +154,16 @@ const EventDetails = () => {
                     <Ellipsis className="flex-shrink-0" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="m-2 space-y-1">
+                <DropdownMenuContent className="m-2 space-y-1 w-40">
                   <DropdownMenuLabel>Actions</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <UpdateFormDialog id={id as string} />
-                  <DropdownMenuItem>Send Approval</DropdownMenuItem>
+                  {data.status === 'ON_HOLD' && data.committees.length > 0 && (
+                    <SendApprovalDialog
+                      id={id as string}
+                      committees={data.committees}
+                    />
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             )}

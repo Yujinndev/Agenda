@@ -1,9 +1,9 @@
-import { User } from 'lucide-react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import ResultMessage from '@/components/ui/resultMessage'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { Badge } from '@/components/ui/badge'
+import { FaUserSecret } from 'react-icons/fa6'
 
 export type Committee = {
   name: string
@@ -28,14 +28,14 @@ const EventCommitteesList = ({ id }: { id: string }) => {
                 type="button"
                 size="icon"
                 variant="secondary"
-                className="p-12 rounded-full"
+                className="p-8 rounded-full"
               >
-                <User size={50} className="flex-shrink-0" />
+                <FaUserSecret size={40} className="flex-shrink-0" />
               </Button>
 
               <Badge>{committee.approvalStatus}</Badge>
               <p className="text-center text-lg font-bold line-clamp-2">
-                {committee.name}
+                {committee.name || committee.email}
               </p>
             </Card>
           ))}

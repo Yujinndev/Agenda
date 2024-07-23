@@ -24,7 +24,7 @@ const MyEvents = () => {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-2 md:flex-row overflow-hidden">
-          <div className="flex flex-1 items-center justify-around gap-2 rounded-xl border bg-white overflow-hidden p-2 py-3 md:flex-none flex-wrap">
+          <div className="flex items-center justify-around gap-2 rounded-xl border bg-white overflow-hidden p-2 md:flex-none flex-wrap">
             {EVENT_CATEGORIES.map((el, idx) => {
               const eventCategoriesLength =
                 isSuccess &&

@@ -3,10 +3,11 @@ import { format, formatDistance, subDays } from 'date-fns'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { EVENT_AUDIENCE } from '@/constants/choices'
-import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
 import useAuth from '@/hooks/useAuth'
 import MarkdownFormat from '@/utils/MarkdownFormat'
 import { concatenateStrings } from '@/utils/helpers/concatenateStrings'
+import { Button } from '../ui/button'
+import { FaUserSecret } from 'react-icons/fa6'
 
 const EventOverview = ({ id }: { id: string }) => {
   const { data } = useGetEventById(id)
@@ -98,10 +99,14 @@ const EventOverview = ({ id }: { id: string }) => {
       <div className="flex flex-col gap-4">
         <Card className="shadow-none">
           <CardContent className="flex items-center gap-4 p-8">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src="https://github.com/shadcn.png" />
-              <AvatarFallback>CN</AvatarFallback>
-            </Avatar>
+            <Button
+              type="button"
+              size="icon"
+              variant="secondary"
+              className="p-8 rounded-full pointer-events-none"
+            >
+              <FaUserSecret size={40} className="flex-shrink-0" />
+            </Button>
             <div className="grid">
               <h1 className="text-xl font-black">Organized By:</h1>
               <p className="text-lg lg:text-justify lg:text-xl">
