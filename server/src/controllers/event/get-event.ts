@@ -17,6 +17,7 @@ export const getEventHandler = async (req: Request, res: Response) => {
       },
       include: {
         participants: true,
+        finance: true,
         organizer: true,
       },
     })

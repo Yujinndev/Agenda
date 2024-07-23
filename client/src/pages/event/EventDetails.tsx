@@ -1,5 +1,6 @@
 import EventOverview from '@/components/event/EventOverview'
 import EventParticipantsList from '@/components/event/EventParticipantsList'
+import EventFinance from '@/components/event/EventFinance'
 import Loading from '@/components/Loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -38,7 +39,7 @@ const EventDetails = () => {
     {
       title: 'Finance',
       value: 'finance',
-      content: <h1>Finance</h1>,
+      content: <EventFinance id={id as string} />,
     },
   ]
 

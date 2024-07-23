@@ -21,11 +21,13 @@ interface TextFieldCustomProps {
   label?: string
   className?: string
   placeholder?: string
+  disabled?: boolean
 }
 
 export function SelectFieldCustom({
   name,
   label,
+  disabled = false,
   className,
   choices,
   placeholder = '',
@@ -39,7 +41,11 @@ export function SelectFieldCustom({
       render={({ field }) => (
         <FormItem className={className}>
           <Label>{label}</Label>
-          <Select onValueChange={field.onChange} defaultValue={field.value}>
+          <Select
+            onValueChange={field.onChange}
+            defaultValue={field.value}
+            disabled={disabled}
+          >
             <FormControl>
               <SelectTrigger>
                 <SelectValue placeholder={placeholder} />
@@ -53,7 +59,7 @@ export function SelectFieldCustom({
               ))}
             </SelectContent>
           </Select>
-          <FormError errorField={formState.errors.name} />
+          <FormError errorField={formState.errors} />
         </FormItem>
       )}
     />

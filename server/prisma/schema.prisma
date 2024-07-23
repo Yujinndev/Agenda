@@ -44,7 +44,7 @@ model Event {
   estimatedExpense   Decimal?
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
-  finance            EventBudget[]
+  finance            EventBudget[]      @relation("Finance")
   committee          EventCommittee[]   @relation("Committees")
   EventFeedback      EventFeedback[]    @relation("Feedbacks")
   EventHistoryLogs   EventHistoryLog[]  @relation("HistoryLogs")
@@ -139,22 +139,22 @@ model EventParticipant {
 model EventBudget {
   id              Int             @id @default(autoincrement())
   financeCategory FinanceCategory
-  taskCategory    String
-  taskName        String
-  vendor          String
-  estimatedCost   Decimal
-  actualCost      Decimal?
+  transactionType    String
+  transactionDescription      String
+  serviceProvider          String
+  estimatedAmount   Decimal
+  actualAmount      Decimal?
   eventId         String
-  event           Event           @relation(fields: [eventId], references: [id])
+  event           Event           @relation("Finance", fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([taskCategory, eventId])
+  @@unique([transactionDescription, eventId])
 }
 
 enum FinanceCategory {
-  INCOME
+  REVENUE
   EXPENSE
 }
 
