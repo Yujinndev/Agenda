@@ -4,6 +4,7 @@ import { getUserEventsHandler } from '../controllers/event/get-user-events-handl
 import { getRequestedEventsHandler } from '../controllers/event/get-requested-events-handler'
 import { createParticipantHandler } from '../controllers/event/create-participant-handler'
 import { updateEventHandler } from '../controllers/event/update-event-handler'
+import { resendEmailApprovalHandler } from '../controllers/event/resend-email-approval-handler'
 
 export const eventRouter = () => {
   const router = Router()
@@ -11,6 +12,7 @@ export const eventRouter = () => {
   router.post('/create', createEventHandler)
   router.post('/join', createParticipantHandler)
   router.post('/update', updateEventHandler)
+  router.post('/send-request', resendEmailApprovalHandler)
   router.get('/me/all', getUserEventsHandler)
   router.get('/me/c/requests', getRequestedEventsHandler)
 

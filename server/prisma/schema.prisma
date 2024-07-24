@@ -25,11 +25,59 @@ model User {
   EventFeedback      EventFeedback[]
   refreshToken       String?
   EventCommittee     EventCommittee[]
+  GroupMembership    GroupMembership[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([email])
+}
+
+model UserGroup {
+  id             String            @id @default(uuid())
+  name           String            @unique
+  members        GroupMembership[]
+  events         Event[]
+  joinPermission JoinPermission    @default(OPEN)
+  postPermission PostPermission    @default(ALL_MEMBERS)
+  visibility     GroupVisibility   @default(PUBLIC)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model GroupMembership {
+  id       String    @id @default(uuid())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   String
+  group    UserGroup @relation(fields: [groupId], references: [id])
+  groupId  String
+  role     UserRoles @default(MEMBER)
+  joinedAt DateTime  @default(now())
+
+  @@unique([userId, groupId])
+}
+
+enum UserRoles {
+  ADMIN
+  MODERATOR
+  MEMBER
+}
+
+enum JoinPermission {
+  OPEN
+  APPROVAL_REQUIRED
+  INVITE_ONLY
+}
+
+enum PostPermission {
+  ALL_MEMBERS
+  MODERATORS_ONLY
+}
+
+enum GroupVisibility {
+  PUBLIC
+  PRIVATE
 }
 
 model Event {
@@ -53,6 +101,8 @@ model Event {
   eventHistoryLogs   EventHistoryLog[]  @relation("HistoryLogs")
   organizerId        String
   organizer          User               @relation("UserEvents", fields: [organizerId], references: [id])
+  userGroupId        String?
+  userGroup          UserGroup?         @relation(fields: [userGroupId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -75,6 +125,7 @@ enum EventAudience {
 }
 
 enum EventStatus {
+  ON_HOLD
   DRAFT
   FOR_ACKNOWLEDGEMENT
   FOR_APPROVAL
@@ -92,6 +143,7 @@ model EventCommittee {
   name                  String?
   EventCommitteeInquiry EventCommitteeInquiry[] @relation("CommitteeInquiries")
   approvalStatus        ApprovalStatus          @default(WAITING)
+  activeStatus          ActiveStatus            @default(ACTIVE)
   user                  User?                   @relation(fields: [userId], references: [id])
   event                 Event                   @relation("Committees", fields: [eventId], references: [id])
 
@@ -106,6 +158,11 @@ enum ApprovalStatus {
   REQUESTING_REVISION
   REJECTED
   APPROVED
+}
+
+enum ActiveStatus {
+  INACTIVE
+  ACTIVE
 }
 
 model EventSentEmailCommittee {

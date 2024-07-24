@@ -11,13 +11,13 @@ export const updateEventHandler = async (req: Request, res: Response) => {
     return res.sendStatus(404)
   }
 
-  const parsedPrice = data.price ? parseFloat(data.price) : 0
+  const parsedPrice = data.price ? parseFloat(data.price) : null
   const parsedEstimatedAttendees = data.estimatedAttendees
     ? parseInt(data.estimatedAttendees)
-    : 0
+    : null
   const parsedEstimatedExpense = data.estimatedExpense
     ? parseFloat(data.estimatedExpense)
-    : 0
+    : null
   const parsedDate = (value: string) => {
     return value ? new Date(value).toISOString() : null
   }
@@ -31,8 +31,16 @@ export const updateEventHandler = async (req: Request, res: Response) => {
     committees,
     eventHistoryLogs,
     participants,
+    saveFlag,
     ...rest
   } = data
+
+  const status =
+    saveFlag === 'SAVE_ALL'
+      ? committees.length > 0
+        ? 'ON_HOLD'
+        : 'UPCOMING'
+      : 'DRAFT'
 
   const values = {
     ...rest,
@@ -43,6 +51,7 @@ export const updateEventHandler = async (req: Request, res: Response) => {
     price: parsedPrice,
     estimatedAttendees: parsedEstimatedAttendees,
     estimatedExpense: parsedEstimatedExpense,
+    status,
   }
 
   const event = await updateEventService({

@@ -5,7 +5,7 @@ import { updateCommitteeData } from '../../data/committee/update-committee'
 import { getCommitteesData } from '../../data/committee/get-committees'
 import { getCommitteeData } from '../../data/committee/get-committee'
 import { updateEventData } from '../../data/event/update-event'
-import { sendEmailApprovalService } from '../send-email-approval-service'
+import { sendEmailApprovalService } from '../event/send-email-approval-service'
 import { ForbiddenError } from '../../utils/errors'
 
 export type CommitteeResponseServiceArgs = {
@@ -76,7 +76,11 @@ export const committeeResponseService = async ({
 
     // if REQUESTED_REVISION, then update all other committees to. return inquiry
     if (values.responseType === 'REQUESTING_REVISION') {
-      return committeeInquiry
+      return await updateEventData({
+        prisma: prismaTx,
+        id: eventId,
+        values: { status: 'ON_HOLD' },
+      })
     }
 
     // if REJECTED, then update event status to CANCELLED
