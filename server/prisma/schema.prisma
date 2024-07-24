@@ -46,7 +46,7 @@ model Event {
   estimatedExpense   Decimal?
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
-  finances           EventFinance[]     @relation("Finances")
+  finances           EventBudget[]     @relation("Finances")
   participants       EventParticipant[] @relation("Participants")
   committees         EventCommittee[]   @relation("Committees")
   eventFeedbacks     EventFeedback[]    @relation("Feedbacks")
@@ -152,7 +152,7 @@ model EventParticipant {
   @@unique([email, eventId])
 }
 
-model EventFinance {
+model EventBudget {
   id              Int             @id @default(autoincrement())
   financeCategory FinanceCategory
   transactionType    String
