@@ -109,17 +109,11 @@ export const updateEventService = async ({
       })
     }
 
-    for (const newCommittee of committeesToCreate) {
-      let committeeDetails
-
-      try {
-        committeeDetails = await getUserData({
-          prisma,
-          email: newCommittee.email,
-        })
-      } catch (error) {
-        console.log(error)
-      }
+    for (const committee of committeesToCreate) {
+      const committeeDetails = await getUserData({
+        prisma,
+        email: committee.email,
+      }).catch((error) => console.log(error))
 
       await createCommitteeData({
         prisma: prismaTx,
@@ -131,15 +125,15 @@ export const updateEventService = async ({
               committeeDetails?.middleName,
               committeeDetails?.lastName,
             ) || null,
-          email: newCommittee.email,
-          eventId: event.id,
+          email: committee?.email,
+          eventId: event?.id,
         },
       })
 
       await createSentEmailCommitteeData({
         prisma: prismaTx,
         values: {
-          committeeEmail: newCommittee.email,
+          committeeEmail: committee.email,
           isSent: false,
         },
       })

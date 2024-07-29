@@ -26,7 +26,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
       { email: user.email, userId: user.id },
       SECRET_ACCESS_KEY,
       {
-        expiresIn: '15m',
+        expiresIn: '1h',
       },
     )
 

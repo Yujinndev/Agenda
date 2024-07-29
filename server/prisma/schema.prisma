@@ -210,24 +210,24 @@ model EventParticipant {
 }
 
 model EventFinance {
-  id              Int             @id @default(autoincrement())
-  financeCategory FinanceCategory
-  taskCategory    String
-  taskName        String
-  vendor          String
-  estimatedCost   Decimal
-  actualCost      Decimal?
-  eventId         String
-  event           Event           @relation("Finances", fields: [eventId], references: [id])
+  id                     Int             @id @default(autoincrement())
+  financeCategory        FinanceCategory
+  transactionType        String
+  transactionDescription String
+  serviceProvider        String
+  estimatedAmount        Decimal
+  actualAmount           Decimal?
+  eventId                String
+  event                  Event           @relation("Finances", fields: [eventId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([taskCategory, eventId])
+  @@unique([transactionDescription, eventId])
 }
 
 enum FinanceCategory {
-  INCOME
+  REVENUE
   EXPENSE
 }
 

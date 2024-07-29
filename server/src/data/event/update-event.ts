@@ -4,11 +4,14 @@ import { Event, Prisma, type PrismaClient } from '@prisma/client'
 export type UpdateEventDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   id: string
+  where?: Prisma.EventWhereInput
+
   values: Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'organizerId'>>
 }
 
 export const updateEventData = async ({
   prisma,
+  where = {},
   id,
   values,
 }: UpdateEventDataArgs) => {
@@ -16,6 +19,7 @@ export const updateEventData = async ({
     .update({
       data: values,
       where: {
+        ...where,
         id,
       },
     })

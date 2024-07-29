@@ -5,6 +5,7 @@ import { getRequestedEventsHandler } from '../controllers/event/get-requested-ev
 import { createParticipantHandler } from '../controllers/event/create-participant-handler'
 import { updateEventHandler } from '../controllers/event/update-event-handler'
 import { resendEmailApprovalHandler } from '../controllers/event/resend-email-approval-handler'
+import { createFinancesHandler } from '../controllers/event/create-finances-handler'
 
 export const eventRouter = () => {
   const router = Router()
@@ -13,8 +14,8 @@ export const eventRouter = () => {
   router.post('/join', createParticipantHandler)
   router.post('/update', updateEventHandler)
   router.post('/send-request', resendEmailApprovalHandler)
+  router.post('/finance-create', createFinancesHandler)
   router.get('/me/all', getUserEventsHandler)
   router.get('/me/c/requests', getRequestedEventsHandler)
-
   return router
 }
