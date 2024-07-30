@@ -11,7 +11,7 @@ const EventHistoryTimeline = ({ id }: { id: string }) => {
   const history = isSuccess && data?.eventHistoryLogs
 
   return (
-    <div>
+    <div className="relative">
       {history.map((timeline: any) => {
         const actionTime = new Date(timeline.createdAt)
         const action =

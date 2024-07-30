@@ -1,5 +1,5 @@
 import { Calendar, Clock8, MapPin } from 'lucide-react'
-import { format, formatDistance, subDays } from 'date-fns'
+import { format, formatDistance, isSameDay, subDays } from 'date-fns'
 import { Card, CardContent } from '@/components/ui/card'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { EVENT_AUDIENCE } from '@/constants/choices'
@@ -21,6 +21,9 @@ const EventOverview = ({ id }: { id: string }) => {
   const endDateTime = data.endDateTime
     ? format(new Date(data.endDateTime), 'PPp')
     : undefined
+
+  const isSameDate =
+    startDateTime && endDateTime ? isSameDay(startDateTime, endDateTime) : false
 
   const eventAudience = EVENT_AUDIENCE.find((el) => el.value === data.audience)
   const eventOrganizer = concatenateStrings(
@@ -66,11 +69,14 @@ const EventOverview = ({ id }: { id: string }) => {
             </div>
             <div className="ms-6 flex items-center gap-4 text-base lg:text-lg">
               <Calendar size={24} className="flex-shrink-0" />
-              <div className="flex gap-2">
-                <p className="line-clamp-3">{startDateTime}</p>
-                <small>{startDateTime && endDateTime ? '-' : ''}</small>
-                <p className="line-clamp-3">{endDateTime}</p>
-              </div>
+
+              <p className="line-clamp-2">
+                {startDateTime} - &nbsp;
+                {endDateTime &&
+                  (isSameDate
+                    ? format(endDateTime, 'p')
+                    : format(endDateTime, 'PPp'))}
+              </p>
             </div>
             <div className="ms-6 flex items-center gap-4 text-base lg:text-lg">
               <MapPin size={24} className="flex-shrink-0" />

@@ -4,20 +4,22 @@ import { Label } from './label'
 import FormError from './formError'
 import { FormControl, FormField, FormItem } from './form'
 import { Textarea } from './textarea'
+import { cn } from '@/lib/utils'
 
 interface TextFieldCustomProps<TFieldValues extends FieldValues>
   extends Omit<InputProps, 'name'> {
   name: FieldPath<TFieldValues>
-  label: string
+  label?: string
 }
 
 export function TextFieldCustom<TFieldValues extends FieldValues>({
   name,
   label,
+  labelCn,
   className,
   placeholder = '',
   ...props
-}: TextFieldCustomProps<TFieldValues>) {
+}: TextFieldCustomProps<TFieldValues> & { labelCn?: string }) {
   const { control, formState } = useFormContext<TFieldValues>()
 
   return (
@@ -26,7 +28,9 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
       control={control}
       render={({ field }) => (
         <FormItem className={className}>
-          <Label className="ubuntu-bold">{label}</Label>
+          {label && (
+            <Label className={cn('ubuntu-bold', labelCn)}>{label}</Label>
+          )}
           <FormControl>
             {name !== 'purpose' && name !== 'details' ? (
               <Input

@@ -1,10 +1,17 @@
 import { Link, useLocation } from 'react-router-dom'
-import { CircleUser } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import MobileMenu from '@/components/MobileMenu'
+import { CircleUser, LogOut } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import useAuth from '@/hooks/useAuth'
 import useLogout from '@/hooks/useLogout'
-import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import MobileMenu from '@/components/MobileMenu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 const LINKS = [
   {
@@ -16,7 +23,7 @@ const LINKS = [
     name: 'My Events',
   },
   {
-    site: '/events/browse',
+    site: '/events/browse?page=1',
     name: 'Browse Events',
   },
 ]
@@ -54,7 +61,7 @@ export const PublicLinks = ({
   return (
     <div>
       <Button variant="link" className={className} asChild>
-        <Link to="/events/browse">Browse Events</Link>
+        <Link to="/events/browse?page=1">Browse Events</Link>
       </Button>
     </div>
   )
@@ -80,18 +87,35 @@ const Navbar = () => {
       </div>
       <div className="flex w-[30%] items-center justify-end gap-4 xl:gap-8">
         {auth?.accessToken ? (
-          <Button onClick={logout} className="rounded-full py-4">
-            <div className="flex items-center gap-3 px-4 py-8">
-              <CircleUser size={14} />
-              <span>@{auth?.user?.split('@')[0]}</span>
-            </div>
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="rounded-full py-4" variant="outline">
+                <div className="flex items-center gap-3 p-0">
+                  <CircleUser className="flex-shrink-0" />
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="m-2 space-y-1 w-44">
+              <DropdownMenuLabel>
+                Hello, <span>@{auth?.user?.split('@')[0]}!</span>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <Button
+                className="relative grid grid-cols-9 gap-4 w-full"
+                variant="destructive"
+                onClick={logout}
+              >
+                <LogOut size={18} className="rotate-180" />
+                <span className="col-span-8 mt-1">Logout</span>
+              </Button>
+            </DropdownMenuContent>
+          </DropdownMenu>
         ) : (
           !location.pathname.startsWith('/response-form') && (
             <Button className="rounded-full py-4" asChild>
               <Link to="/onboarding/signin">
                 <div className="flex items-center gap-3 px-4 py-8">
-                  <CircleUser size={14} />
+                  <CircleUser size={16} className="mb-[2px]" />
                   <span>Login</span>
                 </div>
               </Link>

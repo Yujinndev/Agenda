@@ -1,9 +1,10 @@
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { Event } from './Calendar'
 import { Card } from './ui/card'
 import { Badge } from './ui/badge'
 import { cn } from '@/lib/utils'
 import { Calendar, CheckCheckIcon, Ticket } from 'lucide-react'
+import useAuth from '@/hooks/useAuth'
 
 const EventCard = ({
   event,
@@ -14,7 +15,11 @@ const EventCard = ({
   extendedVariant?: boolean
   className?: string
 }) => {
+  const { auth } = useAuth()
   const currentParticipantsCount = event?.participants?.length
+  const startDate = new Date(event.startDateTime)
+  const endDate = new Date(event.endDateTime)
+  const isSameDate = isSameDay(startDate, endDate)
 
   return (
     <Card
@@ -36,30 +41,31 @@ const EventCard = ({
       />
       <div className="grid gap-[2px]">
         <div className="flex justify-between gap-1 items-start">
-          <h2 className="font-bold text-lg line-clamp-1">{event.title}</h2>
+          <h2 className="font-bold text-lg line-clamp-2">{event.title}</h2>
 
           <Badge className="lg:text-[10px]">{event.category}</Badge>
         </div>
         {extendedVariant && (
           <div className="flex items-center gap-2 text-gray-600">
             <p className="font-bold">Organized by:</p>
-            <p>
-              {event?.organizer?.firstName} {event?.organizer?.lastName}
-            </p>
+            <div className="flex gap-1">
+              <p>
+                {event?.organizer?.firstName} {event?.organizer?.lastName}
+              </p>
+              <p>{event?.organizer?.email === auth.user && '(You)'}</p>
+            </div>
           </div>
         )}
         <div className={cn('flex items-center gap-2')}>
           <Calendar size={20} className="mb-1" />
           <div
-            className={cn('flex items-center gap-2', {
+            className={cn('flex flex-col items-center gap-2', {
               'flex-row': extendedVariant,
             })}
           >
-            <p className="line-clamp-1">
-              {format(new Date(event.startDateTime), 'PPp')} -{' '}
-            </p>
-            <p className="line-clamp-1">
-              {format(new Date(event.endDateTime), 'p')}
+            <p className="line-clamp-2">
+              {format(startDate, 'PPp')} - &nbsp;
+              {isSameDate ? format(endDate, 'p') : format(endDate, 'PPp')}
             </p>
           </div>
         </div>

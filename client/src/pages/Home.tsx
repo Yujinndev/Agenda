@@ -16,23 +16,23 @@ import useAuth from '@/hooks/useAuth'
 
 const features = [
   {
-    name: 'Finance Tracker and Analysis',
+    name: 'Finance Report and Tracking',
     desc: `Propose your budget outlining your event's financial needs.`,
     icon: <FaMoneyBills />,
   },
   {
     name: 'Process approval via Email',
-    desc: `Comply in your company's bureaucracy in a modernized manner. Users can effortlessly manage approval.`,
+    desc: `Comply in your company's bureaucracy in a modernized manner. Users can effortlessly manage processing.`,
     icon: <FaEnvelopeCircleCheck />,
   },
   {
     name: 'Timeline and Task Management',
-    desc: 'Assist in planning the timeline for the date, from making reservations to organizing surprise elements.',
+    desc: 'Assist in planning the timeline for the agenda, to organizing surprise elements.',
     icon: <FaTimeline />,
   },
   {
     name: 'Calendar Dashboard Integration',
-    desc: 'Users can schedule tasks, set reminders, and synchronize event details with their personal calendars.',
+    desc: 'Users can schedule agendas, and synchronize details with their busy calendars.',
     icon: <FaCalendarDays />,
   },
 ]
@@ -42,16 +42,10 @@ const faqs = [
     id: 1,
     question: 'What is Agenda?',
     answer:
-      'Agenda simplifies event planning with customizable templates and collaboration tools, making tasks like guest management and budget tracking efficient.',
+      'Agenda simplifies event planning with automated approval processing, making tasks like guest management and budget tracking efficient.',
   },
   {
     id: 2,
-    question: 'Is it free?',
-    answer:
-      'Yes, it will be free for the moment, because the server can accomodate users up to 100.',
-  },
-  {
-    id: 3,
     question: 'How can Agenda benefit me?',
     answer:
       'Agenda saves time, increases efficiency, and improves event outcomes through intuitive features, empowering seamless event management and execution.',
@@ -131,8 +125,8 @@ const Home = () => {
               Shaped to meet your needs
             </h2>
             <p className="mt-4 text-center text-gray-600 dark:text-gray-300">
-              For any occasion, budgeting and invitations; you name it. We all
-              have it!
+              For any important matters, budgeting and approval; you name it
+              all, We can do it!
             </p>
           </div>
           <div className="mt-16 md:mt-20">
@@ -140,7 +134,7 @@ const Home = () => {
               <div className="relative flex h-full flex-col items-center justify-center gap-6 p-8 py-12 lg:py-8">
                 <img
                   src={eventLogo}
-                  className="-mt-16 w-72 md:w-full lg:-mt-20"
+                  className="-mt-16 w-full lg:-mt-20"
                   loading="lazy"
                 />
                 <div className="mx-auto -mt-8 px-4 text-center lg:px-8">
@@ -154,16 +148,14 @@ const Home = () => {
                 </div>
               </div>
               <div className="relative grid grid-rows-2 overflow-hidden rounded-[1.25rem] bg-gray-100 p-1 dark:bg-gray-800/50 sm:grid-cols-2">
-                {features.map((item, index) => {
-                  return (
-                    <FeatureCard
-                      key={index}
-                      name={item.name}
-                      desc={item.desc}
-                      icon={item.icon}
-                    />
-                  )
-                })}
+                {features.map((item, index) => (
+                  <FeatureCard
+                    key={index}
+                    name={item.name}
+                    desc={item.desc}
+                    icon={item.icon}
+                  />
+                ))}
               </div>
             </div>
           </div>

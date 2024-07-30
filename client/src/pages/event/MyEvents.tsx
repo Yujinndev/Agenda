@@ -98,7 +98,7 @@ const MyEvents = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4 py-8 px-6">
+      <div className="flex flex-col gap-4 py-8 px-3 lg:px-6">
         <div className="flex items-center justify-between">
           <p className="text-[17px] font-bold dark:text-gray-300 md:text-xl">
             {selectedFilter.label} events

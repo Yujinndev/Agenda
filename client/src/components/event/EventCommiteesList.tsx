@@ -34,9 +34,16 @@ const EventCommitteesList = ({ id }: { id: string }) => {
               </Button>
 
               <Badge>{committee.approvalStatus}</Badge>
-              <p className="text-center text-lg font-bold line-clamp-2">
-                {committee.name || committee.email}
-              </p>
+              <div className="text-center text-lg font-bold line-clamp-2">
+                {committee.name || (
+                  <div className="grid">
+                    {committee.email}
+                    <small className="text-slate-300">
+                      EXTERNAL ~ NOT A USER
+                    </small>
+                  </div>
+                )}
+              </div>
             </Card>
           ))}
         </div>

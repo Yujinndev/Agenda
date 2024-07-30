@@ -43,3 +43,22 @@ export const CATEGORY_CHOICES = [
   { label: 'School', value: 'SCHOOL' },
   { label: 'Work', value: 'WORK' },
 ]
+
+export const FINANCE_CATEGORY = [
+  { label: 'Revenue', value: 'REVENUE' },
+  { label: 'Expense', value: 'EXPENSE' },
+]
+
+export const FINANCE_TYPE = [
+  { label: 'Sponsorship', value: 'SPONSORSHIP', category: 'REVENUE' },
+  { label: 'Sales', value: 'SALES', category: 'REVENUE' },
+  { label: 'Advertising', value: 'ADVERTISING', category: 'REVENUE' },
+  { label: 'Others', value: 'OTHERS', category: 'REVENUE' },
+  { label: 'Travel', value: 'TRAVEL', category: 'EXPENSE' },
+  { label: 'Utilities', value: 'UTILITIES', category: 'EXPENSE' },
+  { label: 'Supplies', value: 'SUPPLIES', category: 'EXPENSE' },
+  { label: 'Salaries', value: 'SALARIES', category: 'EXPENSE' },
+  { label: 'Rent', value: 'RENT', category: 'EXPENSE' },
+  { label: 'Marketing', value: 'MARKETING', category: 'EXPENSE' },
+  { label: 'Miscellaneous', value: 'MISCELLANEOUS', category: 'EXPENSE' },
+]

@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import { Clock8, MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Event } from '@/components/Calendar'
-import { Card, CardContent } from '@/components/ui/card'
 import ResultMessage from '@/components/ui/resultMessage'
 
 const EventList = ({
@@ -29,18 +28,23 @@ const EventList = ({
               className="relative flex-1 bg-white transition-all ease-linear"
             >
               <Link to={`/events/detail/${el.id}`}>
-                <Card
-                  className={cn('relative flex h-36', {
-                    'bg-primary/10': selectedFilter === 'DONE',
-                    'bg-red-700/10': selectedFilter === 'CANCELLED',
-                  })}
+                <div
+                  className={cn(
+                    'relative flex flex-col lg:flex-row h-72 lg:h-36 border-slate-100 border-[1px] rounded-lg overflow-hidden',
+                    {
+                      'bg-primary/10': selectedFilter === 'DONE',
+                      'bg-red-700/10': selectedFilter === 'CANCELLED',
+                    }
+                  )}
                 >
-                  <img
-                    src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
-                    alt="Example Image"
-                    className="hidden lg:flex aspect-square w-3/12 relative"
-                  />
-                  <CardContent className="relative flex flex-1 items-center gap-4 p-8">
+                  <div className="relative h-[50%] lg:h-full lg:w-3/12">
+                    <img
+                      src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
+                      alt="Example Image"
+                      className="w-full h-full"
+                    />
+                  </div>
+                  <div className="relative flex flex-1 items-center gap-4 px-8 py-2">
                     <div className="flex flex-col items-center justify-center rounded-sm border px-4 py-2">
                       <p className="-mb-1 text-base">
                         {format(startDateTime, 'MMM')}
@@ -69,8 +73,8 @@ const EventList = ({
                         </div>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </Link>
             </motion.div>
           )

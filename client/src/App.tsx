@@ -19,21 +19,24 @@ import PublicEventDetail from '@/pages/event/PublicEventDetail'
 import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
+import ScrollToAnchor from '@/utils/ScrollToAnchor'
 import { AuthProvider } from '@/context/AuthProvider'
 
 function App() {
   return (
     <AuthProvider>
       <Router>
+        <ScrollToAnchor />
+
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
             <Route path="/response-form" element={<ResponseForm />} />
-            <Route path="/events/browse/" element={<EventPage />} />
 
             <Route element={<PersistAuth />}>
               <Route path="/onboarding/signin" element={<SignIn />} />
               <Route path="/onboarding/register" element={<Register />} />
+              <Route path="/events/browse/" element={<EventPage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />

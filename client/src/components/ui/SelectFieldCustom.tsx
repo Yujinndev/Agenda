@@ -9,17 +9,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from './select'
+import { cn } from '@/lib/utils'
 
-interface Choice {
+type Choice = {
   value: string
   label: string
   type?: string
 }
 
-interface TextFieldCustomProps {
+type TextFieldCustomProps = {
   name: string
   choices: Choice[]
   label?: string
+  labelCn?: string
   className?: string
   placeholder?: string
   disabled?: boolean
@@ -28,6 +30,7 @@ interface TextFieldCustomProps {
 export function SelectFieldCustom({
   name,
   label,
+  labelCn,
   className,
   choices,
   placeholder = '',
@@ -41,7 +44,7 @@ export function SelectFieldCustom({
       name={name}
       render={({ field }) => (
         <FormItem className={className}>
-          <Label className="ubuntu-bold">{label}</Label>
+          <Label className={cn('ubuntu-bold', labelCn)}>{label}</Label>
           <Select
             onValueChange={field.onChange}
             defaultValue={field.value}

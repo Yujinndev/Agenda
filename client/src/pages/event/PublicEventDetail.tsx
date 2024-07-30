@@ -31,14 +31,14 @@ import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Event } from '@/components/Calendar'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import ScrollTop from '@/components/ui/ScrollToTop'
 import Loading from '@/components/Loading'
 import useAuth from '@/hooks/useAuth'
 import { QueryClient, useMutation } from '@tanstack/react-query'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 import { toast } from '@/components/ui/use-toast'
 import MarkdownFormat from '@/utils/MarkdownFormat'
+import FloatingScrollButton from '@/components/ui/FloatingScrollButton'
+import { FaUserSecret } from 'react-icons/fa6'
 
 const PublicEventDetail = () => {
   const queryClient = new QueryClient()
@@ -89,7 +89,7 @@ const PublicEventDetail = () => {
   const endDateTime = new Date(event.endDateTime)
 
   return (
-    <div className="w-full py-12 lg:px-28">
+    <div className="w-full py-12 lg:px-28" id="details">
       <div className="relative w-full lg:h-[500px] h-52 rounded-t-2xl overflow-hidden">
         <div
           className="absolute inset-0 w-full h-full bg-center bg-cover blur-xl"
@@ -244,15 +244,22 @@ const PublicEventDetail = () => {
         <div className="text-justify col-span-4 p-2">
           <div className="px-8 py-4 bg-slate-100 rounded-lg mb-4">
             <div className="flex gap-4 pt-1 items-center">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src="https://github.com/shadcn.png" />
-                <AvatarFallback>CN</AvatarFallback>
-              </Avatar>
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                className="p-8 rounded-full pointer-events-none"
+              >
+                <FaUserSecret size={40} className="flex-shrink-0" />
+              </Button>
               <div className="text-gray-600 flex lg:items-center gap-x-2 flex-col lg:flex-row">
                 {'Organized by: '}
-                <h1>
-                  {event.organizer?.firstName} {event.organizer?.lastName}
-                </h1>
+                <div className="flex items-center gap-2">
+                  <h1>
+                    {event.organizer?.firstName} {event.organizer?.lastName}
+                  </h1>
+                  <p>{data?.organizer?.email === auth.user && '(You)'}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -301,7 +308,7 @@ const PublicEventDetail = () => {
           />
         </div>
       </div>
-      <ScrollTop />
+      <FloatingScrollButton to="#details" />
     </div>
   )
 }
