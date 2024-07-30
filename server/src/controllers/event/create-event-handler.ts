@@ -11,13 +11,13 @@ export const createEventHandler = async (req: Request, res: Response) => {
     res.sendStatus(400)
   }
 
-  const parsedPrice = data.price ? parseFloat(data.price) : 0
+  const parsedPrice = data.price ? parseFloat(data.price) : null
   const parsedEstimatedAttendees = data.estimatedAttendees
     ? parseInt(data.estimatedAttendees)
-    : 0
+    : null
   const parsedEstimatedExpense = data.estimatedExpense
     ? parseFloat(data.estimatedExpense)
-    : 0
+    : null
   const parsedDate = (value: string) => {
     return value ? new Date(value).toISOString() : null
   }

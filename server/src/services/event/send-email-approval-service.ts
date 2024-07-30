@@ -1,13 +1,13 @@
 import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
 import { Prisma, type PrismaClient } from '@prisma/client'
-import { getUserData } from '../data/user/get-user'
-import { concatenateStrings } from '../utils/concatenate-strings'
-import { createEmailLinkWithToken } from '../helpers/create-email-magic-link'
-import { getEventData } from '../data/event/get-event'
-import { createHistoryLogData } from '../data/history/create-history-log'
-import { updateSentEmailCommitteeData } from '../data/committee/update-sent-email-committee'
-import { getSentEmailCommitteeData } from '../data/committee/get-sent-email-committee'
+import { getUserData } from '../../data/user/get-user'
+import { concatenateStrings } from '../../utils/concatenate-strings'
+import { createEmailLinkWithToken } from '../../helpers/create-email-magic-link'
+import { getEventData } from '../../data/event/get-event'
+import { createHistoryLogData } from '../../data/history/create-history-log'
+import { updateSentEmailCommitteeData } from '../../data/committee/update-sent-email-committee'
+import { getSentEmailCommitteeData } from '../../data/committee/get-sent-email-committee'
 
 export type SendEmailApprovalServiceArgs = {
   prisma: PrismaClient | Prisma.TransactionClient

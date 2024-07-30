@@ -1,6 +1,5 @@
-import { error } from 'console'
-import { ForbiddenError } from '../../utils/errors'
 import { EventCommittee, Prisma, type PrismaClient } from '@prisma/client'
+import { ForbiddenError } from '../../utils/errors'
 
 export type UpdateCommitteeDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient

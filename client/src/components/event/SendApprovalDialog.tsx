@@ -23,10 +23,13 @@ const SendApprovalDialog = ({
   committees: []
 }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const queryClient = new QueryClient()
   const axios = useAxiosPrivate()
 
   const handleContinueClicked = async () => {
+    setIsSubmitting(true)
+
     try {
       await axios.post('/api/event/send-request', {
         data: {
@@ -48,6 +51,8 @@ const SendApprovalDialog = ({
         description: 'Please try again later.',
         variant: 'destructive',
       })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -69,7 +74,12 @@ const SendApprovalDialog = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button onClick={() => handleContinueClicked()}>Continue</Button>
+          <Button
+            onClick={() => handleContinueClicked()}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? 'Processing ..' : 'Continue'}
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

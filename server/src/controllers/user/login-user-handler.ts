@@ -4,6 +4,7 @@ import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../../constant'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import { ValidationError } from '../../utils/errors'
+import { getUserData } from '../../data/user/get-user'
 
 const prisma = new PrismaClient()
 
@@ -11,11 +12,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
   const { email, password } = req.body
 
   try {
-    const user = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    })
+    const user = await getUserData({ prisma, email })
 
     if (!user) {
       return res.status(404).json({ error: `Couldn't find your account` })
@@ -29,7 +26,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
       { email: user.email, userId: user.id },
       SECRET_ACCESS_KEY,
       {
-        expiresIn: '15m',
+        expiresIn: '1h',
       },
     )
 

@@ -13,19 +13,29 @@ export const createEventData = async ({
   userId,
   values,
 }: CreateEventDataArgs) => {
-  const createdRecord = await prisma.event.create({
-    data: {
-      ...values,
-      organizer: {
-        connect: {
-          id: userId,
+  const { userGroupId, ...rest } = values
+
+  const createdRecord = await prisma.event
+    .create({
+      data: {
+        ...rest,
+        organizer: {
+          connect: {
+            id: userId,
+          },
         },
+        ...(userGroupId && {
+          userGroup: {
+            connect: {
+              id: userGroupId,
+            },
+          },
+        }),
       },
-    },
-  })
-  // .catch(() => {
-  //   throw new ValidationError('Cannot create event for the user.')
-  // })
+    })
+    .catch(() => {
+      throw new ValidationError('Cannot create event for the user.')
+    })
 
   return createdRecord
 }

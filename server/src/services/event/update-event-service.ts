@@ -3,6 +3,11 @@ import { createHistoryLogData } from '../../data/history/create-history-log'
 import { updateEventData } from '../../data/event/update-event'
 import { getUserData } from '../../data/user/get-user'
 import { ValidationError } from '../../utils/errors'
+import { getCommitteesData } from '../../data/committee/get-committees'
+import { createCommitteeData } from '../../data/committee/create-committee'
+import { updateCommitteeData } from '../../data/committee/update-committee'
+import { concatenateStrings } from '../../utils/concatenate-strings'
+import { createSentEmailCommitteeData } from '../../data/committee/create-sent-email-committee'
 
 export type UpdateEventServiceArgs = {
   prisma: PrismaClient
@@ -19,8 +24,8 @@ export const updateEventService = async ({
 }: UpdateEventServiceArgs) => {
   const updatedRecord = await prisma.$transaction(async (prismaTx) => {
     const event = await updateEventData({ prisma: prismaTx, id, values })
-
     if (!event) throw new ValidationError('Event is not updated.')
+
     const organizer = await getUserData({
       prisma: prismaTx,
       id: event.organizerId,
@@ -36,8 +41,102 @@ export const updateEventService = async ({
       },
     })
 
-    if (committees.length < 1) {
+    const allCommittees = await getCommitteesData({
+      prisma: prismaTx,
+      activeStatus: ['ACTIVE', 'INACTIVE'],
+      eventIds: event.id,
+    })
+
+    // Create sets for efficient lookups
+    const allCommitteeEmails = new Set(allCommittees.map((c) => c.email))
+    const updatedCommitteeEmails = new Set(committees.map((uc) => uc.email))
+
+    const committeesToUpdateStatus = allCommittees.filter((c) =>
+      updatedCommitteeEmails.has(c.email),
+    )
+    // Bulk update status for existing committees
+    if (committeesToUpdateStatus.length > 0) {
+      await prismaTx.eventCommittee.updateMany({
+        where: {
+          id: { in: committeesToUpdateStatus.map((c) => c.id) },
+        },
+        data: { approvalStatus: 'WAITING' },
+      })
+    }
+
+    // Check if there are any changes
+    if (
+      allCommitteeEmails.size === updatedCommitteeEmails.size &&
+      [...allCommitteeEmails].every((email) =>
+        updatedCommitteeEmails.has(email),
+      )
+    ) {
+      console.log('No changes in committees detected. Skipping update.')
       return event
+    }
+
+    // Prepare bulk db operations
+    const committeesToDeactivate = allCommittees.filter(
+      (c) =>
+        !updatedCommitteeEmails.has(c.email) && c.activeStatus === 'ACTIVE',
+    )
+    const committeesToReactivate = allCommittees.filter(
+      (c) =>
+        updatedCommitteeEmails.has(c.email) && c.activeStatus === 'INACTIVE',
+    )
+    const committeesToCreate = committees.filter(
+      (nc) => !allCommitteeEmails.has(nc.email),
+    )
+
+    if (committeesToDeactivate.length > 0) {
+      await prismaTx.eventCommittee.updateMany({
+        where: {
+          id: { in: committeesToDeactivate.map((c) => c.id) },
+        },
+        data: { activeStatus: 'INACTIVE' },
+      })
+    }
+
+    for (const committee of committeesToReactivate) {
+      await updateCommitteeData({
+        prisma: prismaTx,
+        email: committee.email,
+        eventId: event.id,
+        values: {
+          activeStatus: 'ACTIVE',
+          approvalStatus: 'WAITING',
+        },
+      })
+    }
+
+    for (const committee of committeesToCreate) {
+      const committeeDetails = await getUserData({
+        prisma,
+        email: committee.email,
+      }).catch((error) => console.log(error))
+
+      await createCommitteeData({
+        prisma: prismaTx,
+        values: {
+          userId: committeeDetails?.id ?? null,
+          name:
+            concatenateStrings(
+              committeeDetails?.firstName,
+              committeeDetails?.middleName,
+              committeeDetails?.lastName,
+            ) || null,
+          email: committee?.email,
+          eventId: event?.id,
+        },
+      })
+
+      await createSentEmailCommitteeData({
+        prisma: prismaTx,
+        values: {
+          committeeEmail: committee.email,
+          isSent: false,
+        },
+      })
     }
 
     return event
