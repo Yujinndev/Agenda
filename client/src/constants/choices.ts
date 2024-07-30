@@ -44,6 +44,11 @@ export const CATEGORY_CHOICES = [
   { label: 'Work', value: 'WORK' },
 ]
 
+export const GROUP_CATEGORY = [
+  { label: 'Public', value: 'PUBLIC' },
+  { label: 'Private', value: 'PRIVATE' },
+]
+
 export const FINANCE_CATEGORY = [
   { label: 'Revenue', value: 'REVENUE' },
   { label: 'Expense', value: 'EXPENSE' },

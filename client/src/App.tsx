@@ -20,6 +20,8 @@ import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
 import { AuthProvider } from '@/context/AuthProvider'
+import EventGroups from './pages/event/EventGroups'
+import NewGroup from './pages/event/NewGroup'
 
 function App() {
   return (
@@ -30,6 +32,7 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/response-form" element={<ResponseForm />} />
             <Route path="/events/browse/" element={<EventPage />} />
+            <Route path="/events/group/" element={<EventGroups />} />
 
             <Route element={<PersistAuth />}>
               <Route path="/onboarding/signin" element={<SignIn />} />
@@ -40,9 +43,17 @@ function App() {
 
                 <Route path="/events" element={<Outlet />}>
                   <Route path="new/" element={<NewEvent />} />
+                  <Route path="create-group/" element={<NewGroup />} />
                   <Route path="my-events/" element={<MyEvents />} />
                   <Route path="detail/:id/" element={<EventDetails />} />
-                  <Route path="browse/p/:id" element={<PublicEventDetail />} />
+                  <Route
+                    path="browse/p/event/:id"
+                    element={<PublicEventDetail />}
+                  />
+                  <Route
+                    path="browse/p/group/:id"
+                    element={<PublicEventDetail />}
+                  />
                 </Route>
               </Route>
             </Route>

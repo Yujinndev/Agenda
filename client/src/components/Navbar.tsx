@@ -19,6 +19,10 @@ const LINKS = [
     site: '/events/browse',
     name: 'Browse Events',
   },
+  {
+    site: '/events/group',
+    name: 'Browse Groups',
+  },
 ]
 
 export const ProtectedLinks = ({
@@ -55,6 +59,9 @@ export const PublicLinks = ({
     <div>
       <Button variant="link" className={className} asChild>
         <Link to="/events/browse">Browse Events</Link>
+      </Button>
+      <Button variant="link" className={className} asChild>
+        <Link to="/events/group">Browse Groups</Link>
       </Button>
     </div>
   )

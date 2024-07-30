@@ -28,7 +28,9 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
         <FormItem className={className}>
           <Label className="ubuntu-bold">{label}</Label>
           <FormControl>
-            {name !== 'purpose' && name !== 'details' ? (
+            {name !== 'purpose' &&
+            name !== 'details' &&
+            name !== 'groupDescription' ? (
               <Input
                 {...field}
                 {...props}

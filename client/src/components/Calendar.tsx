@@ -13,7 +13,7 @@ import {
 } from 'date-fns'
 
 import { motion, MotionProps } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Plus } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Plus, Users } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -109,15 +109,22 @@ const Calendar = ({ events }: { events: Event[] }) => {
               </Badge>
             </div>
           </div>
-          <Button
-            className="rounded-full w-11 h-11 p-2"
-            variant="outline"
-            asChild
-          >
-            <Link to="/events/new">
-              <Plus color="black" />
-            </Link>
-          </Button>
+          <div className="flex justify-end gap-4">
+            <Button
+              className="rounded-full w-11 h-11 p-2"
+              variant="outline"
+              asChild
+            >
+              <Link to="/events/new">
+                <Plus color="black" />
+              </Link>
+            </Button>
+            <Button className="rounded-full w-11 h-11 p-2" variant="outline">
+              <Link to="/events/create-group">
+                <Users color="black" />
+              </Link>
+            </Button>
+          </div>
         </div>
         <HeaderBlock items={WEEKDAYS} />
       </div>

@@ -1,9 +1,17 @@
-import React, { useMemo } from 'react'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useQuery } from '@tanstack/react-query'
+import React, { useMemo, useState } from 'react'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '../ui/table'
 
 interface FinanceProps {
-  data: {
-    finance: FinanceItem[]
-  }
+  id: string
 }
 
 interface FinanceItem {
@@ -13,6 +21,7 @@ interface FinanceItem {
   serviceProvider: string
   estimatedAmount: string
   actualAmount: string
+  eventId: string
 }
 
 const formatCurrency = (value: number) => {
@@ -25,35 +34,34 @@ const formatCurrency = (value: number) => {
 
 const isMobile = () => window.innerWidth <= 640
 
-const Finance: React.FC<FinanceProps> = ({ data }) => {
-  const financeData = data?.finance
+const Finance: React.FC<FinanceProps> = ({ id }) => {
+  const axios = useAxiosPrivate()
+  const [filter, setFilter] = useState<'EXPENSE' | 'REVENUE' | null>(null)
 
-  const logAmounts = (data: FinanceItem[]) => {
-    data.forEach((item) => {
-      console.log(
-        `Estimated Amount: ${item.estimatedAmount}, Actual Amount: ${item.actualAmount}`
-      )
-    })
+  const { data: financeData } = useQuery<FinanceItem[]>({
+    queryKey: ['eventFinance', id],
+    queryFn: async () => {
+      const response = await axios.get(`/api/event/me/c/finance/${id}`)
+      return response.data
+    },
+  })
+
+  const calculateTotalAmount = (data: FinanceItem[] = [], category: string) => {
+    return Number(
+      data
+        .filter((el) => el.financeCategory === category)
+        .reduce((sum, el) => sum + Number(el.actualAmount), 0)
+        .toFixed(2)
+    )
   }
 
-  if (financeData && financeData.length > 0) {
-    logAmounts(financeData)
-  }
+  const totalActualAmountOfExpense = (data: FinanceItem[] = []) =>
+    calculateTotalAmount(data, 'EXPENSE')
+  const totalActualAmountOfRevenue = (data: FinanceItem[] = []) =>
+    calculateTotalAmount(data, 'REVENUE')
 
-  const totalEstimatedCost = (data: FinanceItem[]) => {
-    return data
-      .reduce((sum, el) => sum + Number(el.estimatedAmount), 0)
-      .toFixed(2)
-  }
-
-  const totalActualCost = (data: FinanceItem[]) => {
-    return data.reduce((sum, el) => sum + Number(el.actualAmount), 0).toFixed(2)
-  }
-
-  const calculateVariance = (data: FinanceItem[]) => {
-    const estimatedAmount = Number(totalEstimatedCost(data))
-    const actualAmount = Number(totalActualCost(data))
-    return Math.abs(estimatedAmount - actualAmount)
+  const calculateTotalVariance = (data: FinanceItem[] = []) => {
+    return totalActualAmountOfExpense(data) - totalActualAmountOfRevenue(data)
   }
 
   const calculateItemVariance = (data: FinanceItem) => {
@@ -63,53 +71,59 @@ const Finance: React.FC<FinanceProps> = ({ data }) => {
   }
 
   const getVarianceTextColor = (variance: number) => {
-    return variance >= 0 ? 'text-green-900' : 'text-red-900'
+    return variance <= 0 ? 'text-green-900' : 'text-red-900'
   }
 
-  const estimatedCost = useMemo(
-    () => parseFloat(totalEstimatedCost(financeData)),
-    [financeData]
-  )
-  const actualCost = useMemo(
-    () => parseFloat(totalActualCost(financeData)),
-    [financeData]
-  )
-  const variance = useMemo(() => calculateVariance(financeData), [financeData])
+  const filterCategory = () => {
+    setFilter((prevFilter) =>
+      prevFilter === 'REVENUE' ? 'EXPENSE' : 'REVENUE'
+    )
+  }
+
+  const sortedFinanceData = useMemo(() => {
+    if (!financeData || !filter) return financeData
+    return [...financeData].sort((a, b) => {
+      if (a.financeCategory === filter && b.financeCategory !== filter)
+        return -1
+      if (a.financeCategory !== filter && b.financeCategory === filter) return 1
+      return 0
+    })
+  }, [financeData, filter])
 
   const renderTableRow = (el: FinanceItem, index: number) => (
     <React.Fragment key={index}>
-      <tr
-        className={`py-4 text-gray-700 flex flex-col md:table-row text-base gap-4 ${
+      <TableRow
+        className={`py-4 text-gray-700 flex flex-col md:table-row text-base ${
           index % 2 === 0 ? 'md:bg-slate-200' : ''
         }`}
       >
         {isMobile() ? (
           <>
-            <td className="flex justify-between">
+            <TableCell className="flex justify-between">
               <span className="font-bold">Finance Category</span>
-              <span>{el.financeCategory}</span>
-            </td>
-            <td className="flex justify-between">
+              <span className="mr-4">{el.financeCategory}</span>
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Transaction Type</span>
               <span>{el.transactionType}</span>
-            </td>
-            <td className="flex justify-between">
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Transaction Description</span>
               <span className="ml-36">{el.transactionDescription}</span>
-            </td>
-            <td className="flex justify-between">
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Service Provider</span>
               <span>{el.serviceProvider}</span>
-            </td>
-            <td className="flex justify-between">
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Estimated Amount</span>
               <span>{formatCurrency(parseFloat(el.estimatedAmount))}</span>
-            </td>
-            <td className="flex justify-between">
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Actual Amount</span>
               <span>{formatCurrency(parseFloat(el.actualAmount))}</span>
-            </td>
-            <td className="flex justify-between">
+            </TableCell>
+            <TableCell className="flex justify-between">
               <span className="font-bold">Variance</span>
               <span
                 className={`${getVarianceTextColor(
@@ -118,81 +132,93 @@ const Finance: React.FC<FinanceProps> = ({ data }) => {
               >
                 {formatCurrency(parseFloat(calculateItemVariance(el)))}
               </span>
-            </td>
+            </TableCell>
           </>
         ) : (
           <>
-            <td className="pl-2">{el.financeCategory}</td>
-            <td className="pl-2">{el.transactionType}</td>
-            <td className="justify-end pr-2">{el.transactionDescription}</td>
-            <td className="pr-2">{el.serviceProvider}</td>
-            <td className="text-[14px]">
+            <TableCell className="pl-2">{el.financeCategory}</TableCell>
+            <TableCell className="pl-2">{el.transactionType}</TableCell>
+            <TableCell className="justify-end pr-2">
+              {el.transactionDescription}
+            </TableCell>
+            <TableCell className="pr-2">{el.serviceProvider}</TableCell>
+            <TableCell className="text-[14px]">
               {formatCurrency(parseFloat(el.estimatedAmount))}
-            </td>
-            <td className="text-[14px]">
+            </TableCell>
+            <TableCell className="text-[14px]">
               {formatCurrency(parseFloat(el.actualAmount))}
-            </td>
-            <td
+            </TableCell>
+            <TableCell
               className={`py-4 text-[14px] ${getVarianceTextColor(
                 Number(calculateItemVariance(el))
               )}`}
             >
               {formatCurrency(parseFloat(calculateItemVariance(el)))}
-            </td>
+            </TableCell>
           </>
         )}
-      </tr>
+      </TableRow>
       {isMobile() && <hr className="mb-6 border-y-1 border-y-gray-900" />}
     </React.Fragment>
   )
 
-  const renderTotals = () => (
-    <>
-      <hr className="-mb-6 border-y-2 border-y-gray-600 lg:block hidden" />
-      <div className="font-bold text-gray-700 -mt-6 lg:pt-10 text-lg">
-        <div className="flex justify-between mb-2">
-          <span>Totals:</span>
-          <span className="ml-auto">{formatCurrency(estimatedCost)}</span>
+  const renderTotals = () => {
+    const totalVariance = calculateTotalVariance(financeData)
+
+    return (
+      <>
+        <hr className="-mb-6 border-y-2 border-y-gray-600 lg:block hidden" />
+        <div className="font-bold text-gray-700 -mt-6 lg:pt-10 text-lg">
+          <div className="flex justify-between mb-2">
+            <span>Totals:</span>
+            <span className="ml-auto">
+              {formatCurrency(totalActualAmountOfExpense(financeData))}
+            </span>
+          </div>
+          <div className="flex justify-between mb-2">
+            <span className="ml-auto">
+              {formatCurrency(totalActualAmountOfRevenue(financeData))}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className={`ml-auto ${getVarianceTextColor(totalVariance)}`}>
+              {formatCurrency(calculateTotalVariance(financeData))}
+            </span>
+          </div>
         </div>
-        <div className="flex justify-between mb-2">
-          <span className="ml-auto">{formatCurrency(actualCost)}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className={`ml-auto ${getVarianceTextColor(variance)}`}>
-            {formatCurrency(variance)}
-          </span>
-        </div>
-      </div>
-    </>
-  )
+      </>
+    )
+  }
 
   return (
     <div>
-      <table className="w-full text-left mb-8">
-        <thead className="hidden md:table-header-group">
-          <tr className="text-gray-700 font-bold uppercase py-4 text-[12px] lg:text-base">
-            <th className="pt-6 pr-6 pl-2">Finance Category</th>
-            <th className="pt-6 pr-6">Transaction Type</th>
-            <th className="pt-6 pr-6">Transaction Description</th>
-            <th className="pt-6 pr-6">Service Provider</th>
-            <th className="pt-6 pr-6">Estimated Amount</th>
-            <th className="pt-6 pr-6">Actual Amount</th>
-            <th className="pt-6 pr-6">Variance</th>
-          </tr>
-        </thead>
-        <tbody className="font-[550]">
-          {financeData && financeData.length > 0 ? (
-            financeData.map(renderTableRow)
+      <Table className="w-full text-left mb-8">
+        <TableHeader className="hidden md:table-header-group">
+          <TableRow className="text-gray-700 font-bold uppercase py-4 text-[12px] lg:text-sm">
+            <TableHead className="pt-6 pr-6 pl-2" onClick={filterCategory}>
+              Finance Category
+            </TableHead>
+            <TableHead className="pt-6 pr-6">Transaction Type</TableHead>
+            <TableHead className="pt-6 pr-6">Transaction Description</TableHead>
+            <TableHead className="pt-6 pr-6">Service Provider</TableHead>
+            <TableHead className="pt-6 pr-6">Estimated Amount</TableHead>
+            <TableHead className="pt-6 pr-6">Actual Amount</TableHead>
+            <TableHead className="pt-6 pr-6">Variance</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="font-[550]">
+          {sortedFinanceData && sortedFinanceData.length > 0 ? (
+            sortedFinanceData.map(renderTableRow)
           ) : (
-            <tr>
-              <td colSpan={7} className="text-center py-4">
+            <TableRow>
+              <TableCell colSpan={7} className="text-center py-4">
                 No finance data available
-              </td>
-            </tr>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
-      {financeData && financeData.length > 0 && renderTotals()}
+        </TableBody>
+      </Table>
+      {sortedFinanceData && sortedFinanceData.length > 0 && renderTotals()}
     </div>
   )
 }
