@@ -8,29 +8,36 @@ const prisma = new PrismaClient()
 
 export const registerUserHandler = async (req: Request, res: Response) => {
   const { firstName, middleName, lastName, email, password } = req.body
-  if (!req.body) return res.sendStatus(500)
 
-  const user = await getUserData({
-    prisma,
-    email: email,
-  })
-
-  if (user) {
-    return res.status(403).json({ error: 'Email already used' })
+  if (!req.body) {
+    return res.sendStatus(500)
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10)
+  try {
+    const user = await getUserData({
+      prisma,
+      email: email,
+    })
 
-  const newUser = await createUserData({
-    prisma,
-    values: {
-      firstName,
-      lastName,
-      middleName,
-      email,
-      password: hashedPassword,
-    },
-  })
+    if (user) {
+      return res.status(403).json({ error: 'Email already used' })
+    }
 
-  res.sendStatus(200).json(newUser)
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    const newUser = await createUserData({
+      prisma,
+      values: {
+        firstName,
+        lastName,
+        middleName,
+        email,
+        password: hashedPassword,
+      },
+    })
+
+    return res.status(200).json(newUser)
+  } catch {
+    return res.sendStatus(500)
+  }
 }

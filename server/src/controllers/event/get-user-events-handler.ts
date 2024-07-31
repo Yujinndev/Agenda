@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
+import { getEventsData } from '../../data/event/get-events'
 
 const prisma = new PrismaClient()
 
@@ -11,7 +12,8 @@ export const getUserEventsHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const records = await prisma.event.findMany({
+    const events = await getEventsData({
+      prisma,
       where: {
         OR: [
           {
@@ -24,16 +26,15 @@ export const getUserEventsHandler = async (req: Request, res: Response) => {
           { organizerId: { equals: userId } },
         ],
       },
-      orderBy: {
-        startDateTime: 'asc',
-      },
+      sortBy: 'startDateTime',
+      orderBy: 'asc',
       include: {
         participants: true,
       },
     })
 
-    return res.status(200).json({ records })
+    return res.status(200).json({ events })
   } catch {
-    res.sendStatus(500)
+    return res.sendStatus(500)
   }
 }

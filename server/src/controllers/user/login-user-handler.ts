@@ -52,7 +52,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
       maxAge: 24 * 60 * 60 * 1000,
     })
 
-    res.json({ token: accessToken, email: user.email })
+    return res.status(200).json({ token: accessToken, email: user.email })
   } catch {
     return res.status(500).json({ error: 'Email or Password is incorrect' })
   }

@@ -23,6 +23,6 @@ export const getEventHandler = async (req: Request, res: Response) => {
 
     return res.status(200).json(record)
   } catch {
-    res.sendStatus(500)
+    return res.sendStatus(500)
   }
 }

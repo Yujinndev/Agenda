@@ -29,7 +29,7 @@ export const validateToken = (
   } catch (error) {
     return {
       valid: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : 'error',
     }
   }
 }

@@ -6,7 +6,10 @@ const prisma = new PrismaClient()
 export const logoutUserHandler = async (req: Request, res: Response) => {
   const cookies = req.cookies
 
-  if (!cookies.refreshToken) return res.sendStatus(204)
+  if (!cookies.refreshToken) {
+    return res.sendStatus(204)
+  }
+
   const refreshToken = cookies.refreshToken
 
   try {
@@ -28,7 +31,7 @@ export const logoutUserHandler = async (req: Request, res: Response) => {
 
     res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
     return res.sendStatus(200)
-  } catch (error) {
-    res.status(500).json(error)
+  } catch {
+    return res.sendStatus(500)
   }
 }

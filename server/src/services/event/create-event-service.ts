@@ -1,16 +1,24 @@
-import { Event, EventCommittee, type PrismaClient } from '@prisma/client'
-import { createCommitteeData } from '../../data/committee/create-committee'
-import { createEventData } from '../../data/event/create-event'
+import {
+  Event,
+  EventCommittee,
+  EventFinance,
+  type PrismaClient,
+} from '@prisma/client'
+import { Decimal } from '@prisma/client/runtime/library'
 import { getUserData } from '../../data/user/get-user'
+import { createEventData } from '../../data/event/create-event'
+import { createFinanceData } from '../../data/event/create-finance'
+import { createCommitteeData } from '../../data/committee/create-committee'
+import { createHistoryLogData } from '../../data/history/create-history-log'
 import { createSentEmailCommitteeData } from '../../data/committee/create-sent-email-committee'
 import { sendEmailApprovalService } from './send-email-approval-service'
-import { ValidationError } from '../../utils/errors'
 import { concatenateStrings } from '../../utils/concatenate-strings'
-import { createHistoryLogData } from '../../data/history/create-history-log'
+import { ValidationError } from '../../utils/errors'
 
 export type CreateEventServiceArgs = {
   prisma: PrismaClient
   committees: EventCommittee[]
+  finances: EventFinance[]
   userId: string
   values: Event
 }
@@ -18,6 +26,7 @@ export type CreateEventServiceArgs = {
 export const createEventService = async ({
   prisma,
   committees,
+  finances,
   userId,
   values,
 }: CreateEventServiceArgs) => {
@@ -44,7 +53,6 @@ export const createEventService = async ({
     if (committees.length < 1) {
       return event
     }
-
     for (const committee of committees) {
       const committeeDetails = await getUserData({
         prisma,
@@ -75,8 +83,25 @@ export const createEventService = async ({
       })
     }
 
-    const firstCommittee: string = committees[0]?.email
+    if (finances.length < 1) {
+      return event
+    }
+    for (const finance of finances) {
+      const parsedEstimatedCost = finance.estimatedAmount ?? 0
+      const parsedActualCost = finance.actualAmount || new Decimal(0)
 
+      await createFinanceData({
+        prisma: prismaTx,
+        values: {
+          ...finance,
+          eventId: event.id,
+          estimatedAmount: parsedEstimatedCost,
+          actualAmount: parsedActualCost,
+        },
+      })
+    }
+
+    const firstCommittee: string = committees[0]?.email
     await sendEmailApprovalService({
       prisma: prismaTx,
       committeeEmail: firstCommittee,

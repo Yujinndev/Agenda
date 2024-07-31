@@ -23,14 +23,14 @@ export const getRequestedEventsHandler = async (
             },
           },
         },
-        { status: { notIn: ['ON_HOLD', 'DRAFT'] } },
+        { status: 'FOR_APPROVAL' },
       ],
     },
     sortBy: 'status',
     orderBy: 'asc',
   })
 
-  const eventIds = events.map((event) => event.id)
+  const eventIds = events.records.map((event) => event.id)
 
   const committees = await getCommitteesData({
     prisma,
@@ -38,7 +38,7 @@ export const getRequestedEventsHandler = async (
   })
 
   // Map committees to their respective events
-  const records = events.map((event) => ({
+  const records = events.records.map((event) => ({
     ...event,
     committees: committees.filter(
       (committee) =>

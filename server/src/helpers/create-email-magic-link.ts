@@ -1,5 +1,5 @@
-import { SECRET_ACCESS_KEY } from '../constant'
 import jwt from 'jsonwebtoken'
+import { SECRET_ACCESS_KEY } from '../constant'
 
 type TokenProps = {
   email: string
@@ -21,6 +21,5 @@ export const createEmailLinkWithToken = ({
   )
 
   const accessLink = `${process.env.WEB_CLIENT_URL}/response-form/?token=${newToken}&id=${eventId}&status=${status}&user=${email}`
-
   return accessLink
 }

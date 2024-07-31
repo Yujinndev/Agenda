@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { updateEventData } from '../../data/event/update-event'
-import { createHistoryLogData } from '../../data/history/create-history-log'
 import { sendEmailApprovalService } from '../../services/event/send-email-approval-service'
 
 const prisma = new PrismaClient()
@@ -21,23 +20,27 @@ export const resendEmailApprovalHandler = async (
     return res.sendStatus(404)
   }
 
-  const sentEmail = await prisma.$transaction(async (prismaTx) => {
-    const event = updateEventData({
-      prisma: prismaTx,
-      id: eventId,
-      values: {
-        status: 'FOR_APPROVAL',
-      },
+  try {
+    const sentEmail = await prisma.$transaction(async (prismaTx) => {
+      const event = updateEventData({
+        prisma: prismaTx,
+        id: eventId,
+        values: {
+          status: 'FOR_APPROVAL',
+        },
+      })
+
+      await sendEmailApprovalService({
+        prisma: prismaTx,
+        eventId,
+        committeeEmail: committees[0]?.email,
+      })
+
+      return event
     })
 
-    await sendEmailApprovalService({
-      prisma: prismaTx,
-      eventId,
-      committeeEmail: committees[0]?.email,
-    })
-
-    return event
-  })
-
-  return res.status(200).json(sentEmail)
+    return res.status(200).json(sentEmail)
+  } catch {
+    return res.sendStatus(500)
+  }
 }

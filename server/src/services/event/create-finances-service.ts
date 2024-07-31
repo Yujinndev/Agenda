@@ -6,17 +6,19 @@ import { createFinanceData } from '../../data/event/create-finance'
 
 export type createFinancesServiceArgs = {
   prisma: PrismaClient
+  eventId: string
   values: EventFinance[]
 }
 
 export const createFinancesService = async ({
   prisma,
+  eventId,
   values,
 }: createFinancesServiceArgs) => {
   const eventFinance = await prisma.$transaction(async (prismaTx) => {
     const event = await getEventData({
       prisma: prismaTx,
-      id: values[0].eventId,
+      id: eventId,
     })
 
     if (!event) {

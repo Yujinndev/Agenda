@@ -8,14 +8,20 @@ const prisma = new PrismaClient()
 export const getRefreshTokenHandler = async (req: Request, res: Response) => {
   const cookies = req.cookies
 
-  if (!cookies?.refreshToken) return res.sendStatus(403)
+  if (!cookies?.refreshToken) {
+    return res.sendStatus(403)
+  }
+
   const refreshToken = cookies.refreshToken
 
   try {
     const user = await prisma.user.findFirstOrThrow({
       where: { refreshToken: refreshToken },
     })
-    if (!user) return res.sendStatus(404)
+
+    if (!user) {
+      return res.sendStatus(404)
+    }
 
     jwt.verify(
       refreshToken,
@@ -34,7 +40,7 @@ export const getRefreshTokenHandler = async (req: Request, res: Response) => {
         res.json({ accessToken: accessToken, email: user.email })
       },
     )
-  } catch (error) {
-    res.status(500).json(error)
+  } catch {
+    return res.sendStatus(500)
   }
 }

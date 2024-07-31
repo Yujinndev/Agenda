@@ -53,7 +53,7 @@ export const createParticipantHandler = async (req: Request, res: Response) => {
     })
 
     return res.status(200).json(joinParticipantTx)
-  } catch (error) {
-    res.status(500).json(error)
+  } catch {
+    return res.sendStatus(500)
   }
 }

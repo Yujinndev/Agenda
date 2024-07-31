@@ -11,36 +11,41 @@ export const createEventHandler = async (req: Request, res: Response) => {
     res.sendStatus(400)
   }
 
-  const parsedPrice = data.price ? parseFloat(data.price) : null
-  const parsedEstimatedAttendees = data.estimatedAttendees
-    ? parseInt(data.estimatedAttendees)
-    : null
-  const parsedEstimatedExpense = data.estimatedExpense
-    ? parseFloat(data.estimatedExpense)
-    : null
-  const parsedDate = (value: string) => {
-    return value ? new Date(value).toISOString() : null
+  try {
+    const parsedPrice = data.price ? parseFloat(data.price) : null
+    const parsedEstimatedAttendees = data.estimatedAttendees
+      ? parseInt(data.estimatedAttendees)
+      : null
+    const parsedEstimatedExpense = data.estimatedExpense
+      ? parseFloat(data.estimatedExpense)
+      : null
+    const parsedDate = (value: string) => {
+      return value ? new Date(value).toISOString() : null
+    }
+
+    const { committees, finances, ...rest } = data
+
+    const values = {
+      ...rest,
+      startDateTime: parsedDate(data.startDateTime),
+      endDateTime: parsedDate(data.endDateTime),
+      category: data.category !== '' ? data.category : 'PERSONAL',
+      audience: data.audience !== '' ? data.audience : 'ONLY_ME',
+      price: parsedPrice,
+      estimatedAttendees: parsedEstimatedAttendees,
+      estimatedExpense: parsedEstimatedExpense,
+    }
+
+    const event = await createEventService({
+      prisma,
+      committees,
+      finances,
+      userId,
+      values,
+    })
+
+    return res.status(200).json(event)
+  } catch {
+    return res.sendStatus(500)
   }
-
-  const { committees, ...rest } = data
-
-  const values = {
-    ...rest,
-    startDateTime: parsedDate(data.startDateTime),
-    endDateTime: parsedDate(data.endDateTime),
-    category: data.category !== '' ? data.category : 'PERSONAL',
-    audience: data.audience !== '' ? data.audience : 'ONLY_ME',
-    price: parsedPrice,
-    estimatedAttendees: parsedEstimatedAttendees,
-    estimatedExpense: parsedEstimatedExpense,
-  }
-
-  const event = await createEventService({
-    prisma,
-    committees,
-    userId,
-    values,
-  })
-
-  return res.status(200).json(event)
 }

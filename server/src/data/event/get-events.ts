@@ -13,7 +13,7 @@ export type GetEventsDataArgs = {
 export const getEventsData = async ({
   prisma,
   where = {},
-  limit = 25,
+  limit = 100,
   page = 1,
   sortBy = 'createdAt',
   orderBy = 'desc',
@@ -29,5 +29,9 @@ export const getEventsData = async ({
     include,
   })
 
-  return records
+  const totalCount = await prisma.event.count({
+    where,
+  })
+
+  return { records, totalCount }
 }

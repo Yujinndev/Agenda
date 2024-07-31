@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { committeeResponseService } from '../../services/committee/committee-response-service'
-import { validateToken } from '../../utils/validate-token'
+import { validateToken } from '../../middleware/validate-token'
 import { getUserData } from '../../data/user/get-user'
 
 const prisma = new PrismaClient()
@@ -45,12 +45,16 @@ export const createCommitteeResponseHandler = async (
     }
   }
 
-  const response = await committeeResponseService({
-    prisma,
-    eventId: data.eventId,
-    committeeEmail: data.committeeEmail,
-    values: { ...rest },
-  })
+  try {
+    const response = await committeeResponseService({
+      prisma,
+      eventId: data.eventId,
+      committeeEmail: data.committeeEmail,
+      values: { ...rest },
+    })
 
-  return res.json(response)
+    return res.status(200).json(response)
+  } catch {
+    return res.sendStatus(500)
+  }
 }

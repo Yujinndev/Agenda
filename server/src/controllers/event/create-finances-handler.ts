@@ -11,10 +11,15 @@ export const createFinancesHandler = async (req: Request, res: Response) => {
     return res.sendStatus(404)
   }
 
-  const financeMatrix = createFinancesService({
-    prisma,
-    values: finances,
-  })
+  try {
+    const financeMatrix = createFinancesService({
+      prisma,
+      eventId: finances[0].eventId,
+      values: finances,
+    })
 
-  res.status(200).json(financeMatrix)
+    return res.status(200).json(financeMatrix)
+  } catch {
+    return res.sendStatus(500)
+  }
 }
