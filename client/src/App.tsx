@@ -24,6 +24,7 @@ import EventGroups from '@/pages/event/EventGroups'
 import NewGroup from '@/pages/event/NewGroup'
 import PublicGroupDetail from './pages/event/PublicGroupDetail'
 import MyGroups from './pages/event/MyGroups'
+import GroupDetails from './pages/event/GroupDetails'
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
                   <Route path="my-events/" element={<MyEvents />} />
                   <Route path="my-groups/" element={<MyGroups />} />
                   <Route path="detail/:id/" element={<EventDetails />} />
+                  <Route path="group-detail/:id/" element={<GroupDetails />} />
                   <Route
                     path="browse/p/event/:id"
                     element={<PublicEventDetail />}
