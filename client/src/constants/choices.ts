@@ -44,9 +44,20 @@ export const CATEGORY_CHOICES = [
   { label: 'Work', value: 'WORK' },
 ]
 
-export const GROUP_CATEGORY = [
+export const GROUP_VISIBILITY = [
   { label: 'Public', value: 'PUBLIC' },
   { label: 'Private', value: 'PRIVATE' },
+]
+
+export const JOIN_PERMISSION = [
+  { label: 'Anyone Can Join', value: 'ANYONE_CAN_JOIN' },
+  { label: 'Requires Approval', value: 'APPROVAL_REQUIRED' },
+  { label: 'Invited Persons Only', value: 'INVITE_ONLY' },
+]
+
+export const POST_PERMISSION = [
+  { label: 'All Members', value: 'ALL_MEMBERS' },
+  { label: 'Moderators Only', value: 'MODERATORS_ONLY' },
 ]
 
 export const FINANCE_CATEGORY = [

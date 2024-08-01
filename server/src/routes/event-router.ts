@@ -6,6 +6,9 @@ import { createParticipantHandler } from '../controllers/event/create-participan
 import { updateEventHandler } from '../controllers/event/update-event-handler'
 import { resendEmailApprovalHandler } from '../controllers/event/resend-email-approval-handler'
 import { createFinancesHandler } from '../controllers/event/create-finances-handler'
+import { createGroupHandler } from '../controllers/event/create-group-handler'
+import { createGroupParticipantHandler } from '../controllers/event/create-group-participant-handler'
+import { createLeaveGroupParticipantHandler } from '../controllers/event/create-leave-group-participant-handler'
 
 export const eventRouter = () => {
   const router = Router()
@@ -17,6 +20,9 @@ export const eventRouter = () => {
   router.post('/finance-create', createFinancesHandler)
   router.get('/me/all', getUserEventsHandler)
   router.get('/me/c/requests', getRequestedEventsHandler)
+  router.post('/create-group', createGroupHandler)
+  router.post('/join-group', createGroupParticipantHandler)
+  router.post('/leave-group', createLeaveGroupParticipantHandler)
 
   return router
 }

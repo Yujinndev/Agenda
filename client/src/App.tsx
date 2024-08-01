@@ -20,8 +20,10 @@ import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
 import { AuthProvider } from '@/context/AuthProvider'
-import EventGroups from './pages/event/EventGroups'
-import NewGroup from './pages/event/NewGroup'
+import EventGroups from '@/pages/event/EventGroups'
+import NewGroup from '@/pages/event/NewGroup'
+import PublicGroupDetail from './pages/event/PublicGroupDetail'
+import MyGroups from './pages/event/MyGroups'
 
 function App() {
   return (
@@ -45,6 +47,7 @@ function App() {
                   <Route path="new/" element={<NewEvent />} />
                   <Route path="create-group/" element={<NewGroup />} />
                   <Route path="my-events/" element={<MyEvents />} />
+                  <Route path="my-groups/" element={<MyGroups />} />
                   <Route path="detail/:id/" element={<EventDetails />} />
                   <Route
                     path="browse/p/event/:id"
@@ -52,7 +55,7 @@ function App() {
                   />
                   <Route
                     path="browse/p/group/:id"
-                    element={<PublicEventDetail />}
+                    element={<PublicGroupDetail />}
                   />
                 </Route>
               </Route>

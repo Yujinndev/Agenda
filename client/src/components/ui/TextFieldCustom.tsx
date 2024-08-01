@@ -30,7 +30,7 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
           <FormControl>
             {name !== 'purpose' &&
             name !== 'details' &&
-            name !== 'groupDescription' ? (
+            name !== 'description' ? (
               <Input
                 {...field}
                 {...props}

@@ -11,6 +11,8 @@ import { getEventHandler } from './controllers/event/get-event-handler'
 import { getRefreshTokenHandler } from './controllers/user/get-refresh-token-handler'
 import { getPublicEventsHandler } from './controllers/event/get-public-events-handler'
 import { createCommitteeResponseHandler } from './controllers/committee/committee-response-handler'
+import { getPublicGroupHandler } from './controllers/event/get-public-group-handler'
+import { getGroupHandler } from './controllers/event/get-group-handler'
 
 dotenv.config()
 
@@ -25,7 +27,9 @@ app.use(cookieParser())
 app.use('/api/auth', authRouter())
 app.get('/api/refresh-token', getRefreshTokenHandler)
 app.get('/api/event/all', getPublicEventsHandler)
+app.get('/api/group/all', getPublicGroupHandler)
 app.get('/api/event/:id', getEventHandler)
+app.get('/api/group/:id', getGroupHandler)
 app.post('/api/event/c/response', createCommitteeResponseHandler)
 
 /* PROTECTED ROUTES BELOW THE MIDDLEWARE */

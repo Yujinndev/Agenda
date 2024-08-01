@@ -37,8 +37,11 @@ model UserGroup {
   id             String            @id @default(uuid())
   name           String            @unique
   members        GroupMembership[]
+  numberOfMembers Int?
+  description    String
+  rules           GroupRules[]
   events         Event[]
-  joinPermission JoinPermission    @default(OPEN)
+  joinPermission JoinPermission    @default(ANYONE_CAN_JOIN)
   postPermission PostPermission    @default(ALL_MEMBERS)
   visibility     GroupVisibility   @default(PUBLIC)
 
@@ -48,14 +51,26 @@ model UserGroup {
 
 model GroupMembership {
   id       String    @id @default(uuid())
-  user     User      @relation(fields: [userId], references: [id])
-  userId   String
+  user     User?      @relation(fields: [userId], references: [id])
+  userId   String?
+  email   String
+  name    String?
   group    UserGroup @relation(fields: [groupId], references: [id])
   groupId  String
   role     UserRoles @default(MEMBER)
   joinedAt DateTime  @default(now())
 
   @@unique([userId, groupId])
+}
+
+model GroupRules{
+  id Int @id @default(autoincrement())
+  rulesId String
+  groupId String
+  description String
+  group UserGroup @relation(fields: [rulesId], references: [id])
+  
+  @@unique([groupId, description])
 }
 
 enum UserRoles {
@@ -65,7 +80,7 @@ enum UserRoles {
 }
 
 enum JoinPermission {
-  OPEN
+  ANYONE_CAN_JOIN
   APPROVAL_REQUIRED
   INVITE_ONLY
 }
@@ -94,7 +109,7 @@ model Event {
   estimatedExpense   Decimal?
   price              Decimal?           @default(0)
   status             EventStatus?       @default(UPCOMING)
-  finances           EventBudget[]     @relation("Finances")
+  finances           EventFinance[]     @relation("Finances")
   participants       EventParticipant[] @relation("Participants")
   committees         EventCommittee[]   @relation("Committees")
   eventFeedbacks     EventFeedback[]    @relation("Feedbacks")

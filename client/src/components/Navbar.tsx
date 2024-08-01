@@ -23,6 +23,10 @@ const LINKS = [
     site: '/events/group',
     name: 'Browse Groups',
   },
+  {
+    site: '/events/my-groups',
+    name: 'My Groups',
+  },
 ]
 
 export const ProtectedLinks = ({
