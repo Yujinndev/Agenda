@@ -24,8 +24,6 @@ export const usePostEventMutation = (
       return response.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: options.invalidateQueryKey })
-
       toast({
         description: `Success!`,
         variant: 'success',
@@ -38,6 +36,10 @@ export const usePostEventMutation = (
       if (options.navigateTo) {
         navigate(options.navigateTo, { replace: true })
       }
+
+      return queryClient.invalidateQueries({
+        queryKey: options.invalidateQueryKey,
+      })
     },
     onError: (error: any) => {
       console.log(error)

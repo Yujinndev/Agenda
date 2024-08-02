@@ -8,7 +8,7 @@ export const useGetUserEvents = () => {
     queryKey: ['my-events'],
     queryFn: async () => {
       const response = await axios.get('/api/event/me/all')
-      return response.data?.records
+      return response.data?.events?.records
     },
   })
 }
