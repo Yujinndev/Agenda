@@ -7,7 +7,7 @@ export const useGetUserGroups = () => {
   return useQuery({
     queryKey: ['my-groups'],
     queryFn: async () => {
-      const response = await axios.get('/api/event/group/me/all')
+      const response = await axios.get('/api/group/me/all')
       return response.data?.records
     },
   })

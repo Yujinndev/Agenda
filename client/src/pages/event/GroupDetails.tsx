@@ -1,70 +1,37 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  ArrowUpLeft,
-  ArrowUpRight,
-  Check,
-  Ellipsis,
-  MessageCircleQuestion,
-  X,
-} from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { Link, useParams } from 'react-router-dom'
+import { ArrowUpLeft } from 'lucide-react'
+
 import useAuth from '@/hooks/useAuth'
-import {
-  EVENT_CATEGORIES,
-  EVENT_COMMITTEE_INQUIRIES,
-} from '@/constants/choices'
-import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
-import EventOverview from '@/components/event/EventOverview'
-import EventParticipantsList from '@/components/event/EventParticipantsList'
-import EventHistoryTimeline from '@/components/event/EventHistoryTimeline'
+import { GROUP_VISIBILITY, JOIN_PERMISSION } from '@/constants/choices'
 import Loading from '@/components/Loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/Tabs'
-import UpdateFormDialog from '@/components/event/UpdateForm'
-import EventCommitteesList from '@/components/event/EventCommiteesList'
-import EventFinances from '@/components/event/EventFinance'
-import SendApprovalDialog from '@/components/event/SendApprovalDialog'
 import { useGetGroupById } from '@/hooks/api/useGetGroupById'
+import GroupOverview from '@/components/group/GroupOverview'
+import GroupMembers from '@/components/group/GroupMembers'
+import GroupEvents from '@/components/group/GroupEvents'
 
 const GroupDetails = () => {
   const { id } = useParams()
   const { auth } = useAuth()
   const { data, isLoading } = useGetGroupById(id as string)
 
-  const navigate = useNavigate()
-
   const tabs = [
     {
       title: 'Overview',
       value: 'overview',
-      content: <EventOverview id={id as string} />,
+      content: <GroupOverview id={id as string} />,
     },
     {
-      title: 'Finance',
-      value: 'finance',
-      content: <EventFinances id={id as string} />,
+      title: 'Group Events',
+      value: 'groupevents',
+      content: <GroupEvents id={id as string} />,
     },
     {
-      title: 'Participants',
-      value: 'participants',
-      content: <EventParticipantsList id={id as string} />,
-    },
-    {
-      title: 'Committees',
-      value: 'committees',
-      content: <EventCommitteesList id={id as string} />,
-    },
-    {
-      title: 'History Timeline',
-      value: 'timeline',
-      content: <EventHistoryTimeline id={id as string} />,
+      title: 'Members',
+      value: 'members',
+      content: <GroupMembers id={id as string} />,
     },
   ]
 
@@ -72,31 +39,18 @@ const GroupDetails = () => {
     return <Loading />
   }
 
-  const user = auth!.user as string
-  const isNextToApprove = isCommitteeNextToApprove({
-    committees: data.committees,
-    currentUser: user,
-  })
-  const isOrganizer = data?.organizer?.email === auth.user
-  const isUserAlreadyJoined = data?.participants?.find(
-    (el: any) => el.email === auth.user
+  const creatorEmail = data?.members[0].user?.email
+  const isAdmin = creatorEmail === auth.user
+
+  const groupVisibility = GROUP_VISIBILITY.find(
+    (el) => el.value === data.visibility
+  )
+  const joinPermission = JOIN_PERMISSION.find(
+    (el) => el.value === data.joinPermission
   )
 
-  const eventStatus = EVENT_CATEGORIES.find((el) => el.value === data.status)
-  const approvalStatus = EVENT_COMMITTEE_INQUIRIES.find(
-    (el) => el.value === isNextToApprove?.status
-  )
-
-  const tabsToShow = isOrganizer
-    ? tabs.length
-    : isNextToApprove.isNext
-    ? tabs.length - 1
-    : 1
+  const tabsToShow = isAdmin ? tabs.length : 2
   const visibleTabs = tabs.slice(0, tabsToShow)
-
-  const handleEventCommitteeStep = (status: string) => {
-    navigate(`/response-form/?id=${id}&status=${status}`)
-  }
 
   return (
     <div className="w-full pt-8">
@@ -107,7 +61,7 @@ const GroupDetails = () => {
           className="rounded-full absolute -top-2 -left-2 h-10 w-10 lg:hidden"
           asChild
         >
-          <Link to="/events/my-events" className="text-black">
+          <Link to="/events/my-groups" className="text-black">
             <ArrowUpLeft size={18} />
           </Link>
         </Button>
@@ -118,18 +72,18 @@ const GroupDetails = () => {
               variant="secondary"
               className="pt-1 bg-yellow-300 text-black"
             >
-              {data.category}
+              {joinPermission?.label}
             </Badge>
 
             <Badge variant="secondary" className="pt-1 uppercase">
-              {eventStatus?.label}
+              {groupVisibility?.label}
             </Badge>
           </div>
           <h1 className="text-4xl dark:text-white md:text-4xl lg:text-5xl">
-            {data.title}
+            {data.name}
           </h1>
         </div>
-        <div className="py-2">
+        {/* <div className="py-2">
           <div className="flex gap-2">
             {!isNextToApprove.isNext && (
               <Button
@@ -209,7 +163,7 @@ const GroupDetails = () => {
               </Badge>
             )
           ) : null}
-        </div>
+        </div> */}
       </div>
 
       <Tabs tabs={visibleTabs} activeTabClassName={'bg-green-700'} />

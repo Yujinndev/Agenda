@@ -36,7 +36,7 @@ export const createEventService = async ({
       values: {
         message: `New Event ${msg}`,
         action: 'CREATED',
-        email: organizer.email,
+        email: organizer?.email,
         eventId: event.id,
       },
     })

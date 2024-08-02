@@ -4,6 +4,8 @@ import { cn } from '@/lib/utils'
 import { Card, CardContent } from '@/components/ui/card'
 import ResultMessage from '@/components/ui/resultMessage'
 import { UserGroup } from '@/types/group'
+import { MdAdminPanelSettings } from 'react-icons/md'
+import { FaUsers } from 'react-icons/fa'
 
 const GroupList = ({
   groups,
@@ -43,6 +45,25 @@ const GroupList = ({
                       <p className="mt-1 line-clamp-1 text-[14px]">
                         {el.description}
                       </p>
+                      <div className="flex flex-col flex-wrap gap-x-4 lg:flex-row">
+                        <div className="mt-1 flex items-center gap-2 text-lg lg:mt-2">
+                          <MdAdminPanelSettings
+                            size={18}
+                            className="flex-shrink-0"
+                          />
+                          <p className="mt-1 line-clamp-1 text-[14px] font-semibold">
+                            {el.members.length > 0 && el.members[0].user
+                              ? `${el.members[0].user.firstName} ${el.members[0].user.lastName}`
+                              : 'Unknown'}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 text-lg lg:mt-2">
+                          <FaUsers size={18} className="flex-shrink-0" />
+                          <p className="mt-1 line-clamp-1 text-[14px]">
+                            {el.members.length}
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
