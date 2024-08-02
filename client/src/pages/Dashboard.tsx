@@ -21,7 +21,12 @@ const Dashboard = () => {
 
   const upcomingEvents =
     isUserEventsSuccess &&
-    events.filter((el: Event) => el.status === 'UPCOMING').slice(0, 2)
+    events
+      .filter(
+        (el: Event) =>
+          el.status === 'UPCOMING' && new Date(el.endDateTime) >= new Date()
+      )
+      .slice(0, 3)
 
   if (isLoading) {
     return <Loading />
@@ -34,10 +39,13 @@ const Dashboard = () => {
       <Calendar events={events} />
 
       <div className="grid h-[70vh]">
-        <div className="p-4 px-2 flex flex-col gap-2 lg:-m-1 rounded-md h-96 max-h-96">
-          <div className="text-xl font-bold flex gap-2">
-            <h2>Upcoming Events</h2>
-            <Link to="/events/my-events" className="-mt-1">
+        <div className="p-4 px-2 flex flex-col gap-2 lg:-m-1 rounded-md lg:h-96 max-h-96">
+          <div className="group text-xl font-bold flex gap-2">
+            <h2 className="line-clamp-1">Upcoming Events</h2>
+            <Link
+              to="/events/my-events"
+              className="-mt-1 opacity-0 group-hover:opacity-100 transition-all duration-300"
+            >
               <ArrowUpRight />
             </Link>
           </div>
@@ -57,7 +65,7 @@ const Dashboard = () => {
         </div>
         {isRequestedEventsSuccess && eventsToApprove.length > 0 && (
           <div className="p-4 px-2 lg:-m-1 rounded-md space-y-2">
-            <h2 className="text-xl font-bold">Requested Events</h2>
+            <h2 className="text-xl font-bold">For your approval</h2>
             <div className="h-[1px] w-full bg-gray-400" />
 
             <div className="overflow-y-auto h-96 min-h-96 flex flex-col gap-2">

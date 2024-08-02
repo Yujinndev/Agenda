@@ -6,25 +6,32 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogTitle,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import ResultMessage from '@/components/ui/resultMessage'
 
 export type DialogProps = {
   isDialogOpen: boolean
+  navigateTo?: string
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const SuccessDialog = ({ isDialogOpen, setIsDialogOpen }: DialogProps) => {
+const SuccessDialog = ({
+  isDialogOpen,
+  navigateTo = '/',
+  setIsDialogOpen,
+}: DialogProps) => {
   const navigate = useNavigate()
   const handleClose = () => {
     setIsDialogOpen(false)
-    navigate('/', { replace: true })
+    navigate(navigateTo, { replace: true })
   }
 
   return (
     <Dialog open={isDialogOpen}>
       <DialogContent className="sm:max-w-md">
+        <DialogTitle />
         <DialogHeader>
           <ResultMessage
             label="Thank you, response sent to organizer!"
@@ -37,7 +44,7 @@ const SuccessDialog = ({ isDialogOpen, setIsDialogOpen }: DialogProps) => {
         </DialogHeader>
         <DialogFooter className="justify-end">
           <DialogClose asChild>
-            <Button onClick={() => handleClose()}>Continue to Home</Button>
+            <Button onClick={() => handleClose()}>Continue</Button>
           </DialogClose>
         </DialogFooter>
       </DialogContent>

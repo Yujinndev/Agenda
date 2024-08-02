@@ -8,7 +8,11 @@ const NotFoundPage = () => {
         <p className="mb-4 text-2xl text-gray-600">
           Oops! Looks like you're lost.
         </p>
-        <div className="animate-bounce p-8 pt-12">
+        <span className="w-[25%] m-auto text-lg">
+          The link may be broken, or the page may have been removed. <br />
+          Check to see if the link you're trying to open is correct.
+        </span>
+        <div className="animate-bounce pt-24">
           <svg
             className="mx-auto h-24 w-24 text-red-500"
             fill="none"

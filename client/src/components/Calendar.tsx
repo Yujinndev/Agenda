@@ -17,9 +17,17 @@ import { ArrowLeft, ArrowRight, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog'
 
 export type Event = {
-  id: number
+  id: string
   title: string
   purpose: string
   details: string
@@ -30,6 +38,7 @@ export type Event = {
   estimatedAttendees?: number
   startDateTime: Date
   endDateTime: Date
+  eventFeedbacks?: any
   organizer?: any
   participants?: any
   committees?: any
@@ -104,7 +113,11 @@ const Calendar = ({ events }: { events: Event[] }) => {
               <h1 className="text-3xl  font-black dark:text-white">
                 {format(currentMonth, 'MMMM yyyy')}
               </h1>
-              <Badge className="absolute -right-8 -top-2 bg-amber-300 text-black h-6 w-6 flex justify-center items-center">
+
+              <Badge
+                variant="outline"
+                className="absolute -right-8 -top-2 bg-amber-300 text-black h-6 w-6 flex justify-center items-center"
+              >
                 {eventCountForCurrentMonth}
               </Badge>
             </div>
@@ -168,47 +181,73 @@ const AllDays = ({
             )}
           >
             <div
-              className={cn(
-                'absolute bottom-1 right-1 h-6 w-6 text-black bg-amber-300 hover:bg-amber-300/80 flex items-center justify-center px-2 rounded-full lg:hidden',
-                {
-                  hidden: todaysEvents.length == 0,
-                },
-                {
-                  'lg:block': todaysEvents.length > 1,
-                }
-              )}
+              className={cn('absolute bottom-1 right-1 lg:hidden z-10', {
+                hidden: todaysEvents.length === 0,
+                'lg:block': todaysEvents.length > 1,
+              })}
             >
-              <small className="text-[12px]">{todaysEvents.length}</small>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="rounded-full w-7 h-7 p-0 bg-amber-300 hover:bg-amber-300/80">
+                    <span className="text-base">{todaysEvents.length}</span>
+                  </Button>
+                </DialogTrigger>
+
+                <DialogContent className="max-h-[80dvh] md:max-w-[30dvw]">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Events for {format(dateKey, 'EEEE, PP')}
+                    </DialogTitle>
+                    <DialogDescription>
+                      Make sure to make it count, have fun!
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="h-[1px] w-full bg-green-900" />
+
+                  <div className="grid gap-4 max-h-[60vh] overflow-y-auto p-4">
+                    <EventsPerDay events={todaysEvents} />
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
+
             <p className="font-bold absolute top-2 left-2 lg:relative lg:mt-0 lg:text-right text-sm lg:font-semibold">
               {format(day, 'd')}
             </p>
             <div className="flex flex-col gap-1 absolute left-0 w-[75%] h-20 rounded-e-sm overflow-y-scroll no-scrollbar py-1">
-              {todaysEvents.map((event) => (
-                <Link
-                  to={`/events/detail/${event.id}`}
-                  key={event.title}
-                  className={cn(
-                    'rounded-e-sm hidden px-4 py-2 text-center text-xs text-white bg-gray-700 lg:line-clamp-none lg:text-left text-balance',
-                    {
-                      'bg-green-900 hover:bg-green-900/80 text-white':
-                        event.status === 'UPCOMING',
-                    },
-                    {
-                      'bg-amber-300 hover:bg-amber-300/80':
-                        event.status === 'FOR_APPROVAL',
-                    }
-                  )}
-                >
-                  <p className="font-bold line-clamp-2">{event.title}</p>
-                  <p>{format(new Date(event.startDateTime), 'hh:mm a')}</p>
-                </Link>
-              ))}
+              <EventsPerDay events={todaysEvents} />
             </div>
           </DateBlock>
         )
       })}
     </div>
+  )
+}
+
+const EventsPerDay = ({ events }: { events: Event[] }) => {
+  return events.map(
+    (event) =>
+      event.status !== 'CANCELLED' && (
+        <Link
+          to={`/events/detail/${event.id}`}
+          key={event.title}
+          className={cn(
+            'rounded-e-sm hidden px-4 py-2 text-center text-xs text-black bg-white lg:line-clamp-none lg:text-left text-balance',
+            {
+              'bg-gray-200': event.status === 'DONE',
+              'border-gray-300 border-[1px] border-l-0':
+                event.status === 'DRAFT',
+              'bg-amber-300 hover:bg-amber-300/80':
+                event.status === 'FOR_APPROVAL' || event.status === 'ON_HOLD',
+              'bg-green-900 hover:bg-green-900/80 text-white':
+                event.status === 'UPCOMING',
+            }
+          )}
+        >
+          <p className="font-bold line-clamp-2">{event.title}</p>
+          <p>{format(new Date(event.startDateTime), 'hh:mm a')}</p>
+        </Link>
+      )
   )
 }
 

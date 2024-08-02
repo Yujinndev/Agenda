@@ -6,13 +6,7 @@ import { cn } from '@/lib/utils'
 import { Event } from '@/components/Calendar'
 import ResultMessage from '@/components/ui/resultMessage'
 
-const EventList = ({
-  events,
-  selectedFilter,
-}: {
-  events: Event[]
-  selectedFilter: string
-}) => {
+const EventList = ({ events }: { events: Event[] }) => {
   return (
     <div className="overflow flex flex-col gap-4">
       {events.length > 0 ? (
@@ -32,8 +26,8 @@ const EventList = ({
                   className={cn(
                     'relative flex flex-col lg:flex-row h-72 lg:h-36 border-slate-100 border-[1px] rounded-lg overflow-hidden',
                     {
-                      'bg-primary/10': selectedFilter === 'DONE',
-                      'bg-red-700/10': selectedFilter === 'CANCELLED',
+                      'bg-green-400/10':
+                        el.status === 'UPCOMING' && endDateTime < new Date(),
                     }
                   )}
                 >

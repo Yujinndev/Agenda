@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react'
 
 export interface AuthState {
   user?: string
+  userId?: string
   accessToken?: string
 }
 

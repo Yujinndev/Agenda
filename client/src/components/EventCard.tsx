@@ -39,14 +39,14 @@ const EventCard = ({
           }
         )}
       />
-      <div className="grid gap-[2px]">
+      <div className="grid gap-2">
         <div className="flex justify-between gap-1 items-start">
           <h2 className="font-bold text-lg line-clamp-2">{event.title}</h2>
 
           <Badge className="lg:text-[10px]">{event.category}</Badge>
         </div>
         {extendedVariant && (
-          <div className="flex items-center gap-2 text-gray-600">
+          <div className="flex gap-x-2 text-gray-600 items-start flex-col xl:flex-row">
             <p className="font-bold">Organized by:</p>
             <div className="flex gap-1">
               <p>
@@ -63,7 +63,7 @@ const EventCard = ({
               'flex-row': extendedVariant,
             })}
           >
-            <p className="line-clamp-2">
+            <p className="line-clamp-2 text-balance">
               {format(startDate, 'PPp')} - &nbsp;
               {isSameDate ? format(endDate, 'p') : format(endDate, 'PPp')}
             </p>

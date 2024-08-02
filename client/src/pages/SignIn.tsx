@@ -58,6 +58,7 @@ const SignIn = () => {
 
       setAuth({
         user: response.data?.email,
+        userId: response.data?.userId,
         accessToken: response.data?.token,
       })
     } catch (error: any) {

@@ -110,7 +110,6 @@ const MyEvents = () => {
             events={events.filter(
               (event: Event) => event.status == selectedFilter.value
             )}
-            selectedFilter={selectedFilter.value}
           />
         )}
       </div>

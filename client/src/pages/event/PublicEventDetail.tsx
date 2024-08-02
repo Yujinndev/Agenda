@@ -1,8 +1,8 @@
 import {
   CalendarClock,
   Clock,
-  LogIn,
   MapPinIcon,
+  PartyPopper,
   Ticket,
   UserRoundCheck,
 } from 'lucide-react'
@@ -26,7 +26,7 @@ import {
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import { format, formatDistance } from 'date-fns'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -107,22 +107,14 @@ const PublicEventDetail = () => {
 
       <div className="bg-green-900 px-8 mb-4 rounded-b-md text-white flex flex-col-reverse justify-between md:flex-row md:items-center">
         <div className="relative flex flex-1 flex-col items-start gap-1 py-4 pt-8 md:w-2/3 lg:w-1/2">
-          <div className="pb-2 flex justify-between w-full">
-            <Badge
-              variant="secondary"
-              className="pt-1 bg-yellow-300 text-black"
-            >
+          <div className="pb-2 h-8 flex justify-between w-full">
+            <Badge variant="secondary" className="h-6 bg-yellow-300 text-black">
               {event.category}
             </Badge>
             <div className="lg:block hidden">
               {!isUserTheOrganizer ? (
                 isUserAlreadyJoined ? (
-                  <Badge
-                    className="text-lg px-6 py-2 text-white"
-                    variant="outline"
-                  >
-                    Joined
-                  </Badge>
+                  <Navigate to={`/events/detail/${id}`} state={'redirected'} />
                 ) : (
                   <Sheet>
                     <SheetTrigger asChild>
@@ -131,7 +123,8 @@ const PublicEventDetail = () => {
                         variant="secondary"
                         className="w-max rounded-full py-4 px-6 h-7 space-x-3"
                       >
-                        <p>Join Event</p> <LogIn size={18} className="m-1" />
+                        <p className="mt-[2px]">Join Event</p>{' '}
+                        <PartyPopper size={18} className="m-1" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent>
@@ -176,12 +169,7 @@ const PublicEventDetail = () => {
             <div className="lg:hidden">
               {!isUserTheOrganizer ? (
                 isUserAlreadyJoined ? (
-                  <Badge
-                    className="text-lg px-6 py-2 text-white"
-                    variant="outline"
-                  >
-                    Joined
-                  </Badge>
+                  <Navigate to={`/events/detail/${id}`} state={'redirected'} />
                 ) : (
                   <Drawer>
                     <DrawerTrigger asChild>
@@ -191,7 +179,7 @@ const PublicEventDetail = () => {
                         className="w-max rounded-full py-4 px-6 h-7 space-x-2"
                       >
                         <p className="mt-[2px]">Join Event</p>{' '}
-                        <LogIn size={18} className="m-1" />
+                        <PartyPopper size={18} className="m-1" />
                       </Button>
                     </DrawerTrigger>
                     <DrawerContent>
@@ -299,11 +287,15 @@ const PublicEventDetail = () => {
 
           <DetailsCard
             title="Joining Fee"
-            content={new Intl.NumberFormat('fil-ph', {
-              style: 'currency',
-              currency: 'PHP',
-              minimumFractionDigits: 2,
-            }).format(parseFloat(event.price))}
+            content={
+              event.price === '0'
+                ? 'Free'
+                : new Intl.NumberFormat('fil-ph', {
+                    style: 'currency',
+                    currency: 'PHP',
+                    minimumFractionDigits: 2,
+                  }).format(parseFloat(event.price))
+            }
             icon={<Ticket size={30} className="flex-shrink-0" />}
           />
         </div>
