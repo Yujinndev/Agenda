@@ -33,7 +33,7 @@ const GroupList = ({
                   })}
                 >
                   <img
-                    src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
+                    src="https://st2.depositphotos.com/3591429/6312/i/450/depositphotos_63124153-Word-Group-on-a-Brick-wall.jpg"
                     alt="Example Image"
                     className="hidden lg:flex aspect-square w-3/12 relative"
                   />

@@ -29,7 +29,7 @@ const GroupOverview = ({ id }: { id: string }) => {
       <div className="flex flex-col gap-4">
         <Card className="shadow-none rounded-lg relative p-4 max-h-96">
           <img
-            src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
+            src="https://st2.depositphotos.com/3591429/6312/i/450/depositphotos_63124153-Word-Group-on-a-Brick-wall.jpg"
             alt="Example Image"
             className="w-full h-full rounded-lg"
             loading="lazy"

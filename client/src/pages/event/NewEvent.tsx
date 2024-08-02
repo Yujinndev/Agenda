@@ -99,7 +99,16 @@ const NewEvent: React.FC = () => {
 
       const isFinalPage = activeStep === STEPS.length - 1
       if (isFinalPage) {
-        createEvent.mutate(useEventFormStore.getState().formData)
+        const formData = useEventFormStore.getState().formData
+        const selectedGroupIds = Object.entries(formData.selectedGroups || {})
+          .filter(([_, isSelected]) => isSelected)
+          .map(([groupId]) => groupId)
+
+        createEvent.mutate({
+          ...formData,
+          selectedGroups: selectedGroupIds,
+        })
+        console.log('Event:', createEvent)
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }

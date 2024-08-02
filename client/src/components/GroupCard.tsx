@@ -30,7 +30,7 @@ const GroupCard = ({
       )}
     >
       <img
-        src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
+        src="https://st2.depositphotos.com/3591429/6312/i/450/depositphotos_63124153-Word-Group-on-a-Brick-wall.jpg"
         alt="Example Image"
         className={cn(
           'w-full hidden h-48 overflow-hidden rounded-lg group-hover:opacity-80',

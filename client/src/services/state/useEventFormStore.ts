@@ -21,6 +21,7 @@ const initialData: EventFormValues = {
   committees: [],
   estimatedExpense: '',
   status: 'UPCOMING',
+  selectedGroups: {},
 }
 
 const useEventFormStore = create<FormState>((set) => ({

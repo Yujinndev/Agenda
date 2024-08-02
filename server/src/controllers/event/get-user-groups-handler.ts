@@ -26,9 +26,7 @@ export const getUserGroupsHandler = async (req: Request, res: Response) => {
       orderBy: {
         createdAt: 'asc',
       },
-      include: {
-        members: true,
-      },
+      include: { members: { include: { user: true } } },
     })
 
     return res.status(200).json({ records })

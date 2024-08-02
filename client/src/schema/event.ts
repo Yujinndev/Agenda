@@ -19,12 +19,15 @@ export const eventDetailsSchema = z.object({
   location: z.string().min(1, `Kindly enter the event's location`),
 })
 
+export const selectedGroupsSchema = z.record(z.string(), z.boolean())
+
 export const eventGuestDetailSchema = z.object({
   estimatedAttendees: z
     .string({ invalid_type_error: 'Required' })
     .min(1, 'Required'),
   category: z.string().min(1, 'Kindly Select an Event Category'),
   audience: z.string().min(1, 'Kindly Select an Event Publishing Audience'),
+  selectedGroups: selectedGroupsSchema.optional(),
 })
 
 export const eventBudgetSchema = z.object({
@@ -39,15 +42,23 @@ export const eventBudgetSchema = z.object({
 export const eventCommitteeSchema = z.object({
   committees: z.array(
     z.object({
-      email: z
-        .string()
-        .email({
-          message: 'Kindly enter valid email',
-        })
-        .or(z.literal('')),
+      email: z.string().email({
+        message: 'Kindly enter valid email',
+      }),
     })
   ),
 })
+
+const EVENT_STATUS_OPTIONS = [
+  'DRAFT',
+  'FOR_ACKNOWLEDGEMENT',
+  'FOR_APPROVAL',
+  'UPCOMING',
+  'ON_HOLD',
+  'DONE',
+  'RESCHEDULED',
+  'CANCELLED',
+] as const
 
 export const eventConfirmationSchema = z.object({
   status: z.enum(EVENT_STATUS_OPTIONS),
@@ -64,6 +75,7 @@ export type EventApprovalFormValues = z.infer<typeof eventApprovalSchema>
 export type EventConfirmationFormValues = z.infer<
   typeof eventConfirmationSchema
 >
+export type SelectedGroups = z.infer<typeof selectedGroupsSchema>
 
 // for zustand store
 export const eventFormSchema = eventDetailsSchema

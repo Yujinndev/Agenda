@@ -13,6 +13,7 @@ import { getPublicEventsHandler } from './controllers/event/get-public-events-ha
 import { createCommitteeResponseHandler } from './controllers/committee/committee-response-handler'
 import { getPublicGroupHandler } from './controllers/event/get-public-group-handler'
 import { getGroupHandler } from './controllers/event/get-group-handler'
+import { groupRouter } from './routes/group-router'
 
 dotenv.config()
 
@@ -35,6 +36,7 @@ app.post('/api/event/c/response', createCommitteeResponseHandler)
 /* PROTECTED ROUTES BELOW THE MIDDLEWARE */
 app.use(jwtMiddleware)
 app.use('/api/event', eventRouter())
+app.use('/api/group', groupRouter())
 
 app.listen(port, () => {
   console.log(`Server is running at http://localhost:${port}`)
