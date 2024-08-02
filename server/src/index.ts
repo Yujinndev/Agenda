@@ -25,8 +25,8 @@ app.use(cookieParser())
 app.use('/api/auth', authRouter())
 app.get('/api/refresh-token', getRefreshTokenHandler)
 app.get('/api/event/:id', getEventHandler)
-app.get('/api/event/p/:page', getPublicEventsHandler)
-app.post('/api/event/c/response', createCommitteeResponseHandler)
+app.get('/api/event/public/:page', getPublicEventsHandler)
+app.post('/api/event/approval/response', createCommitteeResponseHandler)
 
 /* PROTECTED ROUTES BELOW THE MIDDLEWARE */
 app.use(jwtMiddleware)

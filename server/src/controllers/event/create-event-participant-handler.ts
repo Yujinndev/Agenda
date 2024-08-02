@@ -3,7 +3,10 @@ import { Request, Response } from 'express'
 
 const prisma = new PrismaClient()
 
-export const createParticipantHandler = async (req: Request, res: Response) => {
+export const createEventParticipantHandler = async (
+  req: Request,
+  res: Response,
+) => {
   const { email, eventId } = req.body.data
 
   if (!email) {

@@ -10,6 +10,7 @@ import { ForbiddenError } from '../../utils/errors'
 
 export type CommitteeResponseServiceArgs = {
   prisma: PrismaClient
+  userId: string
   eventId: string
   committeeEmail: string
   values: EventCommitteeInquiry
@@ -17,6 +18,7 @@ export type CommitteeResponseServiceArgs = {
 
 export const committeeResponseService = async ({
   prisma,
+  userId,
   eventId,
   committeeEmail,
   values,
@@ -74,7 +76,7 @@ export const committeeResponseService = async ({
       eventIds: eventId,
     })
 
-    // if REQUESTED_REVISION, then update all other committees to. return inquiry
+    // if REQUESTED_REVISION, then update all other committees too. return inquiry
     if (values.responseType === 'REQUESTING_REVISION') {
       return await updateEventData({
         prisma: prismaTx,
@@ -102,6 +104,7 @@ export const committeeResponseService = async ({
     if (currentCommitteeIndex < committees.length - 1) {
       return await sendEmailApprovalService({
         prisma: prismaTx,
+        userId,
         committeeEmail: committees[currentCommitteeIndex + 1].email,
         eventId,
       })

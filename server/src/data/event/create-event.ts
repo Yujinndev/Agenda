@@ -32,6 +32,9 @@ export const createEventData = async ({
           },
         }),
       },
+      include: {
+        organizer: true,
+      },
     })
     .catch(() => {
       throw new ValidationError('Cannot create event for the user.')

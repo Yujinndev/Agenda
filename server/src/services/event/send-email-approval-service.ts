@@ -1,34 +1,36 @@
 import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
 import { Prisma, type PrismaClient } from '@prisma/client'
-import { getUserData } from '../../data/user/get-user'
+import { UnauthorizedError } from '../../utils/errors'
 import { concatenateStrings } from '../../utils/concatenate-strings'
-import { createEmailLinkWithToken } from '../../helpers/create-email-magic-link'
-import { getEventData } from '../../data/event/get-event'
-import { createHistoryLogData } from '../../data/history/create-history-log'
 import { updateSentEmailCommitteeData } from '../../data/committee/update-sent-email-committee'
 import { getSentEmailCommitteeData } from '../../data/committee/get-sent-email-committee'
+import { createEmailLinkWithToken } from '../../helpers/create-email-magic-link'
+import { createHistoryLogData } from '../../data/history/create-history-log'
+import { getEventData } from '../../data/event/get-event'
 
 export type SendEmailApprovalServiceArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   committeeEmail: string
+  userId: string
   eventId: string
 }
 
 export const sendEmailApprovalService = async ({
   prisma,
   committeeEmail,
+  userId,
   eventId,
 }: SendEmailApprovalServiceArgs) => {
   const event = await getEventData({ prisma, id: eventId })
+  if (event.organizerId !== userId) {
+    throw new UnauthorizedError('User is not the organizer.')
+  }
 
-  const organizer = await getUserData({
-    prisma,
-    id: event.organizerId,
-  })
   const organizerFullName = concatenateStrings(
-    organizer?.firstName,
-    organizer?.lastName,
+    event?.organizer?.firstName,
+    event?.organizer?.middleName ?? '',
+    event?.organizer?.lastName,
   )
 
   const startDateTime = event.startDateTime

@@ -1,10 +1,13 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { createFinancesService } from '../../services/event/create-finances-service'
+import { createEventFinancesService } from '../../services/event/create-event-finances-service'
 
 const prisma = new PrismaClient()
 
-export const createFinancesHandler = async (req: Request, res: Response) => {
+export const createEventFinancesHandler = async (
+  req: Request,
+  res: Response,
+) => {
   const { finances } = req.body.data
 
   if (!finances) {
@@ -12,7 +15,7 @@ export const createFinancesHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const financeMatrix = createFinancesService({
+    const financeMatrix = createEventFinancesService({
       prisma,
       eventId: finances[0].eventId,
       values: finances,

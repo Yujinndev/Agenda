@@ -1,29 +1,24 @@
 import { EventFinance, type PrismaClient } from '@prisma/client'
 import { Decimal } from '@prisma/client/runtime/library'
-import { ValidationError } from '../../utils/errors'
 import { getEventData } from '../../data/event/get-event'
 import { createFinanceData } from '../../data/event/create-finance'
 
-export type createFinancesServiceArgs = {
+export type createEventFinancesServiceArgs = {
   prisma: PrismaClient
   eventId: string
   values: EventFinance[]
 }
 
-export const createFinancesService = async ({
+export const createEventFinancesService = async ({
   prisma,
   eventId,
   values,
-}: createFinancesServiceArgs) => {
+}: createEventFinancesServiceArgs) => {
   const eventFinance = await prisma.$transaction(async (prismaTx) => {
     const event = await getEventData({
       prisma: prismaTx,
       id: eventId,
     })
-
-    if (!event) {
-      throw new ValidationError('No event found with the provided ID')
-    }
 
     for (const finance of values) {
       const parsedEstimatedCost = finance.estimatedAmount ?? 0

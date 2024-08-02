@@ -2,41 +2,45 @@ import { Event, EventCommittee, type PrismaClient } from '@prisma/client'
 import { createHistoryLogData } from '../../data/history/create-history-log'
 import { updateEventData } from '../../data/event/update-event'
 import { getUserData } from '../../data/user/get-user'
-import { ValidationError } from '../../utils/errors'
+import { UnauthorizedError } from '../../utils/errors'
 import { getCommitteesData } from '../../data/committee/get-committees'
 import { createCommitteeData } from '../../data/committee/create-committee'
 import { updateCommitteeData } from '../../data/committee/update-committee'
 import { concatenateStrings } from '../../utils/concatenate-strings'
 import { createSentEmailCommitteeData } from '../../data/committee/create-sent-email-committee'
 
-export type UpdateEventServiceArgs = {
+export type UpdateEvenDetailstServiceArgs = {
   prisma: PrismaClient
   committees: EventCommittee[]
-  id: string
+  userId: string
+  eventId: string
   values: Partial<Event>
 }
 
-export const updateEventService = async ({
+export const updateEventDetailsService = async ({
   prisma,
   committees,
-  id,
+  userId,
+  eventId,
   values,
-}: UpdateEventServiceArgs) => {
+}: UpdateEvenDetailstServiceArgs) => {
   const updatedRecord = await prisma.$transaction(async (prismaTx) => {
-    const event = await updateEventData({ prisma: prismaTx, id, values })
-    if (!event) throw new ValidationError('Event is not updated.')
-
-    const organizer = await getUserData({
+    const event = await updateEventData({
       prisma: prismaTx,
-      id: event.organizerId,
+      id: eventId,
+      values,
     })
+
+    if (event.organizerId !== userId) {
+      throw new UnauthorizedError('User is not the organizer.')
+    }
 
     await createHistoryLogData({
       prisma: prismaTx,
       values: {
         message: 'Event details were updated',
         action: 'UPDATED',
-        email: organizer.email,
+        email: event.organizer.email,
         eventId: event.id,
       },
     })
@@ -48,7 +52,7 @@ export const updateEventService = async ({
     })
 
     // Create sets for efficient lookups
-    const allCommitteeEmails = new Set(allCommittees.map((c) => c.email))
+    const allCurrentCommitteeEmails = new Set(allCommittees.map((c) => c.email))
     const updatedCommitteeEmails = new Set(committees.map((uc) => uc.email))
 
     const committeesToUpdateStatus = allCommittees.filter((c) =>
@@ -58,7 +62,7 @@ export const updateEventService = async ({
     if (committeesToUpdateStatus.length > 0) {
       await prismaTx.eventCommittee.updateMany({
         where: {
-          id: { in: committeesToUpdateStatus.map((c) => c.id) },
+          eventId: { in: committeesToUpdateStatus.map((c) => c.eventId) },
         },
         data: { approvalStatus: 'WAITING' },
       })
@@ -66,8 +70,8 @@ export const updateEventService = async ({
 
     // Check if there are any changes
     if (
-      allCommitteeEmails.size === updatedCommitteeEmails.size &&
-      [...allCommitteeEmails].every((email) =>
+      allCurrentCommitteeEmails.size === updatedCommitteeEmails.size &&
+      [...allCurrentCommitteeEmails].every((email) =>
         updatedCommitteeEmails.has(email),
       )
     ) {
@@ -85,13 +89,13 @@ export const updateEventService = async ({
         updatedCommitteeEmails.has(c.email) && c.activeStatus === 'INACTIVE',
     )
     const committeesToCreate = committees.filter(
-      (nc) => !allCommitteeEmails.has(nc.email),
+      (nc) => !allCurrentCommitteeEmails.has(nc.email),
     )
 
     if (committeesToDeactivate.length > 0) {
       await prismaTx.eventCommittee.updateMany({
         where: {
-          id: { in: committeesToDeactivate.map((c) => c.id) },
+          eventId: { in: committeesToDeactivate.map((c) => c.eventId) },
         },
         data: { activeStatus: 'INACTIVE' },
       })

@@ -9,14 +9,10 @@ export const resendEmailApprovalHandler = async (
   req: Request,
   res: Response,
 ) => {
-  const { email, data } = req.body
+  const { userId, data } = req.body
   const { committees, eventId } = data
 
-  if (!email) {
-    return res.sendStatus(403)
-  }
-
-  if (!data || !email) {
+  if (!data) {
     return res.sendStatus(404)
   }
 
@@ -32,6 +28,7 @@ export const resendEmailApprovalHandler = async (
 
       await sendEmailApprovalService({
         prisma: prismaTx,
+        userId,
         eventId,
         committeeEmail: committees[0]?.email,
       })

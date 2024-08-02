@@ -1,13 +1,16 @@
 import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
-import { updateEventService } from '../../services/event/update-event-service'
+import { updateEventDetailsService } from '../../services/event/update-event-details-service'
 
 const prisma = new PrismaClient()
 
-export const updateEventHandler = async (req: Request, res: Response) => {
-  const { data } = req.body
+export const updateEventDetailsHandler = async (
+  req: Request,
+  res: Response,
+) => {
+  const { data, userId } = req.body
 
-  if (!data.id) {
+  if (!data) {
     return res.sendStatus(404)
   }
 
@@ -37,12 +40,19 @@ export const updateEventHandler = async (req: Request, res: Response) => {
       ...rest
     } = data
 
-    const status =
-      saveFlag === 'SAVE_ALL'
+    let statuss
+
+    if (saveFlag === '') {
+      statuss = 'DONE'
+    }
+
+    const status = saveFlag!
+      ? saveFlag === 'SAVE_ALL'
         ? committees.length > 0
           ? 'ON_HOLD'
           : 'UPCOMING'
         : 'DRAFT'
+      : 'DONE'
 
     const values = {
       ...rest,
@@ -56,10 +66,11 @@ export const updateEventHandler = async (req: Request, res: Response) => {
       status,
     }
 
-    const event = await updateEventService({
+    const event = await updateEventDetailsService({
       values,
       committees,
-      id,
+      userId,
+      eventId: id,
       prisma,
     })
 

@@ -19,7 +19,7 @@ export const getUserData = async ({
       where: { OR: [{ email }, { id }, { refreshToken }] },
     })
     .catch(() => {
-      throw new NotFoundError('User not found.')
+      return null
     })
 
   return user

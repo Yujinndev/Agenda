@@ -5,7 +5,6 @@ export type UpdateEventDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   id: string
   where?: Prisma.EventWhereInput
-
   values: Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'organizerId'>>
 }
 
@@ -21,6 +20,9 @@ export const updateEventData = async ({
       where: {
         ...where,
         id,
+      },
+      include: {
+        organizer: true,
       },
     })
     .catch(() => {

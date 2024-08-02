@@ -13,7 +13,7 @@ import { createHistoryLogData } from '../../data/history/create-history-log'
 import { createSentEmailCommitteeData } from '../../data/committee/create-sent-email-committee'
 import { sendEmailApprovalService } from './send-email-approval-service'
 import { concatenateStrings } from '../../utils/concatenate-strings'
-import { ValidationError } from '../../utils/errors'
+import { NotFoundError, ValidationError } from '../../utils/errors'
 
 export type CreateEventServiceArgs = {
   prisma: PrismaClient
@@ -32,12 +32,15 @@ export const createEventService = async ({
 }: CreateEventServiceArgs) => {
   const newEvent = await prisma.$transaction(async (prismaTx) => {
     const event = await createEventData({ prisma: prismaTx, values, userId })
-    if (!event) throw new ValidationError('Event is not created.')
 
     const organizer = await getUserData({
       prisma: prismaTx,
       id: event.organizerId,
     })
+
+    if (!organizer) {
+      throw new NotFoundError('No organizer found.')
+    }
 
     const msg = event.status === 'DRAFT' ? 'Draft' : ''
     await createHistoryLogData({
@@ -50,9 +53,27 @@ export const createEventService = async ({
       },
     })
 
+    if (finances.length > 0) {
+      for (const finance of finances) {
+        const parsedEstimatedCost = finance.estimatedAmount ?? 0
+        const parsedActualCost = finance.actualAmount || new Decimal(0)
+
+        await createFinanceData({
+          prisma: prismaTx,
+          values: {
+            ...finance,
+            eventId: event.id,
+            estimatedAmount: parsedEstimatedCost,
+            actualAmount: parsedActualCost,
+          },
+        })
+      }
+    }
+
     if (committees.length < 1) {
       return event
     }
+
     for (const committee of committees) {
       const committeeDetails = await getUserData({
         prisma,
@@ -83,27 +104,10 @@ export const createEventService = async ({
       })
     }
 
-    if (finances.length < 1) {
-      return event
-    }
-    for (const finance of finances) {
-      const parsedEstimatedCost = finance.estimatedAmount ?? 0
-      const parsedActualCost = finance.actualAmount || new Decimal(0)
-
-      await createFinanceData({
-        prisma: prismaTx,
-        values: {
-          ...finance,
-          eventId: event.id,
-          estimatedAmount: parsedEstimatedCost,
-          actualAmount: parsedActualCost,
-        },
-      })
-    }
-
     const firstCommittee: string = committees[0]?.email
     await sendEmailApprovalService({
       prisma: prismaTx,
+      userId,
       committeeEmail: firstCommittee,
       eventId: event.id,
     })
