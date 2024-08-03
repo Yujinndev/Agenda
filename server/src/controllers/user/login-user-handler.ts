@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
-import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../../constant'
-import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 import { ValidationError } from '../../utils/errors'
 import { getUserData } from '../../data/user/get-user'
+import { SECRET_ACCESS_KEY, SECRET_REFRESH_KEY } from '../../constant'
 
 const prisma = new PrismaClient()
 
@@ -19,14 +19,13 @@ export const loginUserHandler = async (req: Request, res: Response) => {
     }
 
     const isPasswordMatched = await bcrypt.compare(password, user.password)
-
     if (!isPasswordMatched) throw new ValidationError('Password not match')
 
     const accessToken = jwt.sign(
       { email: user.email, userId: user.id },
       SECRET_ACCESS_KEY,
       {
-        expiresIn: '1h',
+        expiresIn: '1d',
       },
     )
 
@@ -34,7 +33,7 @@ export const loginUserHandler = async (req: Request, res: Response) => {
       { email: user.email, userId: user.id },
       SECRET_REFRESH_KEY,
       {
-        expiresIn: '1d',
+        expiresIn: '7d',
       },
     )
 
@@ -49,10 +48,12 @@ export const loginUserHandler = async (req: Request, res: Response) => {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
-      maxAge: 24 * 60 * 60 * 1000,
+      maxAge: 24 * 60 * 60 * 7000,
     })
 
-    return res.status(200).json({ token: accessToken, email: user.email })
+    return res
+      .status(200)
+      .json({ token: accessToken, email: user.email, userId: user.id })
   } catch {
     return res.status(500).json({ error: 'Email or Password is incorrect' })
   }

@@ -12,9 +12,8 @@ export const getRefreshTokenHandler = async (req: Request, res: Response) => {
     return res.sendStatus(403)
   }
 
-  const refreshToken = cookies.refreshToken
-
   try {
+    const refreshToken = cookies.refreshToken
     const user = await prisma.user.findFirstOrThrow({
       where: { refreshToken: refreshToken },
     })
@@ -37,7 +36,11 @@ export const getRefreshTokenHandler = async (req: Request, res: Response) => {
           },
         )
 
-        res.json({ accessToken: accessToken, email: user.email })
+        res.status(200).json({
+          accessToken: accessToken,
+          email: user.email,
+          userId: user.id,
+        })
       },
     )
   } catch {
