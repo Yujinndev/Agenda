@@ -1,4 +1,4 @@
-import { TextFieldCustom } from '../ui/TextFieldCustom'
+import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
 
 const DetailsForm = () => {
   return (
@@ -7,12 +7,19 @@ const DetailsForm = () => {
       <TextFieldCustom
         name="details"
         label="Details"
+        fieldType="text-area"
         placeholder="Ready, Set, GLOW! Join us to ignite the LORMANIAN Glow in the greatest comeback of Glow Run."
       />
       <TextFieldCustom
         name="purpose"
         label="Purpose"
+        fieldType="text-area"
         placeholder="To organize a fun and engaging nighttime running event that combines fitness with entertainment."
+      />
+      <TextFieldCustom
+        name="location"
+        label="Venue Location"
+        placeholder="Lorma Colleges, Inc."
       />
       <div className="grid lg:grid-cols-2 gap-4">
         <TextFieldCustom
@@ -26,7 +33,6 @@ const DetailsForm = () => {
           type="datetime-local"
         />
       </div>
-      <TextFieldCustom name="location" label="Venue Location" />
     </div>
   )
 }

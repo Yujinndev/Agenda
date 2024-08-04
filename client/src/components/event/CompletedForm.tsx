@@ -1,7 +1,14 @@
-import useEventFormStore from '@/services/state/useEventFormStore'
 import { format, formatDistance, subDays } from 'date-fns'
-import { Card, CardContent, CardDescription, CardTitle } from '../ui/card'
+import useEventFormStore from '@/services/state/useEventFormStore'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardTitle,
+} from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { EVENT_AUDIENCE, EVENT_CATEGORIES } from '@/constants/choices'
+import MarkdownFormat from '@/utils/MarkdownFormat'
 
 const CompletedForm = () => {
   const { formData } = useEventFormStore()
@@ -19,6 +26,7 @@ const CompletedForm = () => {
     audience,
     estimatedExpense,
     status,
+    finances,
   } = formData
 
   const getStatus = EVENT_CATEGORIES.find((el) => el.value === status)
@@ -32,11 +40,15 @@ const CompletedForm = () => {
       </CardContent>
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Details:</CardDescription>
-        <CardTitle>{details}</CardTitle>
+        <CardTitle>
+          <MarkdownFormat details={details} />
+        </CardTitle>
       </CardContent>
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Purpose:</CardDescription>
-        <CardTitle>{purpose}</CardTitle>
+        <CardTitle>
+          <MarkdownFormat details={purpose} />
+        </CardTitle>
       </CardContent>
       <CardContent className="border-b-[1px] px-0">
         <CardDescription>Location:</CardDescription>
@@ -81,15 +93,60 @@ const CompletedForm = () => {
       </div>
 
       {committees.length > 0 && (
-        <CardContent className="border-b-[1px] px-0">
+        <CardContent className="border-b-[1px] px-0 space-y-2">
           <CardDescription>Committee/s:</CardDescription>
-          <CardTitle>
-            <ol>
-              {committees.map((item) => (
-                <li key={item.email}>* {item.email}</li>
-              ))}
-            </ol>
-          </CardTitle>
+          <div className="space-y-2">
+            {committees.map((item, index) => (
+              <div key={index} className="relative space-x-7">
+                <Badge className="absolute -top-1 -left-2" variant="secondary">
+                  {index + 1}
+                </Badge>
+                <CardTitle className="p">{item.email}</CardTitle>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      )}
+
+      {finances.length > 0 && (
+        <CardContent className="border-b-[1px] px-0 space-y-2 w-full">
+          <CardDescription>Finance/s:</CardDescription>
+          <div>
+            {finances.map((item, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-2 lg:grid-cols-6 lg:grid-flow-row-dense gap-x-2 gap-y-1 bg-slate-50/75 relative rounded-md px-6 py-4 border-[1px]"
+              >
+                <Badge className="absolute -top-2 -left-2" variant="secondary">
+                  {index + 1}
+                </Badge>
+                <div>
+                  <CardDescription>Category:</CardDescription>
+                  <CardTitle>{item.financeCategory}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Type:</CardDescription>
+                  <CardTitle>{item.transactionType}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Description:</CardDescription>
+                  <CardTitle>{item.transactionDescription}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Service Provider:</CardDescription>
+                  <CardTitle>{item.serviceProvider}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Estimated Amount:</CardDescription>
+                  <CardTitle>{item.estimatedAmount}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Actual Amount:</CardDescription>
+                  <CardTitle>{item.actualAmount || 'None'}</CardTitle>
+                </div>
+              </div>
+            ))}
+          </div>
         </CardContent>
       )}
 
@@ -107,11 +164,13 @@ const CompletedForm = () => {
         <CardContent className="border-b-[1px] lg:border-0 px-0">
           <CardDescription>Joining Fee / Ticket Price:</CardDescription>
           <CardTitle>
-            {new Intl.NumberFormat('fil-PH', {
-              style: 'currency',
-              currency: 'PHP',
-              maximumFractionDigits: 2,
-            }).format(parseFloat(price))}
+            {price !== '0'
+              ? new Intl.NumberFormat('fil-PH', {
+                  style: 'currency',
+                  currency: 'PHP',
+                  maximumFractionDigits: 2,
+                }).format(parseFloat(price))
+              : 'Free'}
           </CardTitle>
         </CardContent>
       </div>

@@ -17,9 +17,13 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
   label,
   labelCn,
   className,
+  fieldType = 'input',
   placeholder = '',
   ...props
-}: TextFieldCustomProps<TFieldValues> & { labelCn?: string }) {
+}: TextFieldCustomProps<TFieldValues> & {
+  labelCn?: string
+  fieldType?: 'input' | 'text-area'
+}) {
   const { control, formState } = useFormContext<TFieldValues>()
 
   return (
@@ -32,15 +36,18 @@ export function TextFieldCustom<TFieldValues extends FieldValues>({
             <Label className={cn('ubuntu-bold', labelCn)}>{label}</Label>
           )}
           <FormControl>
-            {name !== 'purpose' && name !== 'details' ? (
-              <Input
+            {fieldType === 'text-area' ? (
+              <Textarea
                 {...field}
-                {...props}
+                className="min-h-32"
+                autoComplete="off"
                 placeholder={placeholder !== '' ? placeholder : ''}
               />
             ) : (
-              <Textarea
+              <Input
                 {...field}
+                {...props}
+                autoComplete="off"
                 placeholder={placeholder !== '' ? placeholder : ''}
               />
             )}

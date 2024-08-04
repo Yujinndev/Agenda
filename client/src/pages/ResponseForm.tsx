@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { ArrowLeft } from 'lucide-react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -11,21 +10,9 @@ import {
   FormDescription,
   FormField,
   FormItem,
-  FormLabel,
 } from '@/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import EventCard from '@/components/EventCard'
-import FormError from '@/components/ui/formError'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
-import { Checkbox } from '@/components/ui/checkbox'
 import { toast } from '@/components/ui/use-toast'
 import { useGetEventById } from '@/hooks/api/useGetEventById'
 import { EVENT_COMMITTEE_INQUIRIES } from '@/constants/choices'
@@ -35,7 +22,11 @@ import Loading from '@/components/Loading'
 import { useState } from 'react'
 import SuccessDialog from '@/components/SuccessDialog'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { Switch } from '@/components/ui/switch'
+import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
+import { SelectFieldCustom } from '@/components/ui/SelectFieldCustom'
 
+type ResponseFormSchemaType = z.infer<typeof responseFormSchema>
 const responseFormSchema = z.discriminatedUnion('withContent', [
   z.object({
     responseType: z.string(),
@@ -54,8 +45,6 @@ const responseFormSchema = z.discriminatedUnion('withContent', [
       ),
   }),
 ])
-
-type ResponseFormSchemaType = z.infer<typeof responseFormSchema>
 
 const ResponseForm = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false)
@@ -95,7 +84,7 @@ const ResponseForm = () => {
 
   const { mutateAsync, isPending } = useMutation({
     mutationFn: async (values: Omit<ResponseFormSchemaType, 'withContent'>) => {
-      await axios.post('/api/event/c/response', {
+      await axios.post('/api/event/approval/response', {
         data: {
           ...values,
           eventId: id,
@@ -126,108 +115,84 @@ const ResponseForm = () => {
   }
 
   return (
-    <div className="grid lg:grid-cols-3 gap-8 pt-12 p-4 w-full lg:w-4/5">
-      <EventCard event={eventDetails} extendedVariant />
-      <SuccessDialog isDialogOpen={isOpen} setIsDialogOpen={setIsOpen} />
-
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="lg:col-span-2 space-y-6"
+    <div className="pt-4 lg:pt-12 w-full lg:w-4/5">
+      <div className="flex items-center gap-4 bg-green-900 p-4 rounded-lg text-white">
+        <Button
+          variant="ghost"
+          size="icon"
+          type="button"
+          className="rounded-full"
+          onClick={() => navigate(-1)}
         >
-          <div className="flex items-center gap-4 bg-green-900 p-4 rounded-lg text-white">
-            <Button
-              variant="ghost"
-              size="icon"
-              type="button"
-              className="rounded-full"
-              onClick={() => navigate(-1)}
-            >
-              <ArrowLeft className="flex-shrink-0" />
-            </Button>
-            <h1 className="pt-[2px]">Response Form</h1>
-          </div>
-          <FormField
-            control={form.control}
-            name="responseType"
-            render={({ field }) => (
-              <FormItem>
-                <Label>Your Response/Inquiry type</Label>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled
-                >
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a response type" />
-                    </SelectTrigger>
-                  </FormControl>
+          <ArrowLeft className="flex-shrink-0" />
+        </Button>
+        <h1 className="pt-[2px]">Committee's Response</h1>
+      </div>
 
-                  <SelectContent>
-                    <SelectItem value={`${eventCommitteeInquiry?.value}`}>
-                      {eventCommitteeInquiry?.label}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
+      <div className="grid lg:grid-cols-3 gap-8 p-2 py-4 pt-6">
+        <div>
+          <EventCard event={eventDetails} extendedVariant />
+          <SuccessDialog isDialogOpen={isOpen} setIsDialogOpen={setIsOpen} />
+        </div>
 
-          <FormField
-            control={form.control}
-            name="committeeEmail"
-            render={({ field }) => (
-              <FormItem>
-                <Label>Your Email</Label>
-                <Input {...field} disabled />
-              </FormItem>
-            )}
-          />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="lg:col-span-2 space-y-6"
+          >
+            <SelectFieldCustom
+              name="responseType"
+              label="Your Response/Inquiry type"
+              placeholder="Select a response type"
+              choices={[eventCommitteeInquiry]}
+              disabled
+            />
 
-          <FormField
-            control={form.control}
-            name="withContent"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                    disabled={
-                      eventCommitteeInquiry.value === 'APPROVED' ? false : true
-                    }
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>Add message or inquiry</FormLabel>
-                  <FormDescription>
-                    You can add any of your questions or appreciation here.
-                  </FormDescription>
-                </div>
-              </FormItem>
-            )}
-          />
+            <TextFieldCustom
+              name="committeeEmail"
+              label="Your Email"
+              disabled
+            />
 
-          {isWithContent && (
             <FormField
               control={form.control}
-              name="content"
-              shouldUnregister={true}
+              name="withContent"
               render={({ field }) => (
-                <FormItem>
-                  <Label>Your Inquiry</Label>
-                  <Textarea {...field} className="min-h-[16rem]" />
-                  <FormError errorField={form.formState.errors} />
+                <FormItem className="flex flex-row items-center gap-8 rounded-lg border p-4 px-6">
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                      disabled={
+                        eventCommitteeInquiry.value === 'APPROVED'
+                          ? false
+                          : true
+                      }
+                    />
+                  </FormControl>
+                  <div className="space-y-0.5">
+                    <Label className="text-base">Add message or inquiry</Label>
+                    <FormDescription>
+                      You can add any of your questions or appreciation here.
+                    </FormDescription>
+                  </div>
                 </FormItem>
               )}
             />
-          )}
-          <Button type="submit" disabled={isPending}>
-            {isPending ? 'Submitting ...' : 'Submit'}
-          </Button>
-        </form>
-      </Form>
+
+            {isWithContent && (
+              <TextFieldCustom
+                name="content"
+                label="Your Inquiry"
+                fieldType="text-area"
+              />
+            )}
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? 'Submitting ...' : 'Submit'}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </div>
   )
 }
