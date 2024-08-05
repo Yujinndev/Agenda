@@ -5,7 +5,7 @@ import { Router } from 'express'
 export const groupRouter = () => {
   const router = Router()
 
-  router.get('/event/all', getGroupEvents)
+  router.get('/events/:id', getGroupEvents)
   router.get('/me/all', getUserGroupsHandler)
 
   return router

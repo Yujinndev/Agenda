@@ -18,6 +18,7 @@ export const getGroupData = async ({ prisma, id }: GetGroupDataArgs) => {
             user: true,
           },
         },
+        selectedEvents: true,
         rules: true,
       },
     })

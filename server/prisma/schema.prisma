@@ -44,7 +44,7 @@ model UserGroup {
   joinPermission JoinPermission    @default(ANYONE_CAN_JOIN)
   postPermission PostPermission    @default(ALL_MEMBERS)
   visibility     GroupVisibility   @default(PUBLIC)
-  selectedEvents EventUserGroup[]
+  selectedEvents EventUserGroup[]  @relation("GroupEvents")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -119,7 +119,7 @@ model Event {
   organizer          User               @relation("UserEvents", fields: [organizerId], references: [id])
   userGroupId        String?
   userGroup          UserGroup?         @relation(fields: [userGroupId], references: [id])
-  selectedGroups     EventUserGroup[]     
+  selectedGroups     EventUserGroup[]   @relation("EventGroups")     
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -153,11 +153,13 @@ enum EventStatus {
 }
 
 model EventUserGroup {
+  event       Event     @relation("EventGroups", fields: [eventId], references: [id])
   eventId     String
+  userGroup   UserGroup @relation("GroupEvents", fields: [userGroupId], references: [id])
   userGroupId String
+  groupName   String
+  creatorName String
 
-  event       Event     @relation(fields: [eventId], references: [id])
-  userGroup   UserGroup @relation(fields: [userGroupId], references: [id])
 
   @@id([eventId, userGroupId])
 }

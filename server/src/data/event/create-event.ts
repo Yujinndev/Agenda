@@ -5,7 +5,13 @@ export type CreateEventDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   userId: string
   values: Pick<Event, 'title'> &
-    Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'organizerId'>>
+    Partial<Omit<Event, 'id' | 'createdAt' | 'updatedAt' | 'organizerId'>> & {
+      selectedGroups?: Array<{
+        groupId: string
+        name: string
+        creatorName: string
+      }>
+    }
 }
 
 export const createEventData = async ({
@@ -13,10 +19,33 @@ export const createEventData = async ({
   userId,
   values,
 }: CreateEventDataArgs) => {
-  const { userGroupId, ...rest } = values
+  const { userGroupId, selectedGroups, ...rest } = values
 
-  const createdRecord = await prisma.event
-    .create({
+  try {
+    // Check if UserGroup records exist if selectedGroups are provided
+    if (selectedGroups) {
+      // Extract groupIds from the array
+      const userGroupIds = selectedGroups.map(({ groupId }) => groupId)
+
+      console.log('Selected UserGroup IDs:', userGroupIds)
+
+      const existingUserGroups = await prisma.userGroup.findMany({
+        where: {
+          id: { in: userGroupIds },
+        },
+      })
+
+      // Log the found UserGroups
+      console.log('Existing UserGroups:', existingUserGroups)
+
+      // Check if all selected groups exist
+      if (existingUserGroups.length !== userGroupIds.length) {
+        throw new ValidationError('One or more UserGroup records do not exist.')
+      }
+    }
+
+    // Proceed with event creation
+    const createdRecord = await prisma.event.create({
       data: {
         ...rest,
         organizer: {
@@ -31,11 +60,24 @@ export const createEventData = async ({
             },
           },
         }),
+        selectedGroups: {
+          create: selectedGroups?.map(({ groupId, name, creatorName }) => ({
+            userGroup: {
+              connect: { id: groupId },
+            },
+            groupName: name,
+            creatorName: creatorName,
+          })),
+        },
       },
     })
-    .catch(() => {
-      throw new ValidationError('Cannot create event for the user.')
-    })
 
-  return createdRecord
+    console.log('Created Event:', createdRecord)
+    return createdRecord
+  } catch (error) {
+    console.error('Error creating event:', error)
+    throw new ValidationError(
+      'Cannot create event for the user: ' + (error as Error).message,
+    )
+  }
 }
