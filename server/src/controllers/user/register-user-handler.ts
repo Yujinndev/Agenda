@@ -16,7 +16,7 @@ export const registerUserHandler = async (req: Request, res: Response) => {
   try {
     const user = await getUserData({
       prisma,
-      email: email,
+      email,
     })
 
     if (user) {

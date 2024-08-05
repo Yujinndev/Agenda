@@ -1,5 +1,6 @@
-import { PrismaClient } from '@prisma/client'
 import { Request, Response } from 'express'
+import { PrismaClient } from '@prisma/client'
+import { getUserData } from '../../data/user/get-user'
 
 const prisma = new PrismaClient()
 
@@ -10,12 +11,9 @@ export const logoutUserHandler = async (req: Request, res: Response) => {
     return res.sendStatus(204)
   }
 
-  const refreshToken = cookies.refreshToken
-
   try {
-    const user = await prisma.user.findFirstOrThrow({
-      where: { refreshToken: refreshToken },
-    })
+    const refreshToken = cookies.refreshToken
+    const user = await getUserData({ prisma, refreshToken })
 
     if (!user) {
       res.clearCookie('refreshToken', { httpOnly: true, sameSite: 'lax' })
