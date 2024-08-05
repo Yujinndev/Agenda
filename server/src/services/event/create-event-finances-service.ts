@@ -22,7 +22,10 @@ export const createEventFinancesService = async ({
 
     for (const finance of values) {
       const parsedEstimatedCost = finance.estimatedAmount ?? 0
-      const parsedActualCost = finance.actualAmount ?? new Decimal(0)
+      const parsedActualCost =
+        finance.actualAmount?.toString() !== ''
+          ? finance.actualAmount
+          : new Decimal(0)
 
       await createFinanceData({
         prisma: prismaTx,
