@@ -1,44 +1,40 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import {
-  ArrowUpLeft,
-  ArrowUpRight,
-  Check,
-  Ellipsis,
-  MessageCircleQuestion,
-  X,
-} from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import useAuth from '@/hooks/useAuth'
-import { useGetEventById } from '@/hooks/api/useGetEventById'
-import {
-  EVENT_CATEGORIES,
-  EVENT_COMMITTEE_INQUIRIES,
-} from '@/constants/choices'
+import { useEffect } from 'react'
+import { Link, useLocation, useParams } from 'react-router-dom'
+import { ArrowUpLeft } from 'lucide-react'
+import { EVENT_CATEGORIES } from '@/constants/choices'
 import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
-import EventOverview from '@/components/event/EventOverview'
-import EventParticipantsList from '@/components/event/EventParticipantsList'
-import EventHistoryTimeline from '@/components/event/EventHistoryTimeline'
-import Loading from '@/components/Loading'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs } from '@/components/ui/Tabs'
-import UpdateFormDialog from '@/components/event/UpdateForm'
-import EventCommitteesList from '@/components/event/EventCommiteesList'
+import { useGetEventById } from '@/hooks/api/useGetEventById'
+import useAuth from '@/hooks/useAuth'
+import Loading from '@/components/Loading'
 import EventFinances from '@/components/event/EventFinance'
-import SendApprovalDialog from '@/components/event/SendApprovalDialog'
+import EventOverview from '@/components/event/EventOverview'
+import EventParticipantsList from '@/components/event/EventParticipantsList'
+import EventHistoryTimeline from '@/components/event/EventHistoryTimeline'
+import EventCommitteesList from '@/components/event/EventCommiteesList'
+import EventActions from '@/components/event/EventActions'
+import { useToast } from '@/components/ui/use-toast'
+import { DecimalStarRating } from '@/pages/event/FeedbackForm'
 
 const EventDetails = () => {
   const { id } = useParams()
+  const { toast } = useToast()
+  const location = useLocation()
+
+  useEffect(() => {
+    if (location.state === 'redirected') {
+      toast({
+        title: 'Redirected!',
+        description: 'You already joined the public event.',
+        variant: 'success',
+      })
+    }
+  }, [location.state])
+
   const { auth } = useAuth()
   const { data, isLoading } = useGetEventById(id as string)
-
-  const navigate = useNavigate()
 
   const tabs = [
     {
@@ -73,30 +69,29 @@ const EventDetails = () => {
   }
 
   const user = auth!.user as string
+  const ratings = data.eventFeedbacks
+    .reduce((sum: number, item: any) => sum + Number(item.rating), 0)
+    .toFixed(2)
+
+  const isOrganizer = data.organizer?.email === auth.user
+  const isUserAlreadyJoined = data.participants?.find(
+    (el: any) => el.email === auth.user
+  )
   const isNextToApprove = isCommitteeNextToApprove({
     committees: data.committees,
     currentUser: user,
   })
-  const isOrganizer = data?.organizer?.email === auth.user
-  const isUserAlreadyJoined = data?.participants?.find(
-    (el: any) => el.email === auth.user
+  const hasAlreadySentFeedback = data.eventFeedbacks?.some(
+    (el: any) => el.userId === auth.userId
   )
 
   const eventStatus = EVENT_CATEGORIES.find((el) => el.value === data.status)
-  const approvalStatus = EVENT_COMMITTEE_INQUIRIES.find(
-    (el) => el.value === isNextToApprove?.status
-  )
-
   const tabsToShow = isOrganizer
     ? tabs.length
     : isNextToApprove.isNext
     ? tabs.length - 1
     : 1
   const visibleTabs = tabs.slice(0, tabsToShow)
-
-  const handleEventCommitteeStep = (status: string) => {
-    navigate(`/response-form/?id=${id}&status=${status}`)
-  }
 
   return (
     <div className="w-full pt-8">
@@ -128,88 +123,22 @@ const EventDetails = () => {
           <h1 className="text-4xl dark:text-white md:text-4xl lg:text-5xl">
             {data.title}
           </h1>
+          {ratings > 0 && (
+            <div className="flex items-center justify-center gap-2 -mt-2">
+              <small className="mt-4">Ratings: </small>
+              <DecimalStarRating value={Number(ratings)} onChange={() => {}} />
+              <small className="mt-4">{`(${ratings})`}</small>
+            </div>
+          )}
         </div>
-        <div className="py-2">
-          <div className="flex gap-2">
-            {!isNextToApprove.isNext && (
-              <Button
-                size="sm"
-                variant="outline"
-                className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
-                asChild
-              >
-                <Link to="/events/my-events" className="text-black">
-                  My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
-                </Link>
-              </Button>
-            )}
-            {isOrganizer && data.status !== 'FOR_APPROVAL' && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="rounded-full"
-                  >
-                    <Ellipsis className="flex-shrink-0" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="m-2 space-y-1 w-40">
-                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <UpdateFormDialog id={id as string} />
-                  {data.status === 'ON_HOLD' && data.committees.length > 0 && (
-                    <SendApprovalDialog
-                      id={id as string}
-                      committees={data.committees}
-                    />
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
 
-          {isNextToApprove.isNext ? (
-            isNextToApprove?.status === 'WAITING' ? (
-              <div className="flex items-center gap-3 justify-center pb-6 lg:pb-0">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="rounded-full"
-                  onClick={() =>
-                    handleEventCommitteeStep('REQUESTING_REVISION')
-                  }
-                >
-                  <MessageCircleQuestion className="flex-shrink-0" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="rounded-full"
-                  onClick={() => handleEventCommitteeStep('APPROVED')}
-                >
-                  <Check className="flex-shrink-0" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="destructive"
-                  className="rounded-full"
-                  onClick={() => handleEventCommitteeStep('REJECTED')}
-                >
-                  <X className="flex-shrink-0" />
-                </Button>
-              </div>
-            ) : (
-              <Badge
-                variant="outline"
-                className="text-white flex items-center gap-3 py-2 text-sm justify-center"
-              >
-                {approvalStatus?.label}
-                {isUserAlreadyJoined && <li>Joined</li>}
-              </Badge>
-            )
-          ) : null}
-        </div>
+        <EventActions
+          data={data}
+          isOrganizer={isOrganizer}
+          isNextToApprove={isNextToApprove}
+          isUserAlreadyJoined={isUserAlreadyJoined}
+          hasAlreadySentFeedback={hasAlreadySentFeedback}
+        />
       </div>
 
       <Tabs tabs={visibleTabs} activeTabClassName={'bg-green-700'} />

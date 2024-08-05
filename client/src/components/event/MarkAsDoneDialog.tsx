@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Send } from 'lucide-react'
+import { CheckCircle } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -10,18 +10,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { QueryClient } from '@tanstack/react-query'
-import { toast } from '@/components/ui/use-toast'
-import { Button } from '@/components/ui/button'
 import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { QueryClient } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { toast } from '@/components/ui/use-toast'
 
-const SendApprovalDialog = ({
-  id,
-  committees,
-}: {
-  id: string
-  committees: []
-}) => {
+const MarkAsDoneDialog = ({ id }: { id: string }) => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false)
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const queryClient = new QueryClient()
@@ -31,15 +25,14 @@ const SendApprovalDialog = ({
     setIsSubmitting(true)
 
     try {
-      await axios.post('/api/event/approval/send-request', {
+      await axios.post('/api/event/done', {
         data: {
           eventId: id,
-          committees,
         },
       })
 
       toast({
-        description: 'Sent approval successfully!',
+        description: 'Event updated successfully!',
         variant: 'success',
       })
       setIsDialogOpen(false)
@@ -47,7 +40,7 @@ const SendApprovalDialog = ({
     } catch (error) {
       console.log(error)
       toast({
-        title: 'Sorry, failed to send approval!',
+        title: 'Sorry, failed to update event!',
         description: 'Please try again later.',
         variant: 'destructive',
       })
@@ -59,9 +52,9 @@ const SendApprovalDialog = ({
   return (
     <AlertDialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <AlertDialogTrigger asChild>
-        <Button className="relative grid grid-cols-4 gap-4" variant="secondary">
-          <Send size={20} />
-          <span>Send Approval</span>
+        <Button className="relative grid grid-cols-4 gap-4 bg-green-900">
+          <CheckCircle size={20} />
+          <span>Mark as done</span>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
@@ -69,7 +62,7 @@ const SendApprovalDialog = ({
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
             This action cannot be undone. This will prevent you from updating
-            the event, and will wait for the response from the committees.
+            the event, and will open feedbacks from participants.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -86,4 +79,4 @@ const SendApprovalDialog = ({
   )
 }
 
-export default SendApprovalDialog
+export default MarkAsDoneDialog

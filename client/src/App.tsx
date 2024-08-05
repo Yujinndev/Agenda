@@ -14,6 +14,7 @@ import MyEvents from '@/pages/event/MyEvents'
 import Register from '@/pages/Register'
 import EventDetails from '@/pages/event/EventDetails'
 import ResponseForm from '@/pages/ResponseForm'
+import FeedbackForm from '@/pages/event/FeedbackForm'
 import PublicEventDetail from '@/pages/event/PublicEventDetail'
 
 import NotFoundPage from '@/components/NotFoundPage'
@@ -31,12 +32,11 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/response-form" element={<ResponseForm />} />
-
             <Route element={<PersistAuth />}>
+              <Route path="/response-form" element={<ResponseForm />} />
+              <Route path="/events/browse/" element={<EventPage />} />
               <Route path="/onboarding/signin" element={<SignIn />} />
               <Route path="/onboarding/register" element={<Register />} />
-              <Route path="/events/browse/" element={<EventPage />} />
 
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
@@ -44,6 +44,7 @@ function App() {
                 <Route path="/events" element={<Outlet />}>
                   <Route path="new/" element={<NewEvent />} />
                   <Route path="my-events/" element={<MyEvents />} />
+                  <Route path="feedback/:id/" element={<FeedbackForm />} />
                   <Route path="detail/:id/" element={<EventDetails />} />
                   <Route path="browse/p/:id" element={<PublicEventDetail />} />
                 </Route>
