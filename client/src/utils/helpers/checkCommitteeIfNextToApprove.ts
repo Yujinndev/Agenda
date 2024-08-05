@@ -1,15 +1,25 @@
-type CommitteesType = {
+export type ApprovalStatus =
+  | 'REQUESTING_REVISION'
+  | 'ON_HOLD'
+  | 'WAITING'
+  | 'APPROVED'
+export type isNextToApprove = {
+  isNext: boolean
+  status?: ApprovalStatus
+}
+
+export type CommitteesType = {
   currentUser: string
   committees: {
     email: string
-    approvalStatus: string
+    approvalStatus: ApprovalStatus
   }[]
 }
 
 export const isCommitteeNextToApprove = ({
   committees,
   currentUser,
-}: CommitteesType) => {
+}: CommitteesType): isNextToApprove => {
   const currentUserCommitteeIndex: number = committees.findIndex(
     (el: any) => el.email === currentUser
   )
@@ -32,7 +42,8 @@ export const isCommitteeNextToApprove = ({
     }
   }
 
-  const currentUserStatus = committees[currentUserCommitteeIndex].approvalStatus
+  const currentUserStatus: ApprovalStatus =
+    committees[currentUserCommitteeIndex].approvalStatus
 
   if (currentUserStatus === 'APPROVED') {
     return {
