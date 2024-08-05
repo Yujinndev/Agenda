@@ -1,60 +1,50 @@
-import { useEffect, useState } from 'react'
+import React, { FC, useEffect, useState } from 'react'
 import { FormProvider } from 'react-hook-form'
 import { z } from 'zod'
-import {
-  eventApprovalSchema,
-  eventConfirmationSchema,
-  eventDetailsSchema,
-  EventFormValues,
-  eventGuestDetailSchema,
-} from '@/schema/event'
 import { Card } from '@/components/ui/card'
 import Stepper from '@/components/ui/stepper'
 import { Button } from '@/components/ui/button'
-import BudgetForm from '@/components/event/BudgetForm'
-import DetailsForm from '@/components/event/DetailsForm'
-import CompletedForm from '@/components/event/CompletedForm'
-import ParticipantsForm from '@/components/event/ParticipantsForm'
-import useEventFormStore from '@/services/state/useEventFormStore'
-import { usePostEventMutation } from '@/hooks/api/usePostEventMutation'
 import useDynamicForm from '@/hooks/useDynamicForm'
 import heroImg from '@/assets/hero-image.png'
+import CreateGroup from '@/components/event/CreateGroup'
+import CompletedGroupForm from '@/components/event/CompletedGroupForm'
+import useGroupFormStore from '@/services/state/useGroupFormStore'
+import {
+  eventGroupSchema,
+  EventGroupDetailsValues,
+  eventGroupRulesSchema,
+} from '@/schema/group'
+import { QueryClient, useMutation } from '@tanstack/react-query'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
+import { useNavigate } from 'react-router-dom'
+import { toast } from '@/components/ui/use-toast'
+import CreateGroupRules from '@/components/event/CreateGroupRules'
 
-export const SCHEMAS = [
-  eventDetailsSchema,
-  eventGuestDetailSchema,
-  eventApprovalSchema,
-  eventConfirmationSchema,
-]
+export const SCHEMAS = [eventGroupSchema, eventGroupRulesSchema]
 
 // Create a type that gets the schema type based on the index
 export type SchemaArray = typeof SCHEMAS
 export type SchemaType<T extends number> = z.infer<SchemaArray[T]>
 
-const NewEvent: React.FC = () => {
+const NewGroup: FC = () => {
   const [activeStep, setActiveStep] = useState(0)
-  const STEPS = ['Details Form', 'Participants Form', 'Budget Form', 'Confirm']
+  const STEPS = ['Details Form', 'Rules Form', 'Confirm']
+  const axios = useAxiosPrivate()
+  const navigate = useNavigate()
+  const queryClient = new QueryClient()
 
-  const { updateFormData, resetFormData } = useEventFormStore()
+  const { updateFormData, resetFormData } = useGroupFormStore()
 
   const { form } = useDynamicForm<SchemaType<typeof activeStep>>({
-    schema: SCHEMAS[activeStep],
-    dynamicFields: [{ name: 'committees', defaultValue: { email: '' } }],
+    schema: eventGroupSchema,
     formOptions: {
-      defaultValues: useEventFormStore.getState().formData,
+      defaultValues: useGroupFormStore.getState().formData,
       shouldUnregister: false,
     },
   })
 
-  type SelectedGroup = {
-    groupId: string
-    name: string
-    creatorName: string
-  }
-
   const {
     handleSubmit,
-    trigger,
     getValues,
     reset,
     formState: { isSubmitting },
@@ -62,35 +52,49 @@ const NewEvent: React.FC = () => {
 
   // to update form values when eventDetails change
   useEffect(() => {
-    reset(useEventFormStore.getState().formData)
-  }, [useEventFormStore.getState().formData, reset])
+    reset(useGroupFormStore.getState().formData)
+  }, [useGroupFormStore.getState().formData, reset])
 
   const getStepContent = (step: number) => {
     switch (step) {
       case 0:
-        return <DetailsForm />
+        return <CreateGroup />
       case 1:
-        return <ParticipantsForm />
+        return <CreateGroupRules />
       case 2:
-        return <BudgetForm />
-      case 3:
-        return <CompletedForm />
+        return <CompletedGroupForm />
       default:
         return 'Unknown step'
     }
   }
 
-  const createEvent = usePostEventMutation('/api/event/create', {
-    onSuccess: () => {
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1)
+  }
+
+  const createGroup = useMutation({
+    mutationFn: async (data: any) => {
+      const response = await axios.post('/api/event/create-group', {
+        data: {
+          ...data,
+        },
+      })
+      return response.data
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['group'] })
+      toast({
+        description: 'Your group has been created.',
+        variant: 'success',
+      })
       reset()
       resetFormData()
+      navigate('/events/group')
     },
-    navigateTo: '/dashboard',
-    invalidateQueryKey: ['my-events'],
   })
 
   const updateFormDataPromise = (
-    newData: Partial<EventFormValues>
+    newData: Partial<EventGroupDetailsValues>
   ): Promise<void> => {
     return new Promise((resolve) => {
       updateFormData(newData)
@@ -100,43 +104,16 @@ const NewEvent: React.FC = () => {
 
   const onSubmit = async () => {
     updateFormDataPromise(getValues()).then(async () => {
-      const isStepValid = await trigger()
-      if (!isStepValid) return
-
       const isFinalPage = activeStep === STEPS.length - 1
       if (isFinalPage) {
-        const formData = useEventFormStore.getState().formData
-
-        const selectedGroupArray = Object.entries(formData.selectedGroups || {})
-          .filter(
-            (entry): entry is [string, SelectedGroup] =>
-              typeof entry[1] === 'object'
-          )
-          .map(([groupId, group]) => ({ ...group, groupId }))
-
-        console.log('Selected', selectedGroupArray)
-        createEvent.mutate({
-          ...formData,
-          selectedGroups: selectedGroupArray,
-        })
+        const result = await createGroup.mutateAsync(
+          useGroupFormStore.getState().formData
+        )
+        // console.log('Mutation result:', result)
+        updateFormData({ creator: result.creator })
       } else {
         setActiveStep((prevActiveStep) => prevActiveStep + 1)
       }
-    })
-  }
-
-  const handleBack = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep - 1)
-  }
-
-  const handleSaveDraft = async () => {
-    let newValues = getValues()
-
-    updateFormDataPromise({ ...newValues, status: 'DRAFT' }).then(async () => {
-      const isDraftValid = await trigger('title')
-      if (!isDraftValid) return
-
-      createEvent.mutate(useEventFormStore.getState().formData)
     })
   }
 
@@ -160,14 +137,6 @@ const NewEvent: React.FC = () => {
               <div className="lg:pb-12">{getStepContent(activeStep)}</div>
 
               <div className="flex items-center justify-between gap-4 my-4 lg:px-8 relative lg:absolute lg:-bottom-2 lg:left-0 w-full">
-                <Button
-                  onClick={() => handleSaveDraft()}
-                  disabled={createEvent.isPending}
-                  type="button"
-                  variant="outline"
-                >
-                  {createEvent.isPending ? 'Saving ..' : 'Save Draft'}
-                </Button>
                 <div className="flex gap-2 right-8">
                   {activeStep > 0 && (
                     <Button
@@ -182,12 +151,12 @@ const NewEvent: React.FC = () => {
                   <Button
                     type="submit"
                     className="px-8 w-full"
-                    disabled={createEvent.isPending}
+                    disabled={createGroup.isPending}
                   >
-                    {createEvent.isPending || isSubmitting
+                    {createGroup.isPending || isSubmitting
                       ? 'Saving ..'
                       : activeStep === STEPS.length - 1
-                      ? 'Create Event'
+                      ? 'Create Group'
                       : 'Next'}
                   </Button>
                 </div>
@@ -200,4 +169,7 @@ const NewEvent: React.FC = () => {
   )
 }
 
-export default NewEvent
+export default NewGroup
+function mutationFn(variables: any): Promise<void> {
+  throw new Error('Function not implemented.')
+}

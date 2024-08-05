@@ -19,7 +19,11 @@ export const eventDetailsSchema = z.object({
   location: z.string().min(1, `Kindly enter the event's location`),
 })
 
-export const selectedGroupsSchema = z.record(z.string(), z.boolean())
+export const selectedGroupsSchema = z.object({
+  groupId: z.string(),
+  name: z.string(),
+  creatorName: z.string(),
+})
 
 export const eventGuestDetailSchema = z.object({
   estimatedAttendees: z
@@ -27,7 +31,7 @@ export const eventGuestDetailSchema = z.object({
     .min(1, 'Required'),
   category: z.string().min(1, 'Kindly Select an Event Category'),
   audience: z.string().min(1, 'Kindly Select an Event Publishing Audience'),
-  selectedGroups: selectedGroupsSchema.optional(),
+  selectedGroups: z.array(selectedGroupsSchema),
 })
 
 export const eventBudgetSchema = z.object({

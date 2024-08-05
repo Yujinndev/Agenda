@@ -20,11 +20,11 @@ import NotFoundPage from '@/components/NotFoundPage'
 import ProtectedRoute from '@/utils/ProtectedRoute'
 import PersistAuth from '@/utils/PersistAuth'
 import { AuthProvider } from '@/context/AuthProvider'
-import EventGroups from '@/pages/event/EventGroups'
-import NewGroup from '@/pages/event/NewGroup'
-import PublicGroupDetail from './pages/event/PublicGroupDetail'
-import MyGroups from './pages/event/MyGroups'
-import GroupDetails from './pages/event/GroupDetails'
+import Groups from '@/pages/group/Groups'
+import NewGroup from '@/pages/group/NewGroup'
+import PublicGroupDetail from './pages/group/PublicGroupDetail'
+import MyGroups from './pages/group/MyGroups'
+import GroupDetails from './pages/group/GroupDetails'
 
 function App() {
   return (
@@ -33,28 +33,31 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route path="/" element={<Home />} />
-            <Route path="/response-form" element={<ResponseForm />} />
-            <Route path="/events/browse/" element={<EventPage />} />
-            <Route path="/events/group/" element={<EventGroups />} />
 
             <Route element={<PersistAuth />}>
+              <Route path="/response-form" element={<ResponseForm />} />
+              <Route path="/events/browse/" element={<EventPage />} />
+              <Route path="/groups/browse/" element={<Groups />} />
               <Route path="/onboarding/signin" element={<SignIn />} />
               <Route path="/onboarding/register" element={<Register />} />
-
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
 
                 <Route path="/events" element={<Outlet />}>
                   <Route path="new/" element={<NewEvent />} />
-                  <Route path="create-group/" element={<NewGroup />} />
                   <Route path="my-events/" element={<MyEvents />} />
-                  <Route path="my-groups/" element={<MyGroups />} />
                   <Route path="detail/:id/" element={<EventDetails />} />
-                  <Route path="group-detail/:id/" element={<GroupDetails />} />
                   <Route
                     path="browse/p/event/:id"
                     element={<PublicEventDetail />}
                   />
+                </Route>
+
+                <Route path="/groups" element={<Outlet />}>
+                  <Route path="new/" element={<NewGroup />} />
+                  <Route path="my-groups/" element={<MyGroups />} />
+
+                  <Route path="detail/:id/" element={<GroupDetails />} />
                   <Route
                     path="browse/p/group/:id"
                     element={<PublicGroupDetail />}

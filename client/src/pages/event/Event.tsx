@@ -28,7 +28,7 @@ const EventPage = () => {
       {allEvents.length > 0 ? (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-8">
           {allEvents.map((event: Event) => (
-            <Link to={`/events/browse/p/${event.id}`} key={event.id}>
+            <Link to={`/events/browse/p/event/${event.id}`} key={event.id}>
               <EventCard event={event} extendedVariant={true} />
             </Link>
           ))}

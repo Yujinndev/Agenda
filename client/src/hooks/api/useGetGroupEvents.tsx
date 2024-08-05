@@ -1,14 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import useAxiosPrivate from '../useAxiosPrivate'
 
-export const useGetGroupEvents = () => {
+export const useGetGroupEvents = (id: string) => {
   const axios = useAxiosPrivate()
 
   return useQuery({
-    queryKey: ['public-group-events'],
+    queryKey: ['group-events', id],
     queryFn: async () => {
       try {
-        const response = await axios.get('/api/group/event/all')
+        const response = await axios.get(`/api/group/events/${id}`)
         return response.data?.records
       } catch (error) {
         console.log(error)

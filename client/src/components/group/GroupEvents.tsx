@@ -5,11 +5,9 @@ import EventCard from '../EventCard'
 import { useGetGroupEvents } from '@/hooks/api/useGetGroupEvents'
 
 const GroupEvents = ({ id }: { id: string }) => {
-  const { data: groupEvents, isLoading } = useGetGroupEvents()
+  const { data, isSuccess } = useGetGroupEvents(id as string)
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
+  const groupEvents = isSuccess && data
 
   return (
     <section className="relative w-full py-4 lg:px-0 gap-4">

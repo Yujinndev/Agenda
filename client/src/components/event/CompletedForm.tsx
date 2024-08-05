@@ -22,6 +22,12 @@ const CompletedForm = () => {
     selectedGroups,
   } = formData
 
+  type SelectedGroup = {
+    groupId: string
+    name: string
+    creatorName: string
+  }
+
   const getStatus = EVENT_CATEGORIES.find((el) => el.value === status)
   const getAudience = EVENT_AUDIENCE.find((el) => el.value === audience)
 
@@ -121,15 +127,21 @@ const CompletedForm = () => {
         <CardDescription>Status:</CardDescription>
         <CardTitle>{getStatus?.label}</CardTitle>
       </CardContent>
+
       {selectedGroups && Object.keys(selectedGroups).length > 0 && (
         <CardContent className="border-b-[1px] px-0">
           <CardDescription>Selected Groups:</CardDescription>
           <CardTitle>
             <ul>
               {Object.entries(selectedGroups)
-                .filter(([_, isSelected]) => isSelected)
-                .map(([groupId]) => (
-                  <li key={groupId}> {groupId}</li>
+                .filter(
+                  (entry): entry is [string, SelectedGroup] =>
+                    typeof entry[1] === 'object'
+                )
+                .map(([groupId, group]) => (
+                  <li key={groupId}>
+                    {group.name} - {group.creatorName}
+                  </li>
                 ))}
             </ul>
           </CardTitle>

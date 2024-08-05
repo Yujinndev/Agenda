@@ -25,7 +25,7 @@ const GroupList = ({
               whileTap={{ scale: 0.95 }}
               className="relative flex-1 bg-white transition-all ease-linear"
             >
-              <Link to={`/events/group-detail/${el.id}`}>
+              <Link to={`/groups/detail/${el.id}`}>
                 <Card
                   className={cn('relative flex h-36', {
                     'bg-primary/10': selectedFilter === 'PUBLIC',

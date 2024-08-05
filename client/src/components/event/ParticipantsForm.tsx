@@ -94,8 +94,17 @@ const ParticipantsForm = () => {
                     defaultValue={false}
                     render={({ field }) => (
                       <Checkbox
-                        checked={field.value}
-                        onCheckedChange={field.onChange}
+                        checked={field.value !== false}
+                        onCheckedChange={(checked) => {
+                          if (checked) {
+                            field.onChange({
+                              name: group.name,
+                              creatorName: `${group.members[0].user.firstName} ${group.members[0].user.lastName}`,
+                            })
+                          } else {
+                            field.onChange(false)
+                          }
+                        }}
                       />
                     )}
                   />

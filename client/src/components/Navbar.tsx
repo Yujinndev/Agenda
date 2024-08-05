@@ -20,11 +20,11 @@ const LINKS = [
     name: 'Browse Events',
   },
   {
-    site: '/events/group',
+    site: '/groups/browse',
     name: 'Browse Groups',
   },
   {
-    site: '/events/my-groups',
+    site: '/groups/my-groups',
     name: 'My Groups',
   },
 ]
@@ -65,7 +65,7 @@ export const PublicLinks = ({
         <Link to="/events/browse">Browse Events</Link>
       </Button>
       <Button variant="link" className={className} asChild>
-        <Link to="/events/group">Browse Groups</Link>
+        <Link to="/groups/browse">Browse Groups</Link>
       </Button>
     </div>
   )

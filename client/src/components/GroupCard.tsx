@@ -4,7 +4,6 @@ import { cn } from '@/lib/utils'
 import { UserGroup } from '@/types/group'
 import useAuth from '@/hooks/useAuth'
 import { JOIN_PERMISSION } from '@/constants/choices'
-import useGroupFormStore from '@/services/state/useGroupFormStore'
 
 const GroupCard = ({
   group,
@@ -57,16 +56,6 @@ const GroupCard = ({
               ) : (
                 <p>Members: {group.members.length}</p>
               )}
-            </div>
-          </div>
-        )}
-
-        {extendedVariant && (
-          <div className="flex gap-8 items-center py-1">
-            <div className="flex items-center gap-2">
-              <p>
-                {/* {currentParticipantsCount} / {event.estimatedAttendees} Person */}
-              </p>
             </div>
           </div>
         )}
