@@ -9,7 +9,7 @@ export const resendEmailApprovalHandler = async (
   req: Request,
   res: Response,
 ) => {
-  const { userId, data } = req.body
+  const { data } = req.body
   const { committees, eventId } = data
 
   if (!data) {
@@ -26,9 +26,15 @@ export const resendEmailApprovalHandler = async (
         },
       })
 
+      await prismaTx.eventCommittee.updateMany({
+        where: {
+          eventId: { in: committees.map((c: any) => c.eventId) },
+        },
+        data: { approvalStatus: 'WAITING' },
+      })
+
       await sendEmailApprovalService({
         prisma: prismaTx,
-        userId,
         eventId,
         committeeEmail: committees[0]?.email,
       })

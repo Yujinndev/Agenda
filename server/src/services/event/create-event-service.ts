@@ -107,7 +107,6 @@ export const createEventService = async ({
     const firstCommittee: string = committees[0]?.email
     await sendEmailApprovalService({
       prisma: prismaTx,
-      userId,
       committeeEmail: firstCommittee,
       eventId: event.id,
     })

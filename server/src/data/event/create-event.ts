@@ -13,24 +13,15 @@ export const createEventData = async ({
   userId,
   values,
 }: CreateEventDataArgs) => {
-  const { userGroupId, ...rest } = values
-
   const createdRecord = await prisma.event
     .create({
       data: {
-        ...rest,
+        ...values,
         organizer: {
           connect: {
             id: userId,
           },
         },
-        ...(userGroupId && {
-          userGroup: {
-            connect: {
-              id: userGroupId,
-            },
-          },
-        }),
       },
       include: {
         organizer: true,

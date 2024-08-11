@@ -76,7 +76,7 @@ export const committeeResponseService = async ({
       eventIds: eventId,
     })
 
-    // if REQUESTED_REVISION, then update all other committees too. return inquiry
+    // if REQUESTED_REVISION, update status to ONHOLD
     if (values.responseType === 'REQUESTING_REVISION') {
       return await updateEventData({
         prisma: prismaTx,
@@ -104,7 +104,6 @@ export const committeeResponseService = async ({
     if (currentCommitteeIndex < committees.length - 1) {
       return await sendEmailApprovalService({
         prisma: prismaTx,
-        userId,
         committeeEmail: committees[currentCommitteeIndex + 1].email,
         eventId,
       })

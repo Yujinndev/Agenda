@@ -23,7 +23,7 @@ export const createEventHandler = async (req: Request, res: Response) => {
       return value ? new Date(value).toISOString() : null
     }
 
-    const { committees, finances, ...rest } = data
+    const { committees, finances, selectedGroups, ...rest } = data
 
     const values = {
       ...rest,

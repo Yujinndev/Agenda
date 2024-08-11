@@ -23,5 +23,6 @@ export const eventRouter = () => {
   router.post('/participants/feedback', createParticipantFeedbackHandler)
   router.get('/me/all', getUserEventsHandler)
   router.get('/me/approval/get-requests', getRequestedEventsHandler)
+  router.get('/me/c/requests', getRequestedEventsHandler)
   return router
 }

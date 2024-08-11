@@ -1,15 +1,15 @@
-import { Prisma, UserGroup, type PrismaClient } from '@prisma/client'
+import { Prisma, Group, type PrismaClient } from '@prisma/client'
 
 export type CreateUserGroupDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
-  values: UserGroup
+  values: Group
 }
 
 export const createUserGroupData = async ({
   prisma,
   values,
 }: CreateUserGroupDataArgs) => {
-  const createdRecord = prisma.userGroup.create({
+  const createdRecord = prisma.group.create({
     data: values,
   })
 

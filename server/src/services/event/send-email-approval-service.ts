@@ -1,7 +1,6 @@
 import nodemailer from 'nodemailer'
 import { format } from 'date-fns'
 import { Prisma, type PrismaClient } from '@prisma/client'
-import { UnauthorizedError } from '../../utils/errors'
 import { concatenateStrings } from '../../utils/concatenate-strings'
 import { updateSentEmailCommitteeData } from '../../data/committee/update-sent-email-committee'
 import { getSentEmailCommitteeData } from '../../data/committee/get-sent-email-committee'
@@ -12,20 +11,15 @@ import { getEventData } from '../../data/event/get-event'
 export type SendEmailApprovalServiceArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   committeeEmail: string
-  userId: string
   eventId: string
 }
 
 export const sendEmailApprovalService = async ({
   prisma,
   committeeEmail,
-  userId,
   eventId,
 }: SendEmailApprovalServiceArgs) => {
   const event = await getEventData({ prisma, id: eventId })
-  if (event.organizerId !== userId) {
-    throw new UnauthorizedError('User is not the organizer.')
-  }
 
   const organizerFullName = concatenateStrings(
     event?.organizer?.firstName,

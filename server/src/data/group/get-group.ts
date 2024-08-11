@@ -1,30 +1,25 @@
 import { Prisma, type PrismaClient } from '@prisma/client'
 import { ValidationError } from '../../utils/errors'
 
-export type GetEventDataArgs = {
+export type GetGroupDataArgs = {
   prisma: PrismaClient | Prisma.TransactionClient
   id: string
 }
 
-export const getEventData = async ({ prisma, id }: GetEventDataArgs) => {
-  const record = await prisma.event
+export const getGroupData = async ({ prisma, id }: GetGroupDataArgs) => {
+  const record = await prisma.group
     .findFirstOrThrow({
       where: {
         id,
       },
       include: {
-        participants: true,
-        feedbacks: true,
-        organizer: true,
-        finances: {
-          orderBy: { updatedAt: 'asc' },
-        },
-        historyLogs: {
+        members: {
           include: {
-            committeeInquiry: true,
+            user: true,
           },
-          orderBy: { id: 'desc' },
         },
+        events: true,
+        rules: true,
       },
     })
     .catch(() => {

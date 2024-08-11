@@ -15,7 +15,7 @@ export const createParticipantFeedbackService = async ({
   const eventFeedback = await prisma.$transaction(async (prismaTx) => {
     const event = await getEventData({ prisma: prismaTx, id: values.eventId })
 
-    const hasAlreadySentFeedback = event.eventFeedbacks?.some(
+    const hasAlreadySentFeedback = event.feedbacks?.some(
       (el) => el.userId === values.userId,
     )
 

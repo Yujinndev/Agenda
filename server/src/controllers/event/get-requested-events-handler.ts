@@ -41,8 +41,7 @@ export const getRequestedEventsHandler = async (
   const records = events.records.map((event) => ({
     ...event,
     committees: committees.filter(
-      (committee) =>
-        committee.eventId === event.id && committee.userId === userId,
+      (committee) => committee.eventId === event.id,
     ),
   }))
 
