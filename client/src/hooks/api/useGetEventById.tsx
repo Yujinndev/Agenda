@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
-import useAxiosPrivate from '../useAxiosPrivate'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 export const useGetEventById = (id: string) => {
   const axios = useAxiosPrivate()

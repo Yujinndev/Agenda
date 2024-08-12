@@ -18,7 +18,7 @@ type DynamicFieldConfig<T extends FieldValues> = {
 
 type UseDynamicFormOptions<T extends FieldValues> = {
   schema: z.ZodType<T>
-  dynamicFields: DynamicFieldConfig<T>[]
+  dynamicFields?: DynamicFieldConfig<T>[]
   existingForm?: UseFormReturn<T>
   formOptions?: UseFormProps<T>
 }
@@ -29,7 +29,7 @@ type FieldArrays<T extends FieldValues> = {
 
 const useDynamicForm = <T extends FieldValues>({
   schema,
-  dynamicFields,
+  dynamicFields = [],
   existingForm,
   formOptions = {},
 }: UseDynamicFormOptions<T>) => {

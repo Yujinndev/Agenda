@@ -14,11 +14,11 @@ import {
   PaginationPrevious,
 } from '@/components/ui/pagination'
 
-const EventPage = () => {
+const EventsPage = () => {
   const navigate = useNavigate()
 
   const [search] = useCustomSearchParams()
-  const currentPage = Number(search.page)
+  const currentPage = Number(search.page || 1)
   const { data: allEvents, isLoading } = useGetAllPublicEvents(currentPage)
 
   if (isLoading) {
@@ -135,4 +135,4 @@ const EventPage = () => {
   )
 }
 
-export default EventPage
+export default EventsPage

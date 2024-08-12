@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import useAxiosPrivate from '../useAxiosPrivate'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 export const useGetUserEvents = () => {
   const axios = useAxiosPrivate()
@@ -7,8 +7,12 @@ export const useGetUserEvents = () => {
   return useQuery({
     queryKey: ['my-events'],
     queryFn: async () => {
-      const response = await axios.get('/api/event/me/all')
-      return response.data?.events?.records
+      try {
+        const response = await axios.get('/api/event/me/all')
+        return response.data?.events?.records
+      } catch (error) {
+        console.log(error)
+      }
     },
   })
 }

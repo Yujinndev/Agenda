@@ -169,8 +169,8 @@ const Home = () => {
               More about us
             </h2>
             <p className="mt-4 text-center text-[17px] text-gray-600 dark:text-gray-300 md:text-xl">
-              Agenda is developed by Synchro Fission, a startup duo passionate
-              in building innovative solutions.
+              Agenda is developed by Synchro Fission, a duo passionate in
+              building innovative solutions.
             </p>
           </div>
           <div className="mt-12 md:mt-16"></div>

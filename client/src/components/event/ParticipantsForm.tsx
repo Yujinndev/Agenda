@@ -1,27 +1,26 @@
-import { TextFieldCustom } from '../ui/TextFieldCustom'
-import { SelectFieldCustom } from '../ui/SelectFieldCustom'
-import { CATEGORY_CHOICES, EVENT_AUDIENCE } from '@/constants/choices'
-import { useFormContext } from 'react-hook-form'
 import { useState } from 'react'
-import { EVENT_FORM_CONFIG, SchemaType } from '@/pages/event/NewEvent'
+import { Plus, Trash } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
+import { EVENT_FORM_CONFIG, type SchemaType } from '@/pages/event/NewEvent'
 import {
   FormControl,
   FormDescription,
   FormField,
   FormItem,
 } from '@/components/ui/form'
-import { Switch } from '../ui/switch'
-import { Label } from '../ui/label'
-import { Button } from '../ui/button'
-import { Plus, Trash } from 'lucide-react'
-import FormError from '../ui/formError'
-import { Input } from '../ui/input'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { Switch } from '@/components/ui/switch'
+import { Button } from '@/components/ui/button'
+import FormError from '@/components/ui/formError'
+import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
+import { SelectFieldCustom } from '@/components/ui/SelectFieldCustom'
+import { CATEGORY_CHOICES, EVENT_AUDIENCE } from '@/constants/choices'
 import useDynamicForm from '@/hooks/useDynamicForm'
-import { Badge } from '../ui/badge'
 
 const ParticipantsForm = () => {
   const [activeStep] = useState(1)
-
   const { control } = useFormContext()
   const { form, fieldArrays, handleAppend, handleRemove } = useDynamicForm<
     SchemaType<typeof activeStep>
@@ -50,7 +49,6 @@ const ParticipantsForm = () => {
           className="lg:col-span-2"
         />
       </div>
-
       <SelectFieldCustom
         name="audience"
         choices={EVENT_AUDIENCE}
@@ -83,6 +81,15 @@ const ParticipantsForm = () => {
           </FormItem>
         )}
       />
+
+      {/* {form.watch('audience') === 'USER_GROUP' && (
+        <SelectFieldCustom
+          name="category"
+          label="Event Category"
+          placeholder="What category does this event fall under?"
+          className="lg:col-span-2"
+        />
+      )} */}
 
       {form.watch('status') === 'FOR_APPROVAL' && (
         <div className="w-full flex flex-col rounded-lg">

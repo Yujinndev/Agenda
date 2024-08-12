@@ -23,6 +23,7 @@ export const isCommitteeNextToApprove = ({
   const currentUserCommitteeIndex: number = committees.findIndex(
     (el: any) => el.email === currentUser
   )
+
   const revisionCommitteeIndex = committees.findIndex(
     (committee) => committee.approvalStatus === 'REQUESTING_REVISION'
   )

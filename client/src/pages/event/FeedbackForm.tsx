@@ -84,7 +84,7 @@ export const DecimalStarRating = React.forwardRef<
         return (
           <FaStar
             key={index}
-            className={cn('w-6 h-6 text-gray-300', {
+            className={cn('w-6 h-6 text-amber-400/5', {
               'text-amber-400': filled > 0,
             })}
             style={{

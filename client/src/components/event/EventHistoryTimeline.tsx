@@ -8,7 +8,7 @@ const EventHistoryTimeline = ({ id }: { id: string }) => {
   const { auth } = useAuth()
   const { data, isSuccess } = useGetEventById(id)
 
-  const history = isSuccess && data?.eventHistoryLogs
+  const history = isSuccess && data?.historyLogs
 
   return (
     <div className="relative">

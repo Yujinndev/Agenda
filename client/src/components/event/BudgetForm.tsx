@@ -37,7 +37,6 @@ const BudgetForm = () => {
           name="price"
           label="Joining Fee / Ticket Price"
           type="number"
-          disabled={form.watch('price') === '0'}
         />
         <div className="flex gap-3 items-center md:w-[20%] justify-start">
           <Switch

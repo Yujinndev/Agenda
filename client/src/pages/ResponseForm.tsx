@@ -40,7 +40,7 @@ const responseFormSchema = z.discriminatedUnion('withContent', [
     content: z
       .string()
       .min(
-        10,
+        1,
         'Kindly enter your message or inquiry to the organizer (10 characters minimum)'
       ),
   }),

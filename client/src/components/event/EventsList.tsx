@@ -34,11 +34,12 @@ const EventList = ({ events }: { events: Event[] }) => {
                   <div className="relative h-[50%] lg:h-full lg:w-3/12">
                     <img
                       src="https://sb.ecobnb.net/app/uploads/sites/3/2021/09/event-plan.jpg"
-                      alt="Example Image"
+                      alt="Image"
                       className="w-full h-full"
+                      loading="lazy"
                     />
                   </div>
-                  <div className="relative flex flex-1 items-center gap-4 px-8 py-2">
+                  <div className="relative flex flex-1 items-center gap-4 px-4 py-6 lg:p-8">
                     <div className="flex flex-col items-center justify-center rounded-sm border px-4 py-2">
                       <p className="-mb-1 text-base">
                         {format(startDateTime, 'MMM')}

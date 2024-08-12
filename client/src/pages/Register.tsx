@@ -53,14 +53,12 @@ const Register = () => {
         password: data.password,
       })
 
-      if (response.status === 200) {
-        toast({
-          description: 'You have registered successfully!',
-          variant: 'success',
-        })
+      toast({
+        description: 'You have registered successfully!',
+        variant: 'success',
+      })
 
-        navigate('/onboarding/signin', { replace: true })
-      }
+      navigate('/onboarding/signin', { replace: true })
 
       setAuth({
         user: response.data?.email,
@@ -73,7 +71,7 @@ const Register = () => {
   }
 
   return (
-    <section className="w-full lg:h-[100vh] lg:grid lg:grid-cols-3 overflow-hidden">
+    <section className="relative w-full lg:h-[100vh] lg:grid lg:grid-cols-3 overflow-hidden">
       <div className="bg-muted absolute lg:relative top-0 lg:top-0">
         <img
           src={coverImg}
@@ -115,7 +113,7 @@ const Register = () => {
                         <Input placeholder="John" {...field} />
                       </FormControl>
 
-                      <FormError errorField={form.formState.errors.email} />
+                      <FormError errorField={form.formState.errors.firstName} />
                     </FormItem>
                   )}
                 />
@@ -129,7 +127,7 @@ const Register = () => {
                         <Input placeholder="Doe" {...field} />
                       </FormControl>
 
-                      <FormError errorField={form.formState.errors.email} />
+                      <FormError errorField={form.formState.errors.lastName} />
                     </FormItem>
                   )}
                 />
@@ -152,7 +150,7 @@ const Register = () => {
                     <FormItem>
                       <Label>Email</Label>
                       <FormControl>
-                        <Input placeholder="admin@agenda.com" {...field} />
+                        <Input placeholder="you@company.com" {...field} />
                       </FormControl>
 
                       <FormError errorField={form.formState.errors.email} />

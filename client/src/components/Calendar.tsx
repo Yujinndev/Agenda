@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+import { motion, MotionProps } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import {
@@ -11,11 +13,7 @@ import {
   startOfMonth,
   subMonths,
 } from 'date-fns'
-
-import { motion, MotionProps } from 'framer-motion'
-import { ArrowLeft, ArrowRight, Plus } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { Badge } from '@/components/ui/badge'
+import { ArrowLeft, ArrowRight, Plus, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -24,7 +22,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from './ui/dialog'
+} from '@/components/ui/dialog'
 
 export type Event = {
   id: string
@@ -43,10 +41,6 @@ export type Event = {
   participants?: any
   committees?: any
 }
-
-type DateBlockProps = {
-  className?: string
-} & MotionProps
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
@@ -77,23 +71,28 @@ const Calendar = ({ events }: { events: Event[] }) => {
 
   // get the events on each date
   const eventsByDate = useMemo(() => {
-    return events.reduce((acc: any, event: Event) => {
-      const eventStartDate = event.startDateTime ?? '2000-01-01 00:00:00'
-      const dateKey = format(eventStartDate, 'yyyy-MM-dd')
-      return {
-        ...acc,
-        [dateKey]: [...(acc[dateKey] || []), event],
-      }
-    }, {})
+    return (
+      events.length > 0 &&
+      events.reduce((acc: any, event: Event) => {
+        const eventStartDate = event.startDateTime ?? '2000-01-01 00:00:00'
+        const dateKey = format(eventStartDate, 'yyyy-MM-dd')
+        return {
+          ...acc,
+          [dateKey]: [...(acc[dateKey] || []), event],
+        }
+      }, {})
+    )
   }, [events])
 
   // Get event count for the current month
   const eventCountForCurrentMonth = useMemo(() => {
-    return events.filter((event: Event) =>
-      isWithinInterval(new Date(event.startDateTime), {
-        start: firstDayOfMonth,
-        end: lastDayOfMonth,
-      })
+    return events.filter(
+      (event: Event) =>
+        event.status !== 'CANCELLED' &&
+        isWithinInterval(new Date(event.startDateTime), {
+          start: firstDayOfMonth,
+          end: lastDayOfMonth,
+        })
     ).length
   }, [events, firstDayOfMonth, lastDayOfMonth])
 
@@ -113,24 +112,32 @@ const Calendar = ({ events }: { events: Event[] }) => {
               <h1 className="text-3xl  font-black dark:text-white">
                 {format(currentMonth, 'MMMM yyyy')}
               </h1>
-
-              <Badge
-                variant="outline"
-                className="absolute -right-8 -top-2 bg-amber-300 text-black h-6 w-6 flex justify-center items-center"
+              <Button
+                className="absolute -right-8 -top-2 rounded-full w-6 h-6 p-0 bg-slate-300 text-black hover pointer-events-none"
+                variant="secondary"
               >
-                {eventCountForCurrentMonth}
-              </Badge>
+                <span className="text-sm font-mono">
+                  {eventCountForCurrentMonth}
+                </span>
+              </Button>
             </div>
           </div>
-          <Button
-            className="rounded-full w-11 h-11 p-2"
-            variant="outline"
-            asChild
-          >
-            <Link to="/events/new">
-              <Plus color="black" />
-            </Link>
-          </Button>
+          <div className="flex justify-end gap-2">
+            <Button
+              className="rounded-full w-11 h-11 p-2"
+              variant="outline"
+              asChild
+            >
+              <Link to="/events/new">
+                <Plus color="black" />
+              </Link>
+            </Button>
+            <Button className="rounded-full w-11 h-11 p-2" variant="outline">
+              <Link to="/groups/my-groups">
+                <Users color="black" />
+              </Link>
+            </Button>
+          </div>
         </div>
         <HeaderBlock items={WEEKDAYS} />
       </div>
@@ -188,8 +195,13 @@ const AllDays = ({
             >
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="rounded-full w-7 h-7 p-0 bg-amber-300 hover:bg-amber-300/80">
-                    <span className="text-base">{todaysEvents.length}</span>
+                  <Button
+                    className="rounded-full w-6 h-6 p-0 bg-slate-300 text-black group hover:bg-slate-400"
+                    variant="secondary"
+                  >
+                    <span className="text-sm font-mono">
+                      {todaysEvents.length}
+                    </span>
                   </Button>
                 </DialogTrigger>
 
@@ -205,7 +217,10 @@ const AllDays = ({
                   <div className="h-[1px] w-full bg-green-900" />
 
                   <div className="grid gap-4 max-h-[60vh] overflow-y-auto p-4">
-                    <EventsPerDay events={todaysEvents} />
+                    <EventsPerDay
+                      events={todaysEvents}
+                      className="m-0 text-sm py-3 rounded-sm"
+                    />
                   </div>
                 </DialogContent>
               </Dialog>
@@ -215,7 +230,7 @@ const AllDays = ({
               {format(day, 'd')}
             </p>
             <div className="flex flex-col gap-1 absolute left-0 w-[75%] h-20 rounded-e-sm overflow-y-scroll no-scrollbar py-1">
-              <EventsPerDay events={todaysEvents} />
+              <EventsPerDay events={todaysEvents} className="hidden lg:block" />
             </div>
           </DateBlock>
         )
@@ -224,15 +239,22 @@ const AllDays = ({
   )
 }
 
-const EventsPerDay = ({ events }: { events: Event[] }) => {
+const EventsPerDay = ({
+  events,
+  className,
+}: {
+  events: Event[]
+  className?: string
+}) => {
   return events.map(
     (event) =>
       event.status !== 'CANCELLED' && (
         <Link
           to={`/events/detail/${event.id}`}
-          key={event.title}
+          key={event.id}
           className={cn(
-            'rounded-e-sm hidden px-4 py-2 text-center text-xs text-black bg-white lg:line-clamp-none lg:text-left text-balance',
+            'rounded-e-sm px-4 py-2 text-center text-xs text-black bg-white lg:line-clamp-none lg:text-left text-balance',
+            className,
             {
               'bg-gray-200': event.status === 'DONE',
               'border-gray-300 border-[1px] border-l-0':
@@ -251,6 +273,9 @@ const EventsPerDay = ({ events }: { events: Event[] }) => {
   )
 }
 
+type DateBlockProps = {
+  className?: string
+} & MotionProps
 const DateBlock = ({ className, ...rest }: DateBlockProps) => {
   return (
     <>

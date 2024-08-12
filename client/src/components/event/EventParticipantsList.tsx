@@ -6,15 +6,15 @@ import { useGetEventById } from '@/hooks/api/useGetEventById'
 import ReadFeedbackDialog from './ReadFeedbackDialog'
 
 const EventParticipantsList = ({ id }: { id: string }) => {
-  const { data } = useGetEventById(id)
-  const participants = data?.participants
+  const { data, isSuccess } = useGetEventById(id)
+  const participants = isSuccess && data?.participants
 
   return (
     <div className="relative ml-auto w-full">
       {participants?.length > 0 ? (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 min-h-40">
           {participants.map((item: any, idx: number) => {
-            const userFeedback = data?.eventFeedbacks.find(
+            const userFeedback = data?.feedbacks.find(
               (el: any) => el.userId === item.userId
             )
 

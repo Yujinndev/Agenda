@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import useAxiosPrivate from '../useAxiosPrivate'
+import useAxiosPrivate from '@/hooks/useAxiosPrivate'
 
 export const useGetRequestedEventsForCommitteeUser = () => {
   const axios = useAxiosPrivate()

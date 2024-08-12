@@ -15,6 +15,7 @@ type Choice = {
   value: string
   label: string
   type?: string
+  isDisabled?: boolean
 }
 
 type TextFieldCustomProps = {
@@ -57,7 +58,11 @@ export function SelectFieldCustom({
             </FormControl>
             <SelectContent>
               {choices.map((choice) => (
-                <SelectItem key={choice.value} value={choice.value}>
+                <SelectItem
+                  key={choice.value}
+                  value={choice.value}
+                  disabled={choice.isDisabled}
+                >
                   {choice.label}
                 </SelectItem>
               ))}

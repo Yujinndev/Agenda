@@ -143,6 +143,21 @@ const EventActions = ({
           </Button>
         )}
 
+        {isNextToApprove.isNext &&
+          (isWaitingForApproval ? (
+            <CommitteeActions
+              handleEventCommitteeStep={handleEventCommitteeStep}
+            />
+          ) : (
+            <Badge
+              variant="outline"
+              className="text-white flex items-center gap-3 py-2 text-sm"
+            >
+              {approvalStatus?.label}
+              {isUserAlreadyJoined && <li>Joined</li>}
+            </Badge>
+          ))}
+
         {canTakeAction && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -170,21 +185,6 @@ const EventActions = ({
             </DropdownMenuContent>
           </DropdownMenu>
         )}
-
-        {isNextToApprove.isNext &&
-          (isWaitingForApproval ? (
-            <CommitteeActions
-              handleEventCommitteeStep={handleEventCommitteeStep}
-            />
-          ) : (
-            <Badge
-              variant="outline"
-              className="text-white flex items-center gap-3 py-2 text-sm"
-            >
-              {approvalStatus?.label}
-              {isUserAlreadyJoined && <li>Joined</li>}
-            </Badge>
-          ))}
       </div>
     </div>
   )

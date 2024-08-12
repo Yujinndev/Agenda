@@ -18,8 +18,7 @@ export const getGroupData = async ({ prisma, id }: GetGroupDataArgs) => {
             user: true,
           },
         },
-        events: true,
-        rules: true,
+        event: { include: { group: true } },
       },
     })
     .catch(() => {

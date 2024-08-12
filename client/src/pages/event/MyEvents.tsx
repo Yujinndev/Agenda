@@ -66,9 +66,7 @@ const MyEvents = () => {
                     )}
                   </Button>
                   {eventCategoriesLength > 0 && (
-                    <span className="text-xs font-mono absolute -top-1 -left-1 h-3 w-3 p-2 text-center flex items-center justify-center bg-green-900 text-white rounded-full">
-                      {eventCategoriesLength}
-                    </span>
+                    <span className="text-xs font-mono absolute -top-[2px] -left-[2px] h-1 w-1 p-1 text-center flex items-center justify-center bg-green-900 rounded-full" />
                   )}
                 </div>
               )

@@ -1,10 +1,10 @@
-import { useFormContext, FieldValues, FieldPath } from 'react-hook-form'
-import { Input, InputProps } from './input'
-import { Label } from './label'
-import FormError from './formError'
-import { FormControl, FormField, FormItem } from './form'
-import { Textarea } from './textarea'
 import { cn } from '@/lib/utils'
+import { Label } from '@/components/ui/label'
+import FormError from '@/components/ui/formError'
+import { Textarea } from '@/components/ui/textarea'
+import { Input, InputProps } from '@/components/ui/input'
+import { FormControl, FormField, FormItem } from '@/components/ui/form'
+import { useFormContext, FieldValues, FieldPath } from 'react-hook-form'
 
 interface TextFieldCustomProps<TFieldValues extends FieldValues>
   extends Omit<InputProps, 'name'> {

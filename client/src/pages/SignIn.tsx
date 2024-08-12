@@ -105,7 +105,7 @@ const SignIn = () => {
                     <FormItem>
                       <Label>Email</Label>
                       <FormControl>
-                        <Input placeholder="admin@agenda.com" {...field} />
+                        <Input placeholder="you@company.com" {...field} />
                       </FormControl>
 
                       <FormError errorField={form.formState.errors.email} />

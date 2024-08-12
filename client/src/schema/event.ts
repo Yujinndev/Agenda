@@ -2,18 +2,10 @@ import { z } from 'zod'
 
 export type EventDetailsFormValues = z.infer<typeof eventDetailsSchema>
 export const eventDetailsSchema = z.object({
-  title: z
-    .string({ required_error: "Kindly enter your Event's Title" })
-    .min(3, 'Title must contain at least 3 character(s)'),
-  details: z
-    .string({ required_error: "Kindly enter your Event's Detail" })
-    .min(25, 'Detail must contain at least 25 character(s)'),
-  purpose: z
-    .string({ required_error: "Kindly enter your Event's Purpose" })
-    .min(25, 'Purpose must contain at least 25 character(s)'),
-  location: z
-    .string({ required_error: "Kindly enter the Event's location" })
-    .min(5, 'Location must contain at least 5 character(s)'),
+  title: z.string().min(1, { message: "Kindly enter your Event's Title" }),
+  details: z.string().min(1, { message: "Kindly enter your Event's Detail" }),
+  purpose: z.string().min(1, { message: "Kindly enter your Event's Purpose" }),
+  location: z.string().min(1, { message: "Kindly enter the Event's location" }),
   startDateTime: z
     .string()
     .min(1, "Kindly enter your Event's Start Date and Time")
@@ -44,13 +36,13 @@ export const eventGuestDetailSchema = z
   .object({
     estimatedAttendees: z
       .string({ invalid_type_error: 'Required' })
-      .min(1, "Kindly enter your Event's Estimated Attendees"),
+      .min(1, { message: "Kindly enter your Event's Estimated Attendees" }),
     category: z
       .string({ invalid_type_error: 'Required' })
-      .min(1, "Kindly select your Event's Category"),
+      .min(1, { message: "Kindly select your Event's Category" }),
     audience: z
       .string({ invalid_type_error: 'Required' })
-      .min(1, "Kindly select your Event's Publishing Audience"),
+      .min(1, { message: "Kindly select your Event's Publishing Audience" }),
   })
   .merge(eventCommitteeSchema)
 
@@ -78,11 +70,11 @@ export const eventFinanceSchema = z.object({
   finances: z.array(
     z.object({
       eventId: z.string(),
-      financeCategory: z.string().min(1, 'Required'),
-      transactionType: z.string().min(3, 'Required'),
-      transactionDescription: z.string().min(3, 'Required'),
-      serviceProvider: z.string().min(3, 'Required'),
-      estimatedAmount: z.string().min(1, 'Required'),
+      financeCategory: z.string().min(1, { message: 'Required' }),
+      transactionType: z.string().min(1, { message: 'Required' }),
+      transactionDescription: z.string().min(1, { message: 'Required' }),
+      serviceProvider: z.string().min(1, { message: 'Required' }),
+      estimatedAmount: z.string().min(1, { message: 'Required' }),
       actualAmount: z.string().nullable(),
     })
   ),
@@ -91,10 +83,17 @@ export const eventFinanceSchema = z.object({
 export const eventBudgetSchema = z.object({
   estimatedExpense: z
     .string({ invalid_type_error: 'Required' })
-    .min(1, "Kindly enter your Event's maximum budget"),
+    .min(1, { message: "Kindly enter your Event's maximum budget" }),
   price: z
     .string({ invalid_type_error: 'Required' })
-    .min(1, "Kindly enter your Event's joining price"),
+    .min(1, { message: "Kindly enter your Event's joining price" }),
+})
+
+export type SelectedGroups = z.infer<typeof selectedGroupsSchema>
+export const selectedGroupsSchema = z.object({
+  groupId: z.string(),
+  name: z.string(),
+  creatorName: z.string(),
 })
 
 export type EventApprovalFormValues = z.infer<typeof eventApprovalSchema>
