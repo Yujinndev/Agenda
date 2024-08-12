@@ -24,6 +24,9 @@ export const createGroupHandler = async (req: Request, res: Response) => {
         throw new ValidationError('No user found')
       }
 
+      const groupRules: string[] =
+        data.groupRules.length > 0 && data.groupRules.map((el: any) => el.rules)
+
       const newGroup = await prismaTx.group.create({
         data: {
           name: data.name,
@@ -31,20 +34,10 @@ export const createGroupHandler = async (req: Request, res: Response) => {
           visibility: data.visibility,
           joinPermission: data.joinPermission,
           postPermission: data.postPermission,
-          numberOfMembers: 1,
+          membersCount: 1,
+          rules: groupRules,
         },
       })
-
-      if (data.groupRules.length > 0) {
-        const groupRules = data.groupRules.map((el: any) => ({
-          description: el.data,
-          groupId: newGroup.id,
-        }))
-
-        await prismaTx.groupRules.createMany({
-          data: { ...groupRules },
-        })
-      }
 
       const userFullName = concatenateStrings(
         user.firstName,

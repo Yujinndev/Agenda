@@ -27,7 +27,7 @@ export const createGroupParticipantHandler = async (
 
       await prismaTx.group.update({
         where: { id: groupId },
-        data: { numberOfMembers: { increment: 1 } },
+        data: { membersCount: { increment: 1 } },
       })
 
       const newMember = await prismaTx.groupMembership.create({

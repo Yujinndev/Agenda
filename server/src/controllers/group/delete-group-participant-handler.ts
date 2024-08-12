@@ -24,7 +24,7 @@ export const deleteGroupParticipantHandler = async (
       await prismaTx.group.update({
         where: { id: groupId },
         data: {
-          numberOfMembers: { decrement: 1 },
+          membersCount: { decrement: 1 },
         },
       })
 

@@ -14,7 +14,7 @@ export const getGroupEventsHandler = async (req: Request, res: Response) => {
         AND: [
           { audience: { equals: 'USER_GROUP' } },
           { status: { equals: 'UPCOMING' } },
-          { groups: { some: { userGroupId: id } } },
+          { groups: { some: { groupId: id } } },
         ],
       },
       sortBy: 'startDateTime',
