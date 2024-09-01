@@ -6,6 +6,7 @@ const prisma = new PrismaClient()
 
 export const createEventHandler = async (req: Request, res: Response) => {
   const { userId, data } = req.body
+  console.log('🚀 ~ createEventHandler ~ data:', data)
 
   if (!data) {
     res.sendStatus(400)
@@ -23,8 +24,7 @@ export const createEventHandler = async (req: Request, res: Response) => {
       return value ? new Date(value).toISOString() : null
     }
 
-    const { committees, finances, selectedGroups, ...rest } = data
-
+    const { committees, finances, selectedGroups, groupIDs, ...rest } = data
     const values = {
       ...rest,
       startDateTime: parsedDate(data.startDateTime),
@@ -36,11 +36,13 @@ export const createEventHandler = async (req: Request, res: Response) => {
       estimatedExpense: parsedEstimatedExpense,
     }
 
+    const groups = groupIDs.map(({ value }: { value: string }) => value)
     const event = await createEventService({
       prisma,
       committees,
       finances,
       userId,
+      groupIDs: groups,
       values,
     })
 

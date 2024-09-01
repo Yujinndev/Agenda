@@ -13,13 +13,14 @@ import { createHistoryLogData } from '../../data/history/create-history-log'
 import { createSentEmailCommitteeData } from '../../data/committee/create-sent-email-committee'
 import { sendEmailApprovalService } from './send-email-approval-service'
 import { concatenateStrings } from '../../utils/concatenate-strings'
-import { NotFoundError, ValidationError } from '../../utils/errors'
+import { NotFoundError } from '../../utils/errors'
 
 export type CreateEventServiceArgs = {
   prisma: PrismaClient
   committees: EventCommittee[]
   finances: EventFinance[]
   userId: string
+  groupIDs: string[]
   values: Event
 }
 
@@ -28,15 +29,28 @@ export const createEventService = async ({
   committees,
   finances,
   userId,
+  groupIDs,
   values,
 }: CreateEventServiceArgs) => {
   const newEvent = await prisma.$transaction(async (prismaTx) => {
-    const event = await createEventData({ prisma: prismaTx, values, userId })
+    const event = await createEventData({
+      prisma: prismaTx,
+      values,
+      userId,
+      groupIDs,
+    })
 
     const organizer = await getUserData({
       prisma: prismaTx,
       id: event.organizerId,
     })
+
+    if (groupIDs.length > 0) {
+      await prisma.group.updateMany({
+        where: { id: { in: groupIDs } },
+        data: { eventsCount: { increment: 1 } },
+      })
+    }
 
     if (!organizer) {
       throw new NotFoundError('No organizer found.')

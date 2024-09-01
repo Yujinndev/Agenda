@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { getGroupData } from '../../data/group/get-group'
-import { getGroupAdminData } from '../../data/group/get-group-admin'
 
 const prisma = new PrismaClient()
 
@@ -13,14 +12,7 @@ export const getGroupHandler = async (req: Request, res: Response) => {
   }
 
   try {
-    const userGroup = await getGroupData({ prisma, id })
-    const admin = await getGroupAdminData({ prisma, groupIds: id })
-
-    const record = {
-      ...userGroup,
-      admin,
-    }
-
+    const record = await getGroupData({ prisma, id })
     return res.status(200).json(record)
   } catch {
     return res.sendStatus(500)
