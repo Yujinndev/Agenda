@@ -13,7 +13,7 @@ const useLogout = () => {
       setAuth({})
       navigate('/', { replace: true })
     } catch (err) {
-      console.error(err)
+      console.log(err)
     }
   }
 

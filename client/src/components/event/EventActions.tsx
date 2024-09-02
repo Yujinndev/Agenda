@@ -1,5 +1,4 @@
 import {
-  ArrowUpRight,
   Ellipsis,
   MessageCircleQuestion,
   Check,
@@ -14,7 +13,7 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { EVENT_COMMITTEE_INQUIRIES } from '@/constants/choices'
 import { Event } from '@/components/Calendar'
 import { Badge } from '@/components/ui/badge'
@@ -130,19 +129,6 @@ const EventActions = ({
   return (
     <div className="py-2">
       <div className="flex gap-2 items-center">
-        {!isNextToApprove.isNext && (
-          <Button
-            size="sm"
-            variant="outline"
-            className="relative w-max rounded-full lg:px-6 lg:p-5 lg:flex hidden"
-            asChild
-          >
-            <Link to="/events/my-events" className="text-black">
-              My Events <ArrowUpRight size={18} className="-mt-1 ms-2" />
-            </Link>
-          </Button>
-        )}
-
         {isNextToApprove.isNext &&
           (isWaitingForApproval ? (
             <CommitteeActions

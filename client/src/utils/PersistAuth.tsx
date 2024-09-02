@@ -14,7 +14,7 @@ const PersistAuth = () => {
       try {
         await refresh()
       } catch (err) {
-        console.error(err)
+        console.log(err)
       } finally {
         setIsLoading(false)
       }

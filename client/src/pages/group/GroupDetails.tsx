@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ArrowUpLeft, LogOut } from 'lucide-react'
 import { QueryClient } from '@tanstack/react-query'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +31,7 @@ const GroupDetails = () => {
   const queryClient = new QueryClient()
   const axios = useAxiosPrivate()
   const navigate = useNavigate()
+  const location = useLocation()
   const { auth } = useAuth()
   const { data, isLoading } = useGetGroupById(id as string)
 
@@ -90,23 +91,23 @@ const GroupDetails = () => {
     (el) => el.value === data.joinPermission
   )
 
-  const isCreator = data?.members[0].user?.email === auth?.user
+  const isCreator = data.members[0].user?.email === auth?.user
   const showTabsOnPermission = isCreator ? tabs.length : 2
   const visibleTabs = tabs.slice(0, showTabsOnPermission)
 
   return (
     <div className="w-full pt-8">
       <div className="relative bg-green-900 px-8 mb-8 py-6 rounded-md text-white flex flex-col items-start justify-between md:flex-row md:items-center">
-        <Button
-          size="sm"
-          variant="outline"
-          className="rounded-full absolute -top-2 -left-2 h-10 w-10 lg:hidden"
-          asChild
-        >
-          <Link to="/groups/my-groups" className="text-black">
-            <ArrowUpLeft size={18} />
-          </Link>
-        </Button>
+        {!location.state && (
+          <Button
+            size="sm"
+            variant="outline"
+            className="rounded-full absolute -top-2 -left-2 h-10 w-10 text-black"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowUpLeft size={20} className="flex-shrink-0" />
+          </Button>
+        )}
 
         <div className="flex flex-col lg:flex-row w-full justify-between lg:items-center gap-2">
           <div className="flex flex-1 flex-col items-start gap-1 md:w-2/3 lg:w-1/2">
@@ -132,11 +133,11 @@ const GroupDetails = () => {
               <AlertDialogTrigger asChild>
                 <Button
                   size="sm"
-                  variant="warning"
-                  className="w-max rounded-full py-4 px-4 h-7 space-x-3 cursor-pointer"
+                  variant="destructive"
+                  className="w-max rounded-md py-5 px-6 h-7 space-x-3 cursor-pointer"
                 >
+                  <LogOut size={18} className="rotate-180" />
                   <p className="text-white">Leave Group</p>{' '}
-                  <LogOut size={18} color="white" className="m-1 " />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>

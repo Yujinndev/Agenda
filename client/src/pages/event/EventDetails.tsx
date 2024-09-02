@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { ArrowUpLeft } from 'lucide-react'
 import { EVENT_CATEGORIES } from '@/constants/choices'
 import { isCommitteeNextToApprove } from '@/utils/helpers/checkCommitteeIfNextToApprove'
@@ -22,6 +22,7 @@ const EventDetails = () => {
   const { id } = useParams()
   const { toast } = useToast()
   const location = useLocation()
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (location.state === 'redirected') {
@@ -102,16 +103,16 @@ const EventDetails = () => {
     return (
       <div className="w-full pt-8">
         <div className="relative bg-green-900 px-8 mb-8 py-6 rounded-md text-white flex flex-col items-start justify-between md:flex-row md:items-center">
-          <Button
-            size="sm"
-            variant="outline"
-            className="rounded-full absolute -top-2 -left-2 h-10 w-10 lg:hidden"
-            asChild
-          >
-            <Link to="/events/my-events" className="text-black">
-              <ArrowUpLeft size={18} />
-            </Link>
-          </Button>
+          {!location.state && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="rounded-full absolute -top-2 -left-2 h-10 w-10 text-black"
+              onClick={() => navigate(-1)}
+            >
+              <ArrowUpLeft size={20} className="flex-shrink-0" />
+            </Button>
+          )}
 
           <div className="flex flex-1 flex-col items-start gap-1 md:w-2/3 lg:w-1/2">
             <div className="space-x-1 mb-2">
@@ -154,10 +155,6 @@ const EventDetails = () => {
       </div>
     )
   }
-  console.log(
-    '🚀 ~ EventDetails ~ data.eventFeedbacks?.length :',
-    data.eventFeedbacks?.length
-  )
 }
 
 export default EventDetails

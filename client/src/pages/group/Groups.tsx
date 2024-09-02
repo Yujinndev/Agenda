@@ -1,11 +1,11 @@
-import Loading from '@/components/Loading'
 import { Link } from 'react-router-dom'
-import ResultMessage from '@/components/ui/resultMessage'
 import { useGetAllPublicGroups } from '@/hooks/api/useGetAllPublicGroups'
+import ResultMessage from '@/components/ui/resultMessage'
 import GroupCard from '@/components/GroupCard'
+import Loading from '@/components/Loading'
 
 const GroupsPage = () => {
-  const { data: allGroups, isSuccess, isLoading } = useGetAllPublicGroups()
+  const { data, isSuccess, isLoading } = useGetAllPublicGroups()
 
   if (isLoading) {
     return <Loading />
@@ -20,9 +20,9 @@ const GroupsPage = () => {
         </div>
       </div>
 
-      {isSuccess && allGroups.length > 0 ? (
+      {isSuccess && data.length > 0 ? (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 pt-8">
-          {allGroups.map((group: any) => (
+          {data.map((group: any) => (
             <Link to={`/groups/browse/p/${group.id}`} key={group.id}>
               <GroupCard group={group} extendedVariant={true} />
             </Link>

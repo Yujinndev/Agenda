@@ -31,16 +31,12 @@ import { cn } from '@/lib/utils'
 type ResponseFormSchemaType = z.infer<typeof responseFormSchema>
 const responseFormSchema = z.discriminatedUnion('withRatings', [
   z.object({
-    content: z
-      .string()
-      .min(10, 'Kindly enter your message or feedback (10 characters minimum)'),
     withRatings: z.literal(false),
+    content: z.string().min(1, 'Kindly enter your message or feedback'),
   }),
   z.object({
-    content: z
-      .string()
-      .min(10, 'Kindly enter your message or feedback (10 characters minimum)'),
     withRatings: z.literal(true),
+    content: z.string().min(1, 'Kindly enter your message or feedback'),
     rating: z.string({ invalid_type_error: 'Required' }).min(3, 'Required'),
   }),
 ])
@@ -84,7 +80,7 @@ export const DecimalStarRating = React.forwardRef<
         return (
           <FaStar
             key={index}
-            className={cn('w-6 h-6 text-amber-400/5', {
+            className={cn('w-6 h-6 text-amber-400/25', {
               'text-amber-400': filled > 0,
             })}
             style={{

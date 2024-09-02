@@ -16,7 +16,8 @@ const EventCard = ({
   className?: string
 }) => {
   const { auth } = useAuth()
-  const currentParticipantsCount = event?.participants?.length
+  const currentParticipantsCount = event.participants?.length
+
   const startDate = new Date(event.startDateTime)
   const endDate = new Date(event.endDateTime)
   const isSameDate = isSameDay(startDate, endDate)
@@ -39,11 +40,10 @@ const EventCard = ({
           }
         )}
       />
-      <div className="grid gap-2">
+      <div className="space-y-2">
         <div className="flex justify-between gap-1 items-start">
           <h2 className="font-bold text-lg line-clamp-2">{event.title}</h2>
-
-          <Badge className="lg:text-[10px]">{event.category}</Badge>
+          <Badge className="rounded-md">{event.category}</Badge>
         </div>
         {extendedVariant && (
           <div className="flex gap-x-2 text-gray-600 items-start flex-col xl:flex-row">

@@ -1,8 +1,8 @@
-import { Card } from './ui/card'
-import { Badge } from './ui/badge'
 import { cn } from '@/lib/utils'
-import useAuth from '@/hooks/useAuth'
+import { Card } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { JOIN_PERMISSION } from '@/constants/choices'
+import useAuth from '@/hooks/useAuth'
 
 const GroupCard = ({
   group,
@@ -10,21 +10,23 @@ const GroupCard = ({
   extendedVariant = false,
 }: {
   group: any
-  extendedVariant?: boolean
   className?: string
+  extendedVariant?: boolean
 }) => {
   const { auth } = useAuth()
-  const creatorEmail = group?.members[0].user?.email
-  const isUserTheCreator = creatorEmail === auth.user
+
+  const groupCreator = group.members[0].user?.email
+  const isUserTheCreator = auth.user === groupCreator
   const getJoinPermission = JOIN_PERMISSION.find(
     (el) => el.value === group.joinPermission
   )
+
   return (
     <Card
       className={cn(
-        'relative rounded-lg flex flex-col gap-4 border-0 p-4 shadow-none group',
+        'relative rounded-lg flex flex-col gap-4 border-[1px] p-4 shadow-none group',
         className,
-        { 'p-0': extendedVariant }
+        { 'p-0 border-0': extendedVariant }
       )}
     >
       <img
@@ -37,25 +39,22 @@ const GroupCard = ({
           }
         )}
       />
-      <div className="grid gap-[2px]">
+      <div className="space-y-1">
         <div className="flex justify-between gap-1 items-start">
           <h2 className="font-bold text-lg line-clamp-1 ">{group.name}</h2>
           <div className="flex justify-end gap-1 items-start">
-            <Badge className="lg:text-[10px]">{getJoinPermission?.label}</Badge>
+            <Badge className="rounded-md">{getJoinPermission?.label}</Badge>
           </div>
         </div>
         {extendedVariant && (
-          <div className="flex gap-8 items-center py-1">
-            <div className="flex items-center gap-2">
-              {isUserTheCreator ? (
-                <p>
-                  Members: {group.members.length} |{' '}
-                  <span className="font-bold">ADMIN</span>
-                </p>
-              ) : (
-                <p>Members: {group.members.length}</p>
-              )}
-            </div>
+          <div className="flex gap-2">
+            <p>Members: {group.members.length}</p>
+            {isUserTheCreator && (
+              <>
+                <p className="font-extralight text-gray-300">|</p>
+                <p className="font-light">Admin</p>
+              </>
+            )}
           </div>
         )}
       </div>

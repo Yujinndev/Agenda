@@ -38,6 +38,7 @@ export type Event = {
   endDateTime: Date
   eventFeedbacks?: any
   organizer?: any
+  organizerId: string
   participants?: any
   committees?: any
 }

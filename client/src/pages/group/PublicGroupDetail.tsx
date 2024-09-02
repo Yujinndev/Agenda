@@ -1,4 +1,4 @@
-import { LogIn, Notebook, Shield } from 'lucide-react'
+import { ArrowUpLeft, LogIn, Notebook, Shield } from 'lucide-react'
 import {
   Sheet,
   SheetClose,
@@ -40,7 +40,12 @@ const PublicEventDetail = () => {
   const navigate = useNavigate()
 
   const { data, isLoading, isSuccess } = useGetGroupById(id as string)
-  const group = isSuccess ? data && data : undefined
+
+  if (isLoading) {
+    return <Loading />
+  }
+
+  const group = isSuccess && data
 
   const getJoinPermission = JOIN_PERMISSION.find(
     (el) => el.value === group?.joinPermission
@@ -71,18 +76,22 @@ const PublicEventDetail = () => {
 
   const creator = `${group?.members[0].user?.firstName} ${group?.members[0].user?.lastName}`
   const creatorEmail = group?.members[0].user?.email
-
-  const isUserAlreadyJoined = group?.members?.find(
-    (el: any) => el.email === auth.user
+  const isUserAlreadyJoined = group.members?.some(
+    ({ email }: { email: string }) => email === auth?.user
   )
-
-  if (isLoading) {
-    return <Loading />
-  }
 
   return (
     <div className="w-full py-12 lg:px-28" id="#details">
       <div className="relative w-full lg:h-[500px] h-52 rounded-t-2xl overflow-hidden">
+        <Button
+          size="sm"
+          variant="outline"
+          className="rounded-full absolute top-0 left-0 h-10 w-10 text-black z-50"
+          onClick={() => navigate(-1)}
+        >
+          <ArrowUpLeft size={20} className="flex-shrink-0" />
+        </Button>
+
         <div
           className="absolute inset-0 w-full h-full bg-center bg-cover blur-xl"
           style={{
@@ -118,7 +127,7 @@ const PublicEventDetail = () => {
                     <Button
                       size="sm"
                       variant="secondary"
-                      className="w-max rounded-full py-4 px-6 h-7 space-x-3"
+                      className="w-max rounded-md py-5 px-6 h-7 space-x-3"
                     >
                       <p>Join Event</p> <LogIn size={18} className="m-1" />
                     </Button>
@@ -172,7 +181,7 @@ const PublicEventDetail = () => {
                     <Button
                       size="sm"
                       variant="secondary"
-                      className="w-max rounded-full py-4 px-6 h-7 space-x-2"
+                      className="w-max rounded-md py-5 px-6 h-7 space-x-2"
                     >
                       <p className="mt-[2px]">Join Event</p>{' '}
                       <LogIn size={18} className="m-1" />

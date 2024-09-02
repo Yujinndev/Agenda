@@ -85,7 +85,7 @@ const GroupOverview = ({ id }: { id: string }) => {
               <MdAdminPanelSettings size={40} className="flex-shrink-0" />
             </Button>
             <div className="grid">
-              <h1 className="text-xl font-black">Admin:</h1>
+              <h1 className="text-xl font-black">Creator:</h1>
               <p className="text-lg lg:text-justify lg:text-xl">
                 {creator} {creatorEmail === auth.user && '(You)'}
               </p>
