@@ -31,8 +31,12 @@ export const eventCommitteeSchema = z.object({
   ),
 })
 
-export type EventGuestsDetailFormValues = z.infer<typeof eventGuestDetailSchema>
-export const eventGuestDetailSchema = z
+const optionSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+})
+
+const baseEventGuestDetailSchema = z
   .object({
     estimatedAttendees: z
       .string({ invalid_type_error: 'Required' })
@@ -43,8 +47,23 @@ export const eventGuestDetailSchema = z
     audience: z
       .string({ invalid_type_error: 'Required' })
       .min(1, { message: "Kindly select your Event's Publishing Audience" }),
+    groupIDs: z.array(optionSchema),
   })
   .merge(eventCommitteeSchema)
+
+export type EventGuestsDetailFormValues = z.infer<typeof eventGuestDetailSchema>
+export const eventGuestDetailSchema = baseEventGuestDetailSchema.refine(
+  (data) => {
+    if (data.audience === 'USER_GROUP') {
+      return data.groupIDs.length >= 1
+    }
+    return true
+  },
+  {
+    message: 'You have to select at least one item.',
+    path: ['groupIDs'],
+  }
+)
 
 export type EventStatus = (typeof EVENT_STATUS_OPTIONS)[number]
 const EVENT_STATUS_OPTIONS = [
@@ -89,21 +108,14 @@ export const eventBudgetSchema = z.object({
     .min(1, { message: "Kindly enter your Event's joining price" }),
 })
 
-export type SelectedGroups = z.infer<typeof selectedGroupsSchema>
-export const selectedGroupsSchema = z.object({
-  groupId: z.string(),
-  name: z.string(),
-  creatorName: z.string(),
-})
-
 export type EventApprovalFormValues = z.infer<typeof eventApprovalSchema>
 export const eventApprovalSchema = eventBudgetSchema.merge(eventFinanceSchema)
 
 // for zustand store
+export type EventFormValues = z.infer<typeof eventFormSchema>
 export const eventFormSchema = eventDetailsSchema
-  .merge(eventGuestDetailSchema)
+  .merge(baseEventGuestDetailSchema)
   .merge(eventBudgetSchema)
   .merge(eventCommitteeSchema)
   .merge(eventFinanceSchema)
   .merge(eventConfirmationSchema)
-export type EventFormValues = z.infer<typeof eventFormSchema>

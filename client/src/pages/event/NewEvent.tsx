@@ -215,7 +215,7 @@ const NewEvent: React.FC = () => {
       <div className="lg:col-span-3 relative p-8 py-4 lg:pt-8 z-10 space-y-10">
         <Stepper steps={STEPS} activeStep={activeStep} />
 
-        <div className="relative">
+        <div className="space-y-1">
           <FormProvider {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
               <div className="lg:pb-20">

@@ -25,6 +25,7 @@ type TextFieldCustomProps = {
   labelCn?: string
   className?: string
   placeholder?: string
+  onChangeFn?: () => void
   disabled?: boolean
 }
 
@@ -35,6 +36,7 @@ export function SelectFieldCustom({
   className,
   choices,
   placeholder = '',
+  onChangeFn,
   disabled = false,
 }: TextFieldCustomProps) {
   const { control, formState } = useFormContext()
@@ -47,7 +49,13 @@ export function SelectFieldCustom({
         <FormItem className={className}>
           <Label className={cn('ubuntu-bold', labelCn)}>{label}</Label>
           <Select
-            onValueChange={field.onChange}
+            onValueChange={(value) => {
+              if (onChangeFn) {
+                onChangeFn()
+              }
+
+              return field.onChange(value)
+            }}
             defaultValue={field.value}
             disabled={disabled}
           >

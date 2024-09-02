@@ -27,6 +27,7 @@ const CompletedForm = () => {
     estimatedExpense,
     status,
     finances,
+    groupIDs,
   } = formData
 
   const getStatus = EVENT_CATEGORIES.find((el) => el.value === status)
@@ -92,58 +93,32 @@ const CompletedForm = () => {
         </CardContent>
       </div>
 
-      {committees.length > 0 && (
+      {groupIDs.length > 0 && (
         <CardContent className="border-b-[1px] px-0 space-y-2">
-          <CardDescription>Committee/s:</CardDescription>
+          <CardDescription>Group Audience:</CardDescription>
           <div className="space-y-2">
-            {committees.map((item, index) => (
+            {groupIDs.map((group, index) => (
               <div key={index} className="relative space-x-7">
                 <Badge className="absolute -top-1 -left-2" variant="secondary">
                   {index + 1}
                 </Badge>
-                <CardTitle className="p">{item.email}</CardTitle>
+                <CardTitle className="p">{group.label}</CardTitle>
               </div>
             ))}
           </div>
         </CardContent>
       )}
 
-      {finances.length > 0 && (
-        <CardContent className="border-b-[1px] px-0 space-y-2 w-full">
-          <CardDescription>Finance/s:</CardDescription>
-          <div>
-            {finances.map((item, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-2 lg:grid-cols-6 lg:grid-flow-row-dense gap-x-2 gap-y-1 bg-slate-50/75 relative rounded-md px-6 py-4 border-[1px]"
-              >
-                <Badge className="absolute -top-2 -left-2" variant="secondary">
+      {committees.length > 0 && (
+        <CardContent className="border-b-[1px] px-0 space-y-2">
+          <CardDescription>Committee/s:</CardDescription>
+          <div className="space-y-2">
+            {committees.map((committee, index) => (
+              <div key={index} className="relative space-x-7">
+                <Badge className="absolute -top-1 -left-2" variant="secondary">
                   {index + 1}
                 </Badge>
-                <div>
-                  <CardDescription>Category:</CardDescription>
-                  <CardTitle>{item.financeCategory}</CardTitle>
-                </div>
-                <div>
-                  <CardDescription>Type:</CardDescription>
-                  <CardTitle>{item.transactionType}</CardTitle>
-                </div>
-                <div>
-                  <CardDescription>Description:</CardDescription>
-                  <CardTitle>{item.transactionDescription}</CardTitle>
-                </div>
-                <div>
-                  <CardDescription>Service Provider:</CardDescription>
-                  <CardTitle>{item.serviceProvider}</CardTitle>
-                </div>
-                <div>
-                  <CardDescription>Estimated Amount:</CardDescription>
-                  <CardTitle>{item.estimatedAmount}</CardTitle>
-                </div>
-                <div>
-                  <CardDescription>Actual Amount:</CardDescription>
-                  <CardTitle>{item.actualAmount || 'None'}</CardTitle>
-                </div>
+                <CardTitle className="p">{committee.email}</CardTitle>
               </div>
             ))}
           </div>
@@ -174,6 +149,48 @@ const CompletedForm = () => {
           </CardTitle>
         </CardContent>
       </div>
+
+      {finances.length > 0 && (
+        <CardContent className="border-b-[1px] px-0 space-y-2 w-full">
+          <CardDescription>Finance/s:</CardDescription>
+          <div>
+            {finances.map((finance, index) => (
+              <div
+                key={index}
+                className="grid grid-cols-2 lg:grid-cols-6 lg:grid-flow-row-dense gap-x-2 gap-y-1 bg-slate-50/75 relative rounded-md px-6 py-4 border-[1px]"
+              >
+                <Badge className="absolute -top-2 -left-2" variant="secondary">
+                  {index + 1}
+                </Badge>
+                <div>
+                  <CardDescription>Category:</CardDescription>
+                  <CardTitle>{finance.financeCategory}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Type:</CardDescription>
+                  <CardTitle>{finance.transactionType}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Description:</CardDescription>
+                  <CardTitle>{finance.transactionDescription}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Service Provider:</CardDescription>
+                  <CardTitle>{finance.serviceProvider}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Estimated Amount:</CardDescription>
+                  <CardTitle>{finance.estimatedAmount}</CardTitle>
+                </div>
+                <div>
+                  <CardDescription>Actual Amount:</CardDescription>
+                  <CardTitle>{finance.actualAmount || 'N/A'}</CardTitle>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      )}
 
       <CardContent className="px-0">
         <CardDescription>Status:</CardDescription>

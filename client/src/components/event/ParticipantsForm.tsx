@@ -18,10 +18,13 @@ import { TextFieldCustom } from '@/components/ui/TextFieldCustom'
 import { SelectFieldCustom } from '@/components/ui/SelectFieldCustom'
 import { CATEGORY_CHOICES, EVENT_AUDIENCE } from '@/constants/choices'
 import useDynamicForm from '@/hooks/useDynamicForm'
+import { useGetUserGroups } from '@/hooks/api/useGetUserGroups'
+import MultipleSelector, { Option } from '../ui/multiple-selector'
 
 const ParticipantsForm = () => {
   const [activeStep] = useState(1)
   const { control } = useFormContext()
+  const { data, isSuccess } = useGetUserGroups()
   const { form, fieldArrays, handleAppend, handleRemove } = useDynamicForm<
     SchemaType<typeof activeStep>
   >({
@@ -31,6 +34,23 @@ const ParticipantsForm = () => {
   })
 
   const committeesInput = fieldArrays.committees
+  const USER_GROUPS: Option[] =
+    isSuccess &&
+    data.map((group: any) => ({
+      value: group.id,
+      label: group.name,
+    }))
+
+  const mockSearch = async (value: string): Promise<Option[]> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const res = USER_GROUPS.filter((group) =>
+          group.label.toLowerCase().includes(value.toLowerCase())
+        )
+        resolve(res)
+      }, 500)
+    })
+  }
 
   return (
     <div className="grid gap-4">
@@ -49,12 +69,49 @@ const ParticipantsForm = () => {
           className="lg:col-span-2"
         />
       </div>
-      <SelectFieldCustom
-        name="audience"
-        choices={EVENT_AUDIENCE}
-        label="Event Sharing and Privacy"
-        placeholder="Who can view this event?"
-      />
+
+      <div>
+        <SelectFieldCustom
+          name="audience"
+          onChangeFn={() => form.setValue('groupIDs', [])}
+          choices={EVENT_AUDIENCE}
+          label="Event Sharing and Privacy"
+          placeholder="Who can view this event?"
+        />
+
+        {form.watch('audience') === 'USER_GROUP' && (
+          <FormField
+            control={form.control}
+            name="groupIDs"
+            // shouldUnregister={true}
+            render={({ field }) => (
+              <FormItem>
+                <Label className="ubuntu-bold">Groups to publish</Label>
+                <FormControl>
+                  <MultipleSelector
+                    {...field}
+                    value={form.getValues('groupIDs')}
+                    onSearch={async (value) => {
+                      const res = await mockSearch(value)
+                      return res
+                    }}
+                    hidePlaceholderWhenSelected
+                    hideClearAllButton
+                    defaultOptions={USER_GROUPS}
+                    placeholder="Select groups where you want to publish this event ..."
+                    emptyIndicator={
+                      <p className="flex justify-center w-full text-red-500 p-2">
+                        No groups.
+                      </p>
+                    }
+                  />
+                </FormControl>
+                <FormError errorField={form.formState.errors} />
+              </FormItem>
+            )}
+          />
+        )}
+      </div>
 
       <FormField
         control={control}
@@ -81,15 +138,6 @@ const ParticipantsForm = () => {
           </FormItem>
         )}
       />
-
-      {/* {form.watch('audience') === 'USER_GROUP' && (
-        <SelectFieldCustom
-          name="category"
-          label="Event Category"
-          placeholder="What category does this event fall under?"
-          className="lg:col-span-2"
-        />
-      )} */}
 
       {form.watch('status') === 'FOR_APPROVAL' && (
         <div className="w-full flex flex-col rounded-lg">

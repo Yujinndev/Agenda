@@ -24,26 +24,25 @@ export const EVENT_AUDIENCE = [
     value: 'PUBLIC',
   },
   {
-    label: 'Invited Persons Only',
-    value: 'INVITED_ONLY',
-    isDisabled: true,
-  },
-  {
     label: 'Within my group',
     value: 'USER_GROUP',
-    isDisabled: true,
   },
   {
     label: 'Only Me',
     value: 'ONLY_ME',
   },
+  {
+    label: 'Invited Persons Only',
+    value: 'INVITED_ONLY',
+    isDisabled: true,
+  },
 ]
 
 export const CATEGORY_CHOICES = [
-  { label: 'Personal', value: 'PERSONAL' },
-  { label: 'Community', value: 'COMMUNITY' },
-  { label: 'School', value: 'SCHOOL' },
-  { label: 'Work', value: 'WORK' },
+  { label: 'For Personal', value: 'PERSONAL' },
+  { label: 'For Community', value: 'COMMUNITY' },
+  { label: 'For School', value: 'SCHOOL' },
+  { label: 'For Work', value: 'WORK' },
 ]
 
 export const FINANCE_CATEGORY = [
