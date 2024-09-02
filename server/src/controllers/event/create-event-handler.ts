@@ -2,11 +2,15 @@ import { Request, Response } from 'express'
 import { PrismaClient } from '@prisma/client'
 import { createEventService } from '../../services/event/create-event-service'
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient({
+  transactionOptions: {
+    maxWait: 50000,
+    timeout: 100000,
+  },
+})
 
 export const createEventHandler = async (req: Request, res: Response) => {
   const { userId, data } = req.body
-  console.log('🚀 ~ createEventHandler ~ data:', data)
 
   if (!data) {
     res.sendStatus(400)
